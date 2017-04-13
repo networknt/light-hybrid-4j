@@ -1,0 +1,11 @@
+package Account
+
+// Account RPC
+type Account struct {
+	accountNo text
+	accountType text
+	accountName text
+	balance float32
+	debit float32
+	credit float32
+}
