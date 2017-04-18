@@ -39,6 +39,10 @@ public class RpcRouterTest {
     @BeforeClass
     public static void setUp() throws Exception {
         RpcRouter rpcRouter = new RpcRouter();
+        // Make sure that services are loaded in service map. It should be called by
+        // Server module in a normal instance.
+        RpcStartupHookProvider provider = new RpcStartupHookProvider();
+        provider.onStartup();
         if(server == null) {
             logger.info("starting server");
             server = Undertow.builder()

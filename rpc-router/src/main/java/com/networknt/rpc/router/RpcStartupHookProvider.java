@@ -1,6 +1,7 @@
 package com.networknt.rpc.router;
 
 import com.networknt.config.Config;
+import com.networknt.rpc.Handler;
 import com.networknt.server.StartupHookProvider;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.lukehutch.fastclasspathscanner.scanner.ClassInfo;
@@ -26,7 +27,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
     static Map<String, ClassInfo> classNameToClassInfo =
             new FastClasspathScanner(config.getHandlerPackage()).scan().getClassNameToClassInfo();
 
-    public static final Map<String, HttpHandler> serviceMap = new HashMap<>();
+    public static final Map<String, Handler> serviceMap = new HashMap<>();
 
     @Override
     public void onStartup() {
@@ -44,7 +45,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
             try {
                 Class handler = Class.forName(className);
                 ServiceHandler a = (ServiceHandler)handler.getAnnotation(ServiceHandler.class);
-                serviceMap.put(a.id(), (HttpHandler)handler.getConstructor().newInstance());
+                serviceMap.put(a.id(), (Handler)handler.getConstructor().newInstance());
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -1,5 +1,8 @@
 package com.networknt.rpc.router;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.networknt.config.Config;
+import com.networknt.rpc.Handler;
 import io.undertow.io.Receiver;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
@@ -9,6 +12,9 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
+ * This is the entry handler for json api, it will parse the JSON request body and
+ * construct service id and then calls the service handler to get the final response.
+ *
  * Created by steve on 19/02/17.
  */
 public class JsonHandler extends AbstractRpcHandler {
@@ -19,6 +25,18 @@ public class JsonHandler extends AbstractRpcHandler {
             @Override
             public void handle(HttpServerExchange exchange, String message) {
                 System.out.println("message = " + message);
+
+                Map<String, Object> map = null;
+                try {
+                    map = Config.getInstance().getMapper().readValue(message, new TypeReference<Map<String,Object>>(){});
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                String serviceId = getServiceId(map);
+                System.out.println("serviceId = " + serviceId);
+                Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
+                Object result = handler.handle(map);
+                System.out.println("result = " + result);
                 exchange.getResponseSender().send("OK");
             }
         });
