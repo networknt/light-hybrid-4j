@@ -43,10 +43,7 @@ public class RpcRouterTest {
             logger.info("starting server");
             server = Undertow.builder()
                     .addHttpListener(8080, "localhost")
-                    //.setHandler(rpcRouter.getHandler())
-                    .setHandler(Handlers.path()
-                            .addPrefixPath("/api/colfer", new ColferHandler())
-                            .addPrefixPath("/api/json", new JsonHandler()))
+                    .setHandler(rpcRouter.getHandler())
                     .build();
             server.start();
         }
