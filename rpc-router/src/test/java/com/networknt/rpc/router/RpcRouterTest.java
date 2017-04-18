@@ -1,23 +1,29 @@
 package com.networknt.rpc.router;
 
+import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
-import io.undertow.client.ClientConnection;
-import io.undertow.client.UndertowClient;
+import io.undertow.client.*;
 import io.undertow.connector.ByteBufferPool;
 import io.undertow.server.DefaultByteBufferPool;
 import io.undertow.server.HttpHandler;
+import io.undertow.util.Headers;
+import io.undertow.util.Methods;
+import io.undertow.util.StringReadChannelListener;
+import io.undertow.util.StringWriteChannelListener;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xnio.OptionMap;
-import org.xnio.Options;
-import org.xnio.Xnio;
-import org.xnio.XnioWorker;
+import org.xnio.*;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by steve on 12/04/17.
@@ -37,7 +43,10 @@ public class RpcRouterTest {
             logger.info("starting server");
             server = Undertow.builder()
                     .addHttpListener(8080, "localhost")
-                    .setHandler(rpcRouter.getHandler())
+                    //.setHandler(rpcRouter.getHandler())
+                    .setHandler(Handlers.path()
+                            .addPrefixPath("/api/colfer", new ColferHandler())
+                            .addPrefixPath("/api/json", new JsonHandler()))
                     .build();
             server.start();
         }
@@ -71,10 +80,66 @@ public class RpcRouterTest {
     @Test
     public void testJsonRpc() throws Exception {
         UndertowClient client = UndertowClient.getInstance();
-        String message = "{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"accountNo\":\"1234567\"}";
-        final ClientConnection connection = client.connect(new URI("h2c-prior://localhost:8080"), worker, pool, OptionMap.create(UndertowOptions.ENABLE_HTTP2, true)).get();
 
+        String message = "{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"accountNo\":\"1234567\"}";
+        final CountDownLatch latch = new CountDownLatch(1);
+        final List<String> responses = new CopyOnWriteArrayList<>();
+        final ClientConnection connection = client.connect(new URI("http://localhost:8080"), worker, pool, OptionMap.create(UndertowOptions.ENABLE_HTTP2, true)).get();
+        try {
+            connection.getIoThread().execute(() -> {
+                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                request.getRequestHeaders().put(Headers.HOST, "localhost");
+                request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+                connection.sendRequest(request, new ClientCallback<ClientExchange>() {
+                    @Override
+                    public void completed(ClientExchange result) {
+                        new StringWriteChannelListener(message).setup(result.getRequestChannel());
+                        result.setResponseListener(new ClientCallback<ClientExchange>() {
+                            @Override
+                            public void completed(ClientExchange result) {
+                                new StringReadChannelListener(pool) {
+
+                                    @Override
+                                    protected void stringDone(String string) {
+                                        System.out.println("response = " + string);
+                                        responses.add(string);
+                                        latch.countDown();
+                                    }
+
+                                    @Override
+                                    protected void error(IOException e) {
+                                        e.printStackTrace();
+                                        latch.countDown();
+                                    }
+                                }.setup(result.getResponseChannel());
+                            }
+
+                            @Override
+                            public void failed(IOException e) {
+                                e.printStackTrace();
+                                latch.countDown();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void failed(IOException e) {
+                        e.printStackTrace();
+                        latch.countDown();
+                    }
+                });
+            });
+
+            latch.await();
+            final String responseBody = responses.iterator().next();
+            Assert.assertEquals("OK", responseBody);
+        } finally {
+            IoUtils.safeClose(connection);
+        }
     }
+
+
+
 
     @Test
     public void testColferRpc() {

@@ -14,7 +14,16 @@ import java.util.concurrent.CompletableFuture;
 public class JsonHandler extends AbstractRpcHandler {
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
+        System.out.println("JsonHandler is called");
+        exchange.getRequestReceiver().receiveFullString(new Receiver.FullStringCallback() {
+            @Override
+            public void handle(HttpServerExchange exchange, String message) {
+                System.out.println("message = " + message);
+                exchange.getResponseSender().send("OK");
+            }
+        });
 
+        /*
         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
 
         exchange.getRequestReceiver().receiveFullString((exchange1, message) -> {
@@ -30,5 +39,6 @@ public class JsonHandler extends AbstractRpcHandler {
             exchange.getResponseSender().send("OK");
 
         });
+        */
     }
 }
