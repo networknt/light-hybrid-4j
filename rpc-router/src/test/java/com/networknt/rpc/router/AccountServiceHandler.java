@@ -17,6 +17,7 @@ public class AccountServiceHandler implements Handler {
 
     @Override
     public ByteBuffer handle(Object input) {
+        System.out.println("AccountServiceHandler is called");
         return null;
     }
 }

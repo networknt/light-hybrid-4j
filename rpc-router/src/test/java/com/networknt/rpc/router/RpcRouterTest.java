@@ -1,5 +1,6 @@
 package com.networknt.rpc.router;
 
+import com.networknt.colfer.Account;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
@@ -143,7 +144,75 @@ public class RpcRouterTest {
 
 
     @Test
-    public void testColferRpc() {
+    public void testColferRpc() throws Exception {
+        /*
+        UndertowClient client = UndertowClient.getInstance();
+        Account account = new Account();
+        account.host = "www.networknt.com";
+        account.service = "account";
+        account.action = "credit";
+        account.version = "1.0.0";
+        account.accountNo = "1234567";
+        account.credit = 12.00f;
 
+        byte[] buf = new byte[Math.min(Account.colferSizeMax, 2048)];
+        int i = account.marshal(buf, 0);
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final List<String> responses = new CopyOnWriteArrayList<>();
+        final ClientConnection connection = client.connect(new URI("http://localhost:8080"), worker, pool, OptionMap.create(UndertowOptions.ENABLE_HTTP2, true)).get();
+        try {
+            connection.getIoThread().execute(() -> {
+                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                request.getRequestHeaders().put(Headers.HOST, "localhost");
+                request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+                connection.sendRequest(request, new ClientCallback<ClientExchange>() {
+                    @Override
+                    public void completed(ClientExchange result) {
+                        new StringWriteChannelListener(message).setup(result.getRequestChannel());
+                        result.setResponseListener(new ClientCallback<ClientExchange>() {
+                            @Override
+                            public void completed(ClientExchange result) {
+                                new StringReadChannelListener(pool) {
+
+                                    @Override
+                                    protected void stringDone(String string) {
+                                        System.out.println("response = " + string);
+                                        responses.add(string);
+                                        latch.countDown();
+                                    }
+
+                                    @Override
+                                    protected void error(IOException e) {
+                                        e.printStackTrace();
+                                        latch.countDown();
+                                    }
+                                }.setup(result.getResponseChannel());
+                            }
+
+                            @Override
+                            public void failed(IOException e) {
+                                e.printStackTrace();
+                                latch.countDown();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void failed(IOException e) {
+                        e.printStackTrace();
+                        latch.countDown();
+                    }
+                });
+            });
+
+            latch.await();
+            final String responseBody = responses.iterator().next();
+            Assert.assertEquals("OK", responseBody);
+        } finally {
+            IoUtils.safeClose(connection);
+        }
+        */
     }
+
 }
