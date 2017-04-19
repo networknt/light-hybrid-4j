@@ -16,9 +16,11 @@
 
 package com.networknt.rpc;
 
+import java.nio.ByteBuffer;
+
 /**
  * Created by steve on 03/10/16.
  */
 public interface Handler {
-    Object handle (Object object);
+    ByteBuffer handle (Object object);
 }

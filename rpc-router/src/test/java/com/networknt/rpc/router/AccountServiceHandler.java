@@ -6,6 +6,8 @@ import io.undertow.server.HttpServerExchange;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
+import java.nio.ByteBuffer;
+
 /**
  * Created by steve on 12/04/17.
  */
@@ -14,7 +16,7 @@ public class AccountServiceHandler implements Handler {
     static private final XLogger logger = XLoggerFactory.getXLogger(AccountServiceHandler.class);
 
     @Override
-    public Object handle(Object input) {
+    public ByteBuffer handle(Object input) {
         return null;
     }
 }

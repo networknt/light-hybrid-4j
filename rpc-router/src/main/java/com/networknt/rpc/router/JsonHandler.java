@@ -7,6 +7,7 @@ import io.undertow.io.Receiver;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -35,9 +36,9 @@ public class JsonHandler extends AbstractRpcHandler {
                 String serviceId = getServiceId(map);
                 System.out.println("serviceId = " + serviceId);
                 Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
-                Object result = handler.handle(map);
+                ByteBuffer result = handler.handle(map);
                 System.out.println("result = " + result);
-                exchange.getResponseSender().send("OK");
+                exchange.getResponseSender().send(result);
             }
         });
 
