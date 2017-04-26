@@ -6,6 +6,8 @@ import com.networknt.rpc.Handler;
 import io.undertow.io.Receiver;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -19,13 +21,15 @@ import java.util.concurrent.CompletableFuture;
  * Created by steve on 19/02/17.
  */
 public class JsonHandler extends AbstractRpcHandler {
+    static private final XLogger logger = XLoggerFactory.getXLogger(JsonHandler.class);
+
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         System.out.println("JsonHandler is called");
         exchange.getRequestReceiver().receiveFullString(new Receiver.FullStringCallback() {
             @Override
             public void handle(HttpServerExchange exchange, String message) {
-                System.out.println("message = " + message);
+                logger.entry(message);
 
                 Map<String, Object> map = null;
                 try {
@@ -36,28 +40,20 @@ public class JsonHandler extends AbstractRpcHandler {
                 String serviceId = getServiceId(map);
                 System.out.println("serviceId = " + serviceId);
                 Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
+                if(handler == null) {
+                    // TODO handler doesn't exist.
+                    // return a status
+                }
                 ByteBuffer result = handler.handle(map);
-                System.out.println("result = " + result);
-                exchange.getResponseSender().send(result);
+                logger.exit(result);
+                if(result == null) {
+                    // there is nothing returned from the handler.
+                    exchange.endExchange();
+                } else {
+                    exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
+                    exchange.getResponseSender().send(result);
+                }
             }
         });
-
-        /*
-        exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-
-        exchange.getRequestReceiver().receiveFullString((exchange1, message) -> {
-            // parse the message to hashmap
-            System.out.println(message);
-
-            // Need to parse the body in json map
-
-            // find the serviceId and call the service
-
-            // send the response in json from the service
-
-            exchange.getResponseSender().send("OK");
-
-        });
-        */
     }
 }

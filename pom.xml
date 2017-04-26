@@ -106,7 +106,7 @@
             <!-- Modules in this project -->
             <dependency>
                 <groupId>com.networknt</groupId>
-                <artifactId>json-router</artifactId>
+                <artifactId>rpc-router</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
