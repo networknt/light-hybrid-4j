@@ -31,7 +31,6 @@ public class RpcStartupHookProvider implements StartupHookProvider {
 
     @Override
     public void onStartup() {
-
         // lookup all ServiceHandler and register them to handle request
         List<String> handlers =
                 classNameToClassInfo.values().stream()
@@ -39,13 +38,14 @@ public class RpcStartupHookProvider implements StartupHookProvider {
                         .map(ClassInfo::getClassName)
                         .sorted()
                         .collect(Collectors.toList());
-
+        System.out.println("RpcStartupHookProvider: handlers size " + handlers.size());
         // for each handler, create instance and register.
         for(String className: handlers) {
             try {
                 Class handler = Class.forName(className);
                 ServiceHandler a = (ServiceHandler)handler.getAnnotation(ServiceHandler.class);
                 serviceMap.put(a.id(), (Handler)handler.getConstructor().newInstance());
+                System.out.printf("RpcStartupHookProvider add %s to %s", a.id(), className);
             } catch (Exception e) {
                 e.printStackTrace();
             }
