@@ -34,6 +34,7 @@ public class RpcRouterTest {
     private static final ByteBufferPool pool = new DefaultByteBufferPool(true, 8192 * 3, 1000, 10, 100);
     private static XnioWorker worker;
     private static OptionMap DEFAULT_OPTIONS;
+    private static String auth = "Bearer eyJraWQiOiIxMDAiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTgwODkxMzM2NCwianRpIjoicjZpNGstcEF2ekU4VTd4LTFya3JIQSIsImlhdCI6MTQ5MzU1MzM2NCwibmJmIjoxNDkzNTUzMjQ0LCJ2ZXJzaW9uIjoiMS4wIiwidXNlcl9pZCI6InN0ZXZlIiwidXNlcl90eXBlIjoiRU1QTE9ZRUUiLCJjbGllbnRfaWQiOiJmN2Q0MjM0OC1jNjQ3LTRlZmItYTUyZC00YzU3ODc0MjFlNzIiLCJzY29wZSI6WyJ3b3JsZC5yIiwid29ybGQudyIsInNlcnZlci5pbmZvLnIiXX0.VZCeU_M9xJKquSpGu0DgkX5aThUvqlChEcQOIG4aFlLkgfq76hf498GCdqLlAlk7RvkwnQUrwNa2kH8T-gNapgpWYnnwJ0cpWGE4LQ0urqFHetoJeiVyv6XVVp9khO4dsbcJLvVDzEr2Sgzwu3Bi7pkEg6BNwBQIEZRIwNxvQWIt9hnrdrvkId70C0mC9GkZC35_bEOWMkamw0TFUAimeStyZo3NJDwmH9EQmSN1523dF4Q2hFxhtfzOv-DQccIe8U2iG3tT3LJCSYjRJK0idt3NFq57WT0MA7vPSOFplTqCK_WfH5u-so_xKnltRKoKadXkBjHojznXO6nNhF38eQ";
 
     static Undertow server = null;
 
@@ -91,6 +92,7 @@ public class RpcRouterTest {
             connection.getIoThread().execute(() -> {
                 final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
                 request.getRequestHeaders().put(Headers.HOST, "localhost");
+                request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
                 request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
                 connection.sendRequest(request, new ClientCallback<ClientExchange>() {
                     @Override
@@ -153,6 +155,7 @@ public class RpcRouterTest {
             connection.getIoThread().execute(() -> {
                 final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
                 request.getRequestHeaders().put(Headers.HOST, "localhost");
+                request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
                 request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
                 connection.sendRequest(request, new ClientCallback<ClientExchange>() {
                     @Override

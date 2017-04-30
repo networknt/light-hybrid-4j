@@ -109,16 +109,6 @@
                 <artifactId>rpc-router</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.networknt</groupId>
-                <artifactId>hybrid-validator</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.networknt</groupId>
-                <artifactId>hybrid-security</artifactId>
-                <version>${project.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>com.networknt</groupId>

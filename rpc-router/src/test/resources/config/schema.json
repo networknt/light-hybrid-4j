@@ -13,6 +13,6 @@
       },
       "required" : [ "accountNo", "accountType"]
     },
-    "scope": "account.w"
+    "scope": "world.w"
   }
 }
