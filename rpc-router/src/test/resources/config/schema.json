@@ -1,15 +1,18 @@
 {
   "www.networknt.com/account/delete/0.1.1" : {
-    "title" : "Service",
-    "type" : "object",
-    "properties" : {
-      "accountNo" : {
-        "type" : "string"
+    "schema": {
+      "title" : "Service",
+      "type" : "object",
+      "properties" : {
+        "accountNo" : {
+          "type" : "string"
+        },
+        "accountType" : {
+          "type" : "string"
+        }
       },
-      "accountType" : {
-        "type" : "string"
-      }
+      "required" : [ "accountNo", "accountType"]
     },
-    "required" : [ "accountNo", "accountType"]
+    "scope": "account.w"
   }
 }

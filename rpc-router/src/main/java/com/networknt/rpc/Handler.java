@@ -46,8 +46,9 @@ public interface Handler {
 
     default ByteBuffer validate(String serviceId, Object object) {
         // get schema from serviceId
-        Map<String, Object> schemaMap = Config.getInstance().getJsonMapConfig(CONFIG_NAME);
-        JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(schemaMap.get(serviceId));
+        Map<String, Object> configMap = Config.getInstance().getJsonMapConfig(CONFIG_NAME);
+        Map<String, Object> serviceMap = (Map<String, Object>)configMap.get(serviceId);
+        JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(serviceMap.get("schema"));
         JsonSchemaFactory factory = new JsonSchemaFactory();
         JsonSchema schema = factory.getSchema(jsonNode);
         Set<ValidationMessage> errors = schema.validate(Config.getInstance().getMapper().valueToTree(object));
