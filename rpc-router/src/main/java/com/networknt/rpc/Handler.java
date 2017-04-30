@@ -16,11 +16,50 @@
 
 package com.networknt.rpc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.networknt.config.Config;
+import com.networknt.rpc.router.JsonHandler;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.ValidationMessage;
+import com.networknt.status.Status;
+import com.networknt.utility.NioUtils;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
+
 import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by steve on 03/10/16.
  */
 public interface Handler {
+    XLogger logger = XLoggerFactory.getXLogger(Handler.class);
+
+    String STATUS_VALIDATION_ERROR = "ERR11004";
+
+    String CONFIG_NAME = "schema";
+
     ByteBuffer handle (Object object);
+
+    default ByteBuffer validate(String serviceId, Object object) {
+        // get schema from serviceId
+        Map<String, Object> schemaMap = Config.getInstance().getJsonMapConfig(CONFIG_NAME);
+        JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(schemaMap.get(serviceId));
+        JsonSchemaFactory factory = new JsonSchemaFactory();
+        JsonSchema schema = factory.getSchema(jsonNode);
+        Set<ValidationMessage> errors = schema.validate(Config.getInstance().getMapper().valueToTree(object));
+        ByteBuffer bf = null;
+        if(errors.size() > 0) {
+            try {
+                Status status = new Status(STATUS_VALIDATION_ERROR, Config.getInstance().getMapper().writeValueAsString(errors));
+                bf = NioUtils.toByteBuffer(status.toString());
+            } catch (JsonProcessingException e) {
+                logger.error("Exception:", e);
+            }
+        }
+        return bf;
+    }
 }
