@@ -36,6 +36,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class JsonHandler extends AbstractRpcHandler {
     static final String SCHEMA = "schema";
+    static final String ENABLE_VERIFY_JWT = "enableVerifyJwt";
     static final String ENABLE_VERIFY_SCOPE = "enableVerifyScope";
 
     static final String STATUS_HANDLER_NOT_FOUND = "ERR11200";
@@ -78,12 +79,14 @@ public class JsonHandler extends AbstractRpcHandler {
                     return;
                 }
                 // calling JWT verify handler here.
-                Map<String, Object> service = (Map<String, Object>)schema.get(serviceId);
-                String scope = (String)service.get("scope");
-                Status status = verifyJwt(exchange, scope);
-                if(status != null) {
-                    exchange.getResponseSender().send(status.toString());
-                    return;
+                if(config != null && (Boolean)config.get(ENABLE_VERIFY_JWT)) {
+                    Map<String, Object> service = (Map<String, Object>)schema.get(serviceId);
+                    String scope = (String)service.get("scope");
+                    Status status = verifyJwt(exchange, scope);
+                    if(status != null) {
+                        exchange.getResponseSender().send(status.toString());
+                        return;
+                    }
                 }
                 // calling schema validator here.
                 ByteBuffer error = handler.validate(serviceId, map);
