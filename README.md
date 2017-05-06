@@ -1,6 +1,11 @@
-# light-hybrid-4j
-
 A hybrid between monolith and microservices to take advantages of both.
+
+[Developer Chat](https://gitter.im/networknt/light-hybrid-4j) |
+[Documentation](https://networknt.github.io/light-hybrid-4j) |
+[Contribution Guide](CONTRIBUTING.md) |
+
+
+[![Build Status](https://travis-ci.org/networknt/light-hybrid-4j.svg?branch=master)](https://travis-ci.org/networknt/light-hybrid-4j)
 
 ## Why Hybrid
 
