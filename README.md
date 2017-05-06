@@ -1,4 +1,4 @@
-# light-java-hybrid
+# light-hybrid-4j
 
 A hybrid between monolith and microservices to take advantages of both.
 
