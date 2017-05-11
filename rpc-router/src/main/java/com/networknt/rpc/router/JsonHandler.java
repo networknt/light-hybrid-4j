@@ -40,6 +40,7 @@ public class JsonHandler extends AbstractRpcHandler {
     static final String ENABLE_VERIFY_SCOPE = "enableVerifyScope";
 
     static final String STATUS_HANDLER_NOT_FOUND = "ERR11200";
+    static final String STATUS_REQUEST_BODY_EMPTY = "ERR11201";
     static final String STATUS_INVALID_AUTH_TOKEN = "ERR10000";
     static final String STATUS_AUTH_TOKEN_EXPIRED = "ERR10001";
     static final String STATUS_MISSING_AUTH_TOKEN = "ERR10002";
@@ -47,8 +48,6 @@ public class JsonHandler extends AbstractRpcHandler {
     static final String STATUS_SCOPE_TOKEN_EXPIRED = "ERR10004";
     static final String STATUS_AUTH_TOKEN_SCOPE_MISMATCH = "ERR10005";
     static final String STATUS_SCOPE_TOKEN_SCOPE_MISMATCH = "ERR10006";
-    static final String STATUS_INVALID_REQUEST_PATH = "ERR10007";
-    static final String STATUS_METHOD_NOT_ALLOWED = "ERR10008";
 
     static final Map<String, Object> config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
     static final Map<String, Object> schema = Config.getInstance().getJsonMapConfig(SCHEMA);
@@ -63,6 +62,12 @@ public class JsonHandler extends AbstractRpcHandler {
             public void handle(HttpServerExchange exchange, String message) {
                 logger.entry(message);
                 exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
+                if(message == null || message.trim().length() == 0) {
+                    // payload of request is missing
+                    Status status = new Status(STATUS_REQUEST_BODY_EMPTY);
+                    exchange.getResponseSender().send(status.toString());
+                    return;
+                }
 
                 Map<String, Object> map = null;
                 try {
