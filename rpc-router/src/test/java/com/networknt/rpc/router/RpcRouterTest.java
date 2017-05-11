@@ -143,6 +143,75 @@ public class RpcRouterTest {
         }
     }
 
+    /**
+     * Test empty post request body and expect 400 error from the server.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testJsonRpcEmptyBody() throws Exception {
+        UndertowClient client = UndertowClient.getInstance();
+
+        String message = "";
+        final CountDownLatch latch = new CountDownLatch(1);
+        final List<String> responses = new CopyOnWriteArrayList<>();
+        final ClientConnection connection = client.connect(new URI("http://localhost:8080"), worker, pool, OptionMap.create(UndertowOptions.ENABLE_HTTP2, true)).get();
+        try {
+            connection.getIoThread().execute(() -> {
+                final ClientRequest request = new ClientRequest().setMethod(Methods.POST).setPath("/api/json");
+                request.getRequestHeaders().put(Headers.HOST, "localhost");
+                request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+                request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+                connection.sendRequest(request, new ClientCallback<ClientExchange>() {
+                    @Override
+                    public void completed(ClientExchange result) {
+                        new StringWriteChannelListener(message).setup(result.getRequestChannel());
+                        result.setResponseListener(new ClientCallback<ClientExchange>() {
+                            @Override
+                            public void completed(ClientExchange result) {
+                                new StringReadChannelListener(pool) {
+
+                                    @Override
+                                    protected void stringDone(String string) {
+                                        System.out.println("response = " + string);
+                                        responses.add(string);
+                                        latch.countDown();
+                                    }
+
+                                    @Override
+                                    protected void error(IOException e) {
+                                        e.printStackTrace();
+                                        latch.countDown();
+                                    }
+                                }.setup(result.getResponseChannel());
+                            }
+
+                            @Override
+                            public void failed(IOException e) {
+                                e.printStackTrace();
+                                latch.countDown();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void failed(IOException e) {
+                        e.printStackTrace();
+                        latch.countDown();
+                    }
+                });
+            });
+
+            latch.await();
+            final String responseBody = responses.iterator().next();
+            System.out.println("body = " + responseBody);
+            Assert.assertTrue(responseBody.contains("ERR11201"));
+        } finally {
+            IoUtils.safeClose(connection);
+        }
+    }
+
+
     @Test
     public void testJsonRpcNoError() throws Exception {
         UndertowClient client = UndertowClient.getInstance();
