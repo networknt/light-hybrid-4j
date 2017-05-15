@@ -1,13 +1,12 @@
 package com.networknt.rpc.security;
 
 import com.networknt.config.Config;
+import com.networknt.exception.ExpiredTokenException;
 import com.networknt.handler.MiddlewareHandler;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
-import com.networknt.exception.ExpiredTokenException;
 import com.networknt.utility.ModuleRegistry;
-import io.swagger.models.*;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -15,12 +14,10 @@ import io.undertow.util.HeaderMap;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import org.jose4j.jwt.JwtClaims;
-import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,7 +56,8 @@ public class JwtVerifyHandler implements MiddlewareHandler {
                 headerMap.add(new HttpString(Constants.CLIENT_ID), claims.getStringClaimValue(Constants.CLIENT_ID));
                 headerMap.add(new HttpString(Constants.USER_ID), claims.getStringClaimValue(Constants.USER_ID));
                 // This is the id-token scope, it is put into the header for audit and rpc-router for token verification
-                headerMap.add(new HttpString(Constants.SCOPE), claims.getStringListClaimValue(Constants.SCOPE).toString());
+                // Need to remove the space in order for rpc-router to parse and verify scope
+                headerMap.add(new HttpString(Constants.SCOPE), claims.getStringListClaimValue(Constants.SCOPE).toString().replaceAll("\\s+",""));
                 next.handleRequest(exchange);
             } catch (InvalidJwtException e) {
                 // only log it and unauthorized is returned.

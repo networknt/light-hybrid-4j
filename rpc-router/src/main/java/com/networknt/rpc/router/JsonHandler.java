@@ -153,7 +153,7 @@ public class JsonHandler extends AbstractRpcHandler {
         } else {
             // no scope token, verify scope from header which is saved from id token.
             String idScope = headerMap.getFirst(Constants.SCOPE);
-            List<String> primaryScopes = idScope == null? null : Arrays.asList(idScope.split("\\s+"));
+            List<String> primaryScopes = idScope == null? null : Arrays.asList(idScope.substring(1, idScope.length() - 1).split(","));
             if (!matchedScopes(primaryScopes, specScopes)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Authorization jwt token scope " + primaryScopes + " is not matched with " + specScopes);

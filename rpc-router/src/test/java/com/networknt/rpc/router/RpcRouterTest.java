@@ -1,6 +1,7 @@
 package com.networknt.rpc.router;
 
 import com.networknt.colfer.Account;
+import com.networknt.rpc.security.JwtVerifyHandler;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
@@ -41,6 +42,8 @@ public class RpcRouterTest {
     @BeforeClass
     public static void setUp() throws Exception {
         RpcRouter rpcRouter = new RpcRouter();
+        JwtVerifyHandler jwtVerifyHandler = new JwtVerifyHandler();
+        jwtVerifyHandler.setNext(rpcRouter.getHandler());
         // Make sure that services are loaded in service map. It should be called by
         // Server module in a normal instance.
         RpcStartupHookProvider provider = new RpcStartupHookProvider();
@@ -49,7 +52,7 @@ public class RpcRouterTest {
             logger.info("starting server");
             server = Undertow.builder()
                     .addHttpListener(8080, "localhost")
-                    .setHandler(rpcRouter.getHandler())
+                    .setHandler(jwtVerifyHandler)
                     .build();
             server.start();
         }
