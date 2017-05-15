@@ -83,11 +83,11 @@ public class JsonHandler extends AbstractRpcHandler {
                     exchange.getResponseSender().send(status.toString());
                     return;
                 }
-                // calling JWT verify handler here.
-                if(config != null && (Boolean)config.get(ENABLE_VERIFY_JWT)) {
+                // calling jwt scope verification here. token signature and expiration are done
+                if(config != null && (Boolean)config.get(ENABLE_VERIFY_JWT) && (Boolean)config.get(ENABLE_VERIFY_SCOPE)) {
                     Map<String, Object> service = (Map<String, Object>)schema.get(serviceId);
                     String scope = (String)service.get("scope");
-                    Status status = verifyJwt(exchange, scope);
+                    Status status = verifyScope(exchange, scope);
                     if(status != null) {
                         exchange.getResponseSender().send(status.toString());
                         return;
@@ -112,73 +112,54 @@ public class JsonHandler extends AbstractRpcHandler {
         });
     }
 
-    private Status verifyJwt(HttpServerExchange exchange, String scope) {
+    /**
+     * This is to verify if the scope of token from id token or access token matches to the schema
+     * token passed in.
+     *
+     * @param exchange HttpServerExchange that contains information about the request/response.
+     * @param schemaScope The scope defined in the schema for the particular service
+     * @return Status object if there is an error or null if passed.
+     */
+    private Status verifyScope(HttpServerExchange exchange, String schemaScope) {
+        // check if id token scope exist or not.
         HeaderMap headerMap = exchange.getRequestHeaders();
-        String authorization = headerMap.getFirst(Headers.AUTHORIZATION);
-        String jwt = JwtHelper.getJwtFromAuthorization(authorization);
-        if(jwt != null) {
+        String scopeHeader = headerMap.getFirst(Constants.SCOPE_TOKEN);
+        String scopeJwt = JwtHelper.getJwtFromAuthorization(scopeHeader);
+        List<String> secondaryScopes = null;
+        if (scopeJwt != null) {
             try {
-                JwtClaims claims = JwtHelper.verifyJwt(jwt);
-                // put claims into request header so that scope can be verified per endpoint.
-                headerMap.add(new HttpString(Constants.CLIENT_ID), claims.getStringClaimValue(Constants.CLIENT_ID));
-                headerMap.add(new HttpString(Constants.USER_ID), claims.getStringClaimValue(Constants.USER_ID));
-                headerMap.add(new HttpString(Constants.SCOPE), claims.getStringListClaimValue(Constants.SCOPE).toString());
-
-                if (config != null && (Boolean) config.get(ENABLE_VERIFY_SCOPE)) {
-                    // is there a scope token
-                    String scopeHeader = headerMap.getFirst(Constants.SCOPE_TOKEN);
-                    String scopeJwt = JwtHelper.getJwtFromAuthorization(scopeHeader);
-                    List<String> secondaryScopes = null;
-                    if (scopeJwt != null) {
-                        try {
-                            JwtClaims scopeClaims = JwtHelper.verifyJwt(scopeJwt);
-                            secondaryScopes = scopeClaims.getStringListClaimValue("scope");
-                            headerMap.add(new HttpString(Constants.SCOPE_CLIENT_ID), scopeClaims.getStringClaimValue(Constants.CLIENT_ID));
-                        } catch (InvalidJwtException | MalformedClaimException e) {
-                            logger.error("InvalidJwtException", e);
-                            return new Status(STATUS_INVALID_SCOPE_TOKEN);
-                        } catch (ExpiredTokenException e) {
-                            return new Status(STATUS_SCOPE_TOKEN_EXPIRED);
-                        }
-                    }
-
-                    // convert scope to a list of String. scope in schema is space delimited.
-                    List<String> specScopes = scope == null? null : Arrays.asList(scope.split("\\s+"));
-
-                    // validate scope
-                    if (scopeHeader != null) {
-                        if (secondaryScopes == null || !matchedScopes(secondaryScopes, specScopes)) {
-                            if (logger.isDebugEnabled()) {
-                                logger.debug("Scopes " + secondaryScopes + " and specificatio token " + specScopes + " are not matched in scope token");
-                            }
-                            return new Status(STATUS_SCOPE_TOKEN_SCOPE_MISMATCH, secondaryScopes, specScopes);
-                        }
-                    } else {
-                        // no scope token, verify scope from auth token.
-                        List<String> primaryScopes;
-                        try {
-                            primaryScopes = claims.getStringListClaimValue("scope");
-                        } catch (MalformedClaimException e) {
-                            logger.error("MalformedClaimException", e);
-                            return new Status(STATUS_INVALID_AUTH_TOKEN);
-                        }
-                        if (!matchedScopes(primaryScopes, specScopes)) {
-                            if (logger.isDebugEnabled()) {
-                                logger.debug("Authorization jwt token scope " + primaryScopes + " is not matched with " + specScopes);
-                            }
-                            return new Status(STATUS_AUTH_TOKEN_SCOPE_MISMATCH, primaryScopes, specScopes);
-                        }
-                    }
-                }
-            } catch (MalformedClaimException | InvalidJwtException e) {
-                // only log it and unauthorized is returned.
-                logger.error("Exception: ", e);
-                return new Status(STATUS_INVALID_AUTH_TOKEN);
+                JwtClaims scopeClaims = JwtHelper.verifyJwt(scopeJwt);
+                secondaryScopes = scopeClaims.getStringListClaimValue("scope");
+                headerMap.add(new HttpString(Constants.SCOPE_CLIENT_ID), scopeClaims.getStringClaimValue(Constants.CLIENT_ID));
+            } catch (InvalidJwtException | MalformedClaimException e) {
+                logger.error("InvalidJwtException", e);
+                return new Status(STATUS_INVALID_SCOPE_TOKEN);
             } catch (ExpiredTokenException e) {
-                return new Status(STATUS_AUTH_TOKEN_EXPIRED);
+                return new Status(STATUS_SCOPE_TOKEN_EXPIRED);
+            }
+        }
+
+        // convert schemaScope to a list of String. scope in schema is space delimited.
+        List<String> specScopes = schemaScope == null? null : Arrays.asList(schemaScope.split("\\s+"));
+
+        // validate scope
+        if (scopeHeader != null) {
+            if (secondaryScopes == null || !matchedScopes(secondaryScopes, specScopes)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Scopes " + secondaryScopes + " and specification token " + specScopes + " are not matched in scope token");
+                }
+                return new Status(STATUS_SCOPE_TOKEN_SCOPE_MISMATCH, secondaryScopes, specScopes);
             }
         } else {
-            return new Status(STATUS_MISSING_AUTH_TOKEN);
+            // no scope token, verify scope from header which is saved from id token.
+            String idScope = headerMap.getFirst(Constants.SCOPE);
+            List<String> primaryScopes = idScope == null? null : Arrays.asList(idScope.split("\\s+"));
+            if (!matchedScopes(primaryScopes, specScopes)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Authorization jwt token scope " + primaryScopes + " is not matched with " + specScopes);
+                }
+                return new Status(STATUS_AUTH_TOKEN_SCOPE_MISMATCH, primaryScopes, specScopes);
+            }
         }
         return null;
     }
