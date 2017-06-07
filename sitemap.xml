@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
     <loc>https://networknt.github.io/light-hybrid-4j/</loc>
     <lastmod>2017-06-04T09:34:18-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://networknt.github.io/light-hybrid-4j/tutorial/</loc>
+    <lastmod>2017-04-27T09:38:08-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://networknt.github.io/light-hybrid-4j/tutorial/integration/</loc>
+    <lastmod>2016-10-12T17:06:30-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://networknt.github.io/light-hybrid-4j/tutorial/implementation/</loc>
+    <lastmod>2016-10-12T17:05:47-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://networknt.github.io/light-hybrid-4j/tutorial/setup/</loc>
+    <lastmod>2016-10-09T08:01:56-04:00</lastmod>
   </url>
   
   <url>
@@ -19,6 +40,12 @@
   
   <url>
     <loc>https://networknt.github.io/light-hybrid-4j/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://networknt.github.io/light-hybrid-4j/tutorial/</loc>
+    <lastmod>2017-04-27T09:38:08-04:00</lastmod>
     <priority>0</priority>
   </url>
   

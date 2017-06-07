@@ -1,25 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Light Hybrid 4J</title>
-    <link>https://networknt.github.io/light-hybrid-4j/</link>
-    <description>Recent content on Light Hybrid 4J</description>
+    <title>Tutorials on Light Hybrid 4J</title>
+    <link>https://networknt.github.io/light-hybrid-4j/tutorial/</link>
+    <description>Recent content in Tutorials on Light Hybrid 4J</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
-    <lastBuildDate>Sun, 04 Jun 2017 09:34:18 -0400</lastBuildDate>
+    <lastBuildDate>Thu, 27 Apr 2017 09:38:08 -0400</lastBuildDate>
     
-	<atom:link href="https://networknt.github.io/light-hybrid-4j/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://networknt.github.io/light-hybrid-4j/tutorial/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>index</title>
-      <link>https://networknt.github.io/light-hybrid-4j/</link>
-      <pubDate>Sun, 04 Jun 2017 09:34:18 -0400</pubDate>
-      
-      <guid>https://networknt.github.io/light-hybrid-4j/</guid>
-      <description>This is the entry point.</description>
-    </item>
     
     <item>
       <title>Tutorial</title>
