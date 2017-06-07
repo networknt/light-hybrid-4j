@@ -24,3 +24,52 @@ title: Integration Test
   This command will start command and query side hybrid services
 
 
+4. Test on command side to create and publish events:
+
+  Use postmand, set post request:
+
+  URL: http://localhost:8083/api/json
+
+  content:
+  {
+    "host": "lightapi.net",
+    "service":"todo",
+    "action":"create",
+    "version":"0.1.0",
+    "title": " this is the test event from postman ",
+    "completed": false,
+    "order": 0
+  }
+
+5.    Test on query side to subscribe and process events:
+
+  Use postmand, set post request:
+
+  URL: http://localhost:8082/api/json
+
+    content:
+
+    {
+      "host": "lightapi.net",
+      "service":"todo",
+      "action":"gettodos",
+      "version":"0.1.0"
+
+    }
+
+    The event will be subscrible and processed by saving to local TODO table and will get by query side service and send back in the resposne:
+
+{
+  "message": [
+    {
+      "0000015c7e109e77-acde480011220000": {
+        "title": " this is the test event from postman",
+        "completed": false,
+        "order": 0
+      }
+    }
+
+
+
+
+# End
