@@ -46,14 +46,12 @@ public interface Handler {
 
     String STATUS_VALIDATION_ERROR = "ERR11004";
 
-    String CONFIG_NAME = "schema";
-
     ByteBuffer handle (Object object);
 
     default ByteBuffer validate(String serviceId, Object object) {
         // get schema from serviceId
-        Map<String, Object> configMap = Config.getInstance().getJsonMapConfig(CONFIG_NAME);
-        Map<String, Object> serviceMap = (Map<String, Object>)configMap.get(serviceId);
+
+        Map<String, Object> serviceMap = (Map<String, Object>)JsonHandler.schema.get(serviceId);
         JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(serviceMap.get("schema"));
         JsonSchemaFactory factory = new JsonSchemaFactory();
         JsonSchema schema = factory.getSchema(jsonNode);

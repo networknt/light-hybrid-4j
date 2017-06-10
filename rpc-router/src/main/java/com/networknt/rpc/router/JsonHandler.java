@@ -21,11 +21,11 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -35,24 +35,35 @@ import java.util.concurrent.CompletableFuture;
  * Created by steve on 19/02/17.
  */
 public class JsonHandler extends AbstractRpcHandler {
-    static final String SCHEMA = "schema";
+    static final String SCHEMA = "schema.json";
     static final String ENABLE_VERIFY_JWT = "enableVerifyJwt";
     static final String ENABLE_VERIFY_SCOPE = "enableVerifyScope";
 
     static final String STATUS_HANDLER_NOT_FOUND = "ERR11200";
     static final String STATUS_REQUEST_BODY_EMPTY = "ERR11201";
-    static final String STATUS_INVALID_AUTH_TOKEN = "ERR10000";
-    static final String STATUS_AUTH_TOKEN_EXPIRED = "ERR10001";
-    static final String STATUS_MISSING_AUTH_TOKEN = "ERR10002";
     static final String STATUS_INVALID_SCOPE_TOKEN = "ERR10003";
     static final String STATUS_SCOPE_TOKEN_EXPIRED = "ERR10004";
     static final String STATUS_AUTH_TOKEN_SCOPE_MISMATCH = "ERR10005";
     static final String STATUS_SCOPE_TOKEN_SCOPE_MISMATCH = "ERR10006";
 
-    static final Map<String, Object> config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
-    static final Map<String, Object> schema = Config.getInstance().getJsonMapConfig(SCHEMA);
-
     static private final XLogger logger = XLoggerFactory.getXLogger(JsonHandler.class);
+
+    static final Map<String, Object> config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
+    public static Map<String, Object> schema = new HashMap<>();
+
+    static {
+        // load all schema.json from resources folder and merge them into one map.
+        try {
+            final Enumeration<URL> schemaResources = JsonHandler.class.getClassLoader().getResources(SCHEMA);
+            while(schemaResources.hasMoreElements()) {
+                try (InputStream is = schemaResources.nextElement().openStream()) {
+                   schema.putAll(Config.getInstance().getMapper().readValue(is, new TypeReference<Map<String,Object>>(){}));
+                }
+            }
+        } catch (IOException e) {
+            logger.error("Error loading schema.json files from service jars", e);
+        }
+    }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
