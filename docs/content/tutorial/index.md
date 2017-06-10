@@ -14,3 +14,5 @@ The following tutorials will help users to get started on hybrid service and mor
 * [How to run and do integration test for hybrid microservice](https://networknt.github.io/light-hybrid-4j/tutorial/integration/)
 
 * [Hello World Example](https://networknt.github.io/light-hybrid-4j/tutorial/helloworld/)
+
+* [Multiple Services Example](https://networknt.github.io/light-hybrid-4j/tutorial/merge-schema/)
