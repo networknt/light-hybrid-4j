@@ -9,18 +9,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
-    <title>Tutorial - Light Hybrid 4J</title>
+    <title>Hello World Tutorial - Light Hybrid 4J</title>
     <meta name="generator" content="Hugo 0.20.6" />
 
     
     <meta name="description" content="Light Hybrid 4J Docs">
     
-    <link rel="canonical" href="https://networknt.github.io/light-hybrid-4j/tutorial/">
+    <link rel="canonical" href="https://networknt.github.io/light-hybrid-4j/tutorial/helloworld/">
     
     <meta name="author" content="Steve Hu">
     
 
-    <meta property="og:url" content="https://networknt.github.io/light-hybrid-4j/tutorial/">
+    <meta property="og:url" content="https://networknt.github.io/light-hybrid-4j/tutorial/helloworld/">
     <meta property="og:title" content="Light Hybrid 4J">
     <meta property="og:image" content="https://networknt.github.io/light-hybrid-4j/images/logo.png">
     <meta name="apple-mobile-web-app-title" content="Light Hybrid 4J">
@@ -97,7 +97,7 @@
     </div>
     <div class="stretch">
       <div class="title">
-        Tutorial
+        Hello World Tutorial
       </div>
     </div>
 
@@ -288,14 +288,11 @@
 
 
 
-<a class="current" title="Tutorials" href="https://networknt.github.io/light-hybrid-4j/tutorial/">
+<a  title="Tutorials" href="https://networknt.github.io/light-hybrid-4j/tutorial/">
 	
 	Tutorials
 </a>
 
-
-<ul id="scrollspy">
-</ul>
 
 
   
@@ -428,19 +425,137 @@
 
 	<article class="article">
 		<div class="wrapper">
-			<h1>Tutorial </h1>
+			<h1>Hello World Tutorial </h1>
 
-			<p>The following tutorials will help users to get started on hybrid service and more will be added later.</p>
+			
 
-<ul>
-<li><p><a href="https://networknt.github.io/light-hybrid-4j/tutorial/setup/">How to generate and initial hybrid microservice project</a></p></li>
+<p>This is a tutorial to show users how to generate a hybrid server and a hybrid service
+and put them together to serve request from curl. It leverage the generic server and
+generic service defined in model-config/hybrid. These server and service are used to
+test the new version of the light-hybrid-4j and new version of light-codegen.</p>
 
-<li><p><a href="https://networknt.github.io/light-hybrid-4j/tutorial/implementation/">How to develop, setup  hybrid microservice</a></p></li>
+<h1 id="prepare-environment">Prepare Environment</h1>
 
-<li><p><a href="https://networknt.github.io/light-hybrid-4j/tutorial/integration/">How to run and do integration test for hybrid microservice</a></p></li>
+<p>Bofore start, we need to prepare the environment by clone several projects from networknt
+and build them. Let&rsquo;s assume that you are using a workspace called networknt under your
+user directory.</p>
 
-<li><p><a href="https://networknt.github.io/light-hybrid-4j/tutorial/helloworld/">Hello World Example</a></p></li>
-</ul>
+<pre><code>cd ~/networknt
+git clone git@github.com:networknt/light-codegen.git
+git clone git@github.com:networknt/model-config.git
+git clone git@github.com:networknt/light-example-4j.git
+cd light-codegen
+mvn clean install
+cd ..
+
+</code></pre>
+
+<p>As we are going to regenerate the generic-server and generic-service in light-example-4j,
+let&rsquo;s rename these folder so that you can compare them if you want.</p>
+
+<pre><code>cd ~/networknt/light-example-4j/hybrid
+mv generic-server generic-server.bak
+mv generic-service generic-service.bak
+</code></pre>
+
+<h1 id="generate-generic-server">Generate Generic Server</h1>
+
+<p>In light-codegen light-hybrid-4j framework generator it needs a config.json as input
+to generate a server project. This file can be found in model-config/hybrid/generic-server</p>
+
+<p>Here is the content of config.json</p>
+
+<pre><code>{
+  &quot;rootPackage&quot;: &quot;com.networknt.gserver&quot;,
+  &quot;handlerPackage&quot;:&quot;com.networknt.gserver.handler&quot;,
+  &quot;modelPackage&quot;:&quot;com.networknt.gserver.model&quot;,
+  &quot;artifactId&quot;: &quot;gserver&quot;,
+  &quot;groupId&quot;: &quot;com.networknt&quot;,
+  &quot;name&quot;: &quot;gserver&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;overwriteHandler&quot;: true,
+  &quot;overwriteHandlerTest&quot;: true
+}
+
+</code></pre>
+
+<p>Here is the command line to generate server from light-codegen folder.</p>
+
+<pre><code>cd ~/networknt/light-codegen
+java -jar codegen-cli/target/codegen-cli.jar -f light-hybrid-4j-server -o ../light-example-4j/hybrid/generic-server -c ../model-config/hybrid/generic-server/config.json
+</code></pre>
+
+<p>Build generic server</p>
+
+<pre><code>cd ~/networknt/light-example-4j/hybrid/generic-server
+mvn clean install
+</code></pre>
+
+<h1 id="generate-generic-service">Generate Generic Service</h1>
+
+<p>Now let&rsquo;s generate a service. For hybrid service generator, it needs a config.json and also a
+schema.json to deined the interface/contract for the service.</p>
+
+<p>Service config.json can be found in model-config/hybrid/generic-service and its content is</p>
+
+<pre><code>{
+  &quot;rootPackage&quot;: &quot;com.networknt.gservice&quot;,
+  &quot;handlerPackage&quot;:&quot;com.networknt.gservice.handler&quot;,
+  &quot;modelPackage&quot;:&quot;com.networknt.gservice.model&quot;,
+  &quot;artifactId&quot;: &quot;gservice&quot;,
+  &quot;groupId&quot;: &quot;com.networknt&quot;,
+  &quot;name&quot;: &quot;gservice&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;overwriteHandler&quot;: true,
+  &quot;overwriteHandlerTest&quot;: true
+}
+
+</code></pre>
+
+<p>Here is the command line to generate hybrid service</p>
+
+<pre><code>cd ~/networknt/light-codegen
+java -jar codegen-cli/target/codegen-cli.jar -f light-hybrid-4j-service -o ../light-example-4j/hybrid/generic-service -m ../model-config/hybrid/generic-service/schema.json -c ../model-config/hybrid/generic-service/config.json
+</code></pre>
+
+<p>Build generic service</p>
+
+<pre><code>cd ~/networknt/light-example-4j/hybrid/generic-service
+mvn clean install
+</code></pre>
+
+<h1 id="start-the-server-with-service">Start the server with Service</h1>
+
+<p>Now let&rsquo;s start the server with service in the classpath.</p>
+
+<pre><code>cd ~/networknt/light-example-4j/hybrid/generic-server
+jaserver-1.0.0.jar:../generic-service/target/gservice-1.0.0.jar com.networknt.server.Server
+</code></pre>
+
+<p>Now the server is up and running with 4 handlers.</p>
+
+<h1 id="test">Test</h1>
+
+<pre><code>curl -X POST \
+  http://localhost:8080/api/json \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -H 'postman-token: 58bb63eb-de70-b855-a633-5b043bb52c95' \
+  -d '{
+  &quot;host&quot;: &quot;lightapi.net&quot;,
+  &quot;service&quot;: &quot;world&quot;,
+  &quot;action&quot;: &quot;hello&quot;,
+  &quot;version&quot;: &quot;0.1.1&quot;,
+  &quot;lastName&quot;: &quot;Hu&quot;,
+  &quot;firstName&quot;: &quot;Steve&quot;
+}'
+
+</code></pre>
+
+<p>You will have the reponse like this.</p>
+
+<pre><code>{&quot;message&quot;:&quot;Hello World!&quot;}
+</code></pre>
 
 
 			<aside class="copyright" role="note">
@@ -459,34 +574,18 @@
 <nav class="pagination" aria-label="Footer">
   <div class="previous">
   
-      <a href="https://networknt.github.io/light-hybrid-4j/" title="Introduction">
-        <span class="direction">
-          Previous
-        </span>
-        <div class="page">
-          <div class="button button-previous" role="button" aria-label="Previous">
-            <i class="icon icon-back"></i>
-          </div>
-          <div class="stretch">
-            <div class="title">
-              Introduction
-            </div>
-          </div>
-        </div>
-      </a>
-  
   </div>
 
   <div class="next">
   
-      <a href="https://networknt.github.io/light-hybrid-4j/tutorial/integration/" title="Integration Test">
+      <a href="https://networknt.github.io/light-hybrid-4j/" title="Introduction">
         <span class="direction">
           Next
         </span>
         <div class="page">
           <div class="stretch">
             <div class="title">
-              Integration Test
+              Introduction
             </div>
           </div>
           <div class="button button-next" role="button" aria-label="Next">
