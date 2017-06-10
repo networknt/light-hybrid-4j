@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://networknt.github.io/light-hybrid-4j/tutorial/merge-schema/</loc>
+    <lastmod>2017-06-10T11:25:01-04:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://networknt.github.io/light-hybrid-4j/tutorial/helloworld/</loc>
     <lastmod>2017-06-10T09:33:02-04:00</lastmod>
   </url>
@@ -38,7 +43,7 @@
   
   <url>
     <loc>https://networknt.github.io/light-hybrid-4j/</loc>
-    <lastmod>2017-06-10T09:33:02-04:00</lastmod>
+    <lastmod>2017-06-10T11:25:01-04:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -49,7 +54,7 @@
   
   <url>
     <loc>https://networknt.github.io/light-hybrid-4j/tutorial/</loc>
-    <lastmod>2017-06-10T09:33:02-04:00</lastmod>
+    <lastmod>2017-06-10T11:25:01-04:00</lastmod>
     <priority>0</priority>
   </url>
   

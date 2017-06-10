@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license</copyright>
-    <lastBuildDate>Sat, 10 Jun 2017 09:33:02 -0400</lastBuildDate>
+    <lastBuildDate>Sat, 10 Jun 2017 11:25:01 -0400</lastBuildDate>
     
 	<atom:link href="https://networknt.github.io/light-hybrid-4j/tutorial/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Merge Multiple Schemas Tutorial</title>
+      <link>https://networknt.github.io/light-hybrid-4j/tutorial/merge-schema/</link>
+      <pubDate>Sat, 10 Jun 2017 11:25:01 -0400</pubDate>
+      
+      <guid>https://networknt.github.io/light-hybrid-4j/tutorial/merge-schema/</guid>
+      <description>In this tutorial, we are going to start a server with multiple services. Each service will have its own schema.json and they need to be merge during server startup so that validation and scope verification can be done on all request based on the merged schema.
+Prepare Environment Bofore start, we need to prepare the environment by clone several projects from networknt and build them. Let&amp;rsquo;s assume that you are using a workspace called networknt under your user directory.</description>
+    </item>
     
     <item>
       <title>Hello World Tutorial</title>

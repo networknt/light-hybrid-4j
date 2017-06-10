@@ -9,18 +9,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
-    <title>Hello World Tutorial - Light Hybrid 4J</title>
+    <title>Merge Multiple Schemas Tutorial - Light Hybrid 4J</title>
     <meta name="generator" content="Hugo 0.20.6" />
 
     
     <meta name="description" content="Light Hybrid 4J Docs">
     
-    <link rel="canonical" href="https://networknt.github.io/light-hybrid-4j/tutorial/helloworld/">
+    <link rel="canonical" href="https://networknt.github.io/light-hybrid-4j/tutorial/merge-schema/">
     
     <meta name="author" content="Steve Hu">
     
 
-    <meta property="og:url" content="https://networknt.github.io/light-hybrid-4j/tutorial/helloworld/">
+    <meta property="og:url" content="https://networknt.github.io/light-hybrid-4j/tutorial/merge-schema/">
     <meta property="og:title" content="Light Hybrid 4J">
     <meta property="og:image" content="https://networknt.github.io/light-hybrid-4j/images/logo.png">
     <meta name="apple-mobile-web-app-title" content="Light Hybrid 4J">
@@ -97,7 +97,7 @@
     </div>
     <div class="stretch">
       <div class="title">
-        Hello World Tutorial
+        Merge Multiple Schemas Tutorial
       </div>
     </div>
 
@@ -425,14 +425,13 @@
 
 	<article class="article">
 		<div class="wrapper">
-			<h1>Hello World Tutorial </h1>
+			<h1>Merge Multiple Schemas Tutorial </h1>
 
 			
 
-<p>This is a tutorial to show users how to generate a hybrid server and a hybrid service
-and put them together to serve request from curl. It leverage the generic server and
-generic service defined in model-config/hybrid. These server and service are used to
-test the new version of the light-hybrid-4j and new version of light-codegen.</p>
+<p>In this tutorial, we are going to start a server with multiple services. Each service will have
+its own schema.json and they need to be merge during server startup so that validation and scope
+verification can be done on all request based on the merged schema.</p>
 
 <h1 id="prepare-environment">Prepare Environment</h1>
 
@@ -450,39 +449,35 @@ cd ..
 
 </code></pre>
 
-<p>As we are going to regenerate the generic-server and generic-service in light-example-4j,
+<p>As we are going to regenerate a server and several services in light-example-4j,
 let&rsquo;s rename these folder so that you can compare them if you want.</p>
 
 <pre><code>cd ~/networknt/light-example-4j/hybrid
-mv generic-server generic-server.bak
-mv generic-service generic-service.bak
+mv merge-schema merge-schema.bak
 </code></pre>
 
-<h1 id="generate-generic-server">Generate Generic Server</h1>
+<h1 id="generate-merge-server">Generate Merge Server</h1>
 
 <p>In light-codegen light-hybrid-4j framework generator it needs a config.json as input
-to generate a server project. This file can be found in model-config/hybrid/generic-server</p>
+to generate a server project. This file can be found in model-config/hybrid/merge-schema/server</p>
 
 <p>Here is the content of config.json</p>
 
 <pre><code>{
-  &quot;rootPackage&quot;: &quot;com.networknt.gserver&quot;,
-  &quot;handlerPackage&quot;:&quot;com.networknt.gserver.handler&quot;,
-  &quot;modelPackage&quot;:&quot;com.networknt.gserver.model&quot;,
-  &quot;artifactId&quot;: &quot;gserver&quot;,
+  &quot;rootPackage&quot;: &quot;com.networknt.merger&quot;,
+  &quot;handlerPackage&quot;:&quot;com.networknt.merger.handler&quot;,
+  &quot;modelPackage&quot;:&quot;com.networknt.merger.model&quot;,
+  &quot;artifactId&quot;: &quot;merger&quot;,
   &quot;groupId&quot;: &quot;com.networknt&quot;,
-  &quot;name&quot;: &quot;gserver&quot;,
-  &quot;version&quot;: &quot;1.0.0&quot;,
-  &quot;overwriteHandler&quot;: true,
-  &quot;overwriteHandlerTest&quot;: true
+  &quot;name&quot;: &quot;merger&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;
 }
-
 </code></pre>
 
 <p>Here is the command line to generate server from light-codegen folder.</p>
 
 <pre><code>cd ~/networknt/light-codegen
-java -jar codegen-cli/target/codegen-cli.jar -f light-hybrid-4j-server -o ../light-example-4j/hybrid/generic-server -c ../model-config/hybrid/generic-server/config.json
+java -jar codegen-cli/target/codegen-cli.jar -f light-hybrid-4j-server -o ../light-example-4j/hybrid/merge-schema/server -c ../model-config/hybrid/merge-schema/server/config.json
 </code></pre>
 
 <p>Build generic server</p>
@@ -491,50 +486,43 @@ java -jar codegen-cli/target/codegen-cli.jar -f light-hybrid-4j-server -o ../lig
 mvn clean install
 </code></pre>
 
-<h1 id="generate-generic-service">Generate Generic Service</h1>
+<h1 id="generate-two-services">Generate Two Services</h1>
 
-<p>Now let&rsquo;s generate a service. For hybrid service generator, it needs a config.json and also a
+<p>Now let&rsquo;s generate two services. For hybrid service generator, it needs a config.json and also a
 schema.json to define the interface/contract for the service.</p>
 
-<p>Service config.json can be found in model-config/hybrid/generic-service and its content is</p>
+<p>These files can be found in model-config/hybrid/merge-schema/service1 and service2 folder.</p>
 
-<pre><code>{
-  &quot;rootPackage&quot;: &quot;com.networknt.gservice&quot;,
-  &quot;handlerPackage&quot;:&quot;com.networknt.gservice.handler&quot;,
-  &quot;modelPackage&quot;:&quot;com.networknt.gservice.model&quot;,
-  &quot;artifactId&quot;: &quot;gservice&quot;,
-  &quot;groupId&quot;: &quot;com.networknt&quot;,
-  &quot;name&quot;: &quot;gservice&quot;,
-  &quot;version&quot;: &quot;1.0.0&quot;,
-  &quot;overwriteHandler&quot;: true,
-  &quot;overwriteHandlerTest&quot;: true
-}
-
-</code></pre>
-
-<p>Here is the command line to generate hybrid service</p>
+<p>Here is the list of command lines to generate hybrid services</p>
 
 <pre><code>cd ~/networknt/light-codegen
-java -jar codegen-cli/target/codegen-cli.jar -f light-hybrid-4j-service -o ../light-example-4j/hybrid/generic-service -m ../model-config/hybrid/generic-service/schema.json -c ../model-config/hybrid/generic-service/config.json
+java -jar codegen-cli/target/codegen-cli.jar -f light-hybrid-4j-service -o ../light-example-4j/hybrid/merge-schema/service1 -m ../model-config/hybrid/merge-schema/service1/schema.json -c ../model-config/hybrid/merge-schema/service1/config.json
+java -jar codegen-cli/target/codegen-cli.jar -f light-hybrid-4j-service -o ../light-example-4j/hybrid/merge-schema/service2 -m ../model-config/hybrid/merge-schema/service2/schema.json -c ../model-config/hybrid/merge-schema/service2/config.json
+
 </code></pre>
 
-<p>Build generic service</p>
+<p>Build services</p>
 
-<pre><code>cd ~/networknt/light-example-4j/hybrid/generic-service
+<pre><code>cd ~/networknt/light-example-4j/hybrid/merge-schema/service1
 mvn clean install
+cd ~/networknt/light-example-4j/hybrid/merge-schema/service2
+mvn clean install
+
 </code></pre>
 
-<h1 id="start-the-server-with-service">Start the server with Service</h1>
+<h1 id="start-the-server-with-services">Start the server with services</h1>
 
-<p>Now let&rsquo;s start the server with service in the classpath.</p>
+<p>Now let&rsquo;s start the server with services in the classpath.</p>
 
-<pre><code>cd ~/networknt/light-example-4j/hybrid/generic-server
-java -cp target/gserver-1.0.0.jar:../generic-service/target/gservice-1.0.0.jar com.networknt.server.Server
+<pre><code>cd ~/networknt/light-example-4j/hybrid/merge-schema/server
+java -cp target/merger-1.0.0.jar:../service1/target/merger-1.0.0.jar:../service2/target/merger-1.0.0.jar com.networknt.server.Server
 </code></pre>
 
-<p>Now the server is up and running with 4 handlers.</p>
+<p>Now the server is up and running with two services</p>
 
 <h1 id="test">Test</h1>
+
+<p>Access the query service</p>
 
 <pre><code>curl -X POST \
   http://localhost:8080/api/json \
@@ -543,16 +531,39 @@ java -cp target/gserver-1.0.0.jar:../generic-service/target/gservice-1.0.0.jar c
   -H 'postman-token: 58bb63eb-de70-b855-a633-5b043bb52c95' \
   -d '{
   &quot;host&quot;: &quot;lightapi.net&quot;,
-  &quot;service&quot;: &quot;world&quot;,
-  &quot;action&quot;: &quot;hello&quot;,
-  &quot;version&quot;: &quot;0.1.1&quot;,
-  &quot;lastName&quot;: &quot;Hu&quot;,
-  &quot;firstName&quot;: &quot;Steve&quot;
+  &quot;service&quot;: &quot;service1&quot;,
+  &quot;action&quot;: &quot;query&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;q1&quot;: &quot;Hu&quot;,
+  &quot;q2&quot;: &quot;Steve&quot;
 }'
 
 </code></pre>
 
-<p>You will have the reponse like this.</p>
+<p>You will have the response like this.</p>
+
+<pre><code>{&quot;message&quot;:&quot;Hello World!&quot;}
+</code></pre>
+
+<p>Access the command service</p>
+
+<pre><code>curl -X POST \
+  http://localhost:8080/api/json \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -H 'postman-token: 58bb63eb-de70-b855-a633-5b043bb52c95' \
+  -d '{
+  &quot;host&quot;: &quot;lightapi.net&quot;,
+  &quot;service&quot;: &quot;service2&quot;,
+  &quot;action&quot;: &quot;command&quot;,
+  &quot;version&quot;: &quot;0.1.0&quot;,
+  &quot;c1&quot;: &quot;Hu&quot;,
+  &quot;c2&quot;: &quot;Steve&quot;
+}'
+
+</code></pre>
+
+<p>You will have the response like this.</p>
 
 <pre><code>{&quot;message&quot;:&quot;Hello World!&quot;}
 </code></pre>
@@ -574,34 +585,18 @@ java -cp target/gserver-1.0.0.jar:../generic-service/target/gservice-1.0.0.jar c
 <nav class="pagination" aria-label="Footer">
   <div class="previous">
   
-      <a href="https://networknt.github.io/light-hybrid-4j/tutorial/merge-schema/" title="Merge Multiple Schemas Tutorial">
-        <span class="direction">
-          Previous
-        </span>
-        <div class="page">
-          <div class="button button-previous" role="button" aria-label="Previous">
-            <i class="icon icon-back"></i>
-          </div>
-          <div class="stretch">
-            <div class="title">
-              Merge Multiple Schemas Tutorial
-            </div>
-          </div>
-        </div>
-      </a>
-  
   </div>
 
   <div class="next">
   
-      <a href="https://networknt.github.io/light-hybrid-4j/" title="Introduction">
+      <a href="https://networknt.github.io/light-hybrid-4j/tutorial/helloworld/" title="Hello World Tutorial">
         <span class="direction">
           Next
         </span>
         <div class="page">
           <div class="stretch">
             <div class="title">
-              Introduction
+              Hello World Tutorial
             </div>
           </div>
           <div class="button button-next" role="button" aria-label="Next">
