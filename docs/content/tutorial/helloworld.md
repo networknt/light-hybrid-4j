@@ -74,7 +74,7 @@ mvn clean install
 # Generate Generic Service
 
 Now let's generate a service. For hybrid service generator, it needs a config.json and also a 
-schema.json to deined the interface/contract for the service. 
+schema.json to define the interface/contract for the service. 
 
 Service config.json can be found in model-config/hybrid/generic-service and its content is
 
@@ -113,7 +113,7 @@ Now let's start the server with service in the classpath.
 
 ```
 cd ~/networknt/light-example-4j/hybrid/generic-server
-jaserver-1.0.0.jar:../generic-service/target/gservice-1.0.0.jar com.networknt.server.Server
+java -cp target/gserver-1.0.0.jar:../generic-service/target/gservice-1.0.0.jar com.networknt.server.Server
 ```
 Now the server is up and running with 4 handlers. 
 
