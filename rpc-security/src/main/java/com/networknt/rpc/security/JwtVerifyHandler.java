@@ -1,5 +1,6 @@
 package com.networknt.rpc.security;
 
+import com.networknt.audit.AuditHandler;
 import com.networknt.config.Config;
 import com.networknt.exception.ExpiredTokenException;
 import com.networknt.handler.MiddlewareHandler;
@@ -18,6 +19,7 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -51,13 +53,14 @@ public class JwtVerifyHandler implements MiddlewareHandler {
         if(jwt != null) {
             try {
                 JwtClaims claims = JwtHelper.verifyJwt(jwt);
-                // put claims into request header so that scope can be verified per endpoint.
-                // if AuditHandler is enabled, these headers will be part of the input for audit log
-                headerMap.add(new HttpString(Constants.CLIENT_ID), claims.getStringClaimValue(Constants.CLIENT_ID));
-                headerMap.add(new HttpString(Constants.USER_ID), claims.getStringClaimValue(Constants.USER_ID));
+                Map<String, Object> auditInfo = new HashMap<>();
+                auditInfo.put(Constants.ENDPOINT, exchange.getRequestURI());
+                auditInfo.put(Constants.CLIENT_ID, claims.getStringClaimValue(Constants.CLIENT_ID));
+                auditInfo.put(Constants.USER_ID, claims.getStringClaimValue(Constants.USER_ID));
                 // This is the id-token scope, it is put into the header for audit and rpc-router for token verification
                 // Need to remove the space in order for rpc-router to parse and verify scope
-                headerMap.add(new HttpString(Constants.SCOPE), claims.getStringListClaimValue(Constants.SCOPE).toString().replaceAll("\\s+",""));
+                auditInfo.put(Constants.SCOPE, claims.getStringListClaimValue(Constants.SCOPE).toString().replaceAll("\\s+",""));
+                exchange.putAttachment(AuditHandler.AUDIT_INFO, auditInfo);
                 next.handleRequest(exchange);
             } catch (InvalidJwtException e) {
                 // only log it and unauthorized is returned.

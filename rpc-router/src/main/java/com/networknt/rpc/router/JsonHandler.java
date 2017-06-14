@@ -1,6 +1,7 @@
 package com.networknt.rpc.router;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.networknt.audit.AuditHandler;
 import com.networknt.config.Config;
 import com.networknt.exception.ExpiredTokenException;
 import com.networknt.rpc.Handler;
@@ -137,11 +138,14 @@ public class JsonHandler extends AbstractRpcHandler {
         String scopeHeader = headerMap.getFirst(Constants.SCOPE_TOKEN);
         String scopeJwt = JwtHelper.getJwtFromAuthorization(scopeHeader);
         List<String> secondaryScopes = null;
+        Map<String, Object> auditInfo = exchange.getAttachment(AuditHandler.AUDIT_INFO);
+        // auditInfo cannot be null at this point as it is populated by rpc-security and scope verification
+        // must not enabled if jwt verification is disabled. 
         if (scopeJwt != null) {
             try {
                 JwtClaims scopeClaims = JwtHelper.verifyJwt(scopeJwt);
                 secondaryScopes = scopeClaims.getStringListClaimValue("scope");
-                headerMap.add(new HttpString(Constants.SCOPE_CLIENT_ID), scopeClaims.getStringClaimValue(Constants.CLIENT_ID));
+                auditInfo.put(Constants.SCOPE_CLIENT_ID, scopeClaims.getStringClaimValue(Constants.CLIENT_ID));
             } catch (InvalidJwtException | MalformedClaimException e) {
                 logger.error("InvalidJwtException", e);
                 return new Status(STATUS_INVALID_SCOPE_TOKEN);
@@ -162,8 +166,8 @@ public class JsonHandler extends AbstractRpcHandler {
                 return new Status(STATUS_SCOPE_TOKEN_SCOPE_MISMATCH, secondaryScopes, specScopes);
             }
         } else {
-            // no scope token, verify scope from header which is saved from id token.
-            String idScope = headerMap.getFirst(Constants.SCOPE);
+            // no scope token, verify scope from auditInfo which is saved from id token.
+            String idScope = (String)auditInfo.get(Constants.SCOPE);
             List<String> primaryScopes = idScope == null? null : Arrays.asList(idScope.substring(1, idScope.length() - 1).split(","));
             if (!matchedScopes(primaryScopes, specScopes)) {
                 if (logger.isDebugEnabled()) {
