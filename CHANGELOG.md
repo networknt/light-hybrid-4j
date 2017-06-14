@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## 1.3.2 - 2017-06-14
+### Added
+
+### Changed
+- Fixes #8 merge schema files for multiple service jars
+- Fixes #10 update security handler to add auditInfo into exchange for metrics
+- Upgrade to light-4j 1.3.2
+
 ## 1.3.1 - 2017-06-03
 ### Added
 
