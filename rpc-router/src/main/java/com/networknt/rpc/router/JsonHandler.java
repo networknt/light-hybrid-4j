@@ -140,7 +140,7 @@ public class JsonHandler extends AbstractRpcHandler {
         List<String> secondaryScopes = null;
         Map<String, Object> auditInfo = exchange.getAttachment(AuditHandler.AUDIT_INFO);
         // auditInfo cannot be null at this point as it is populated by rpc-security and scope verification
-        // must not enabled if jwt verification is disabled. 
+        // must not enabled if jwt verification is disabled.
         if (scopeJwt != null) {
             try {
                 JwtClaims scopeClaims = JwtHelper.verifyJwt(scopeJwt);
