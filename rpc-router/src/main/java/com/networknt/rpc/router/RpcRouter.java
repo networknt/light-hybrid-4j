@@ -12,6 +12,7 @@ public class RpcRouter implements HandlerProvider {
     public HttpHandler getHandler() {
         return Handlers.path()
                 .addPrefixPath("/api/colfer", new ColferHandler())
-                .addPrefixPath("/api/json", new JsonHandler());
+                .addPrefixPath("/api/json", new JsonHandler())
+                .addPrefixPath("/api/multipart", new MultipartHandler());
     }
 }
