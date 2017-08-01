@@ -23,7 +23,7 @@ import static com.networknt.rpc.router.JsonHandler.STATUS_HANDLER_NOT_FOUND;
  */
 public class MultipartHandler extends AbstractRpcHandler {
 
-    static private final XLogger logger = XLoggerFactory.getXLogger(AbstractRpcHandler.class);
+    static private final XLogger logger = XLoggerFactory.getXLogger(MultipartHandler.class);
     static final Map<String, Object> config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
 
     @Override
