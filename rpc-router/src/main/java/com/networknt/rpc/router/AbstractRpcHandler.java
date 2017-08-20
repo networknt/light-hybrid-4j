@@ -112,7 +112,7 @@ public abstract class AbstractRpcHandler implements HttpHandler {
             try {
                 JwtClaims scopeClaims = JwtHelper.verifyJwt(scopeJwt);
                 secondaryScopes = scopeClaims.getStringListClaimValue("scope");
-                auditInfo.put(Constants.SCOPE_CLIENT_ID, scopeClaims.getStringClaimValue(Constants.CLIENT_ID));
+                auditInfo.put(Constants.SCOPE_CLIENT_ID_STRING, scopeClaims.getStringClaimValue(Constants.CLIENT_ID_STRING));
             } catch (InvalidJwtException | MalformedClaimException e) {
                 logger.error("InvalidJwtException", e);
                 return new Status(STATUS_INVALID_SCOPE_TOKEN);
@@ -134,7 +134,7 @@ public abstract class AbstractRpcHandler implements HttpHandler {
             }
         } else {
             // no scope token, verify scope from auditInfo which is saved from id token.
-            String idScope = (String)auditInfo.get(Constants.SCOPE);
+            String idScope = (String)auditInfo.get(Constants.SCOPE_STRING);
             List<String> primaryScopes = idScope == null? null : Arrays.asList(idScope.substring(1, idScope.length() - 1).split(","));
             if (!matchedScopes(primaryScopes, specScopes)) {
                 if (logger.isDebugEnabled()) {

@@ -54,12 +54,12 @@ public class JwtVerifyHandler implements MiddlewareHandler {
             try {
                 JwtClaims claims = JwtHelper.verifyJwt(jwt);
                 Map<String, Object> auditInfo = new HashMap<>();
-                auditInfo.put(Constants.ENDPOINT, exchange.getRequestURI());
-                auditInfo.put(Constants.CLIENT_ID, claims.getStringClaimValue(Constants.CLIENT_ID));
-                auditInfo.put(Constants.USER_ID, claims.getStringClaimValue(Constants.USER_ID));
+                auditInfo.put(Constants.ENDPOINT_STRING, exchange.getRequestURI());
+                auditInfo.put(Constants.CLIENT_ID_STRING, claims.getStringClaimValue(Constants.CLIENT_ID_STRING));
+                auditInfo.put(Constants.USER_ID_STRING, claims.getStringClaimValue(Constants.USER_ID_STRING));
                 // This is the id-token scope, it is put into the header for audit and rpc-router for token verification
                 // Need to remove the space in order for rpc-router to parse and verify scope
-                auditInfo.put(Constants.SCOPE, claims.getStringListClaimValue(Constants.SCOPE).toString().replaceAll("\\s+",""));
+                auditInfo.put(Constants.SCOPE_STRING, claims.getStringListClaimValue(Constants.SCOPE_STRING).toString().replaceAll("\\s+",""));
                 exchange.putAttachment(AuditHandler.AUDIT_INFO, auditInfo);
                 next.handleRequest(exchange);
             } catch (InvalidJwtException e) {
