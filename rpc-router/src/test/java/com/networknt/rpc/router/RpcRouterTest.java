@@ -87,7 +87,7 @@ public class RpcRouterTest {
     public void testJsonRpcValidationError() throws Exception {
         UndertowClient client = UndertowClient.getInstance();
 
-        String message = "{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"accountNo\":\"1234567\"}";
+        String message = "{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"data\":{\"accountNo\":\"1234567\"}}";
         final CountDownLatch latch = new CountDownLatch(1);
         final List<String> responses = new CopyOnWriteArrayList<>();
         final ClientConnection connection = client.connect(new URI("http://localhost:8080"), worker, pool, OptionMap.create(UndertowOptions.ENABLE_HTTP2, true)).get();
@@ -219,7 +219,7 @@ public class RpcRouterTest {
     public void testJsonRpcNoError() throws Exception {
         UndertowClient client = UndertowClient.getInstance();
 
-        String message = "{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"accountNo\":\"1234567\",\"accountType\":\"P\"}";
+        String message = "{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"data\":{\"accountNo\":\"1234567\",\"accountType\":\"P\"}}";
         final CountDownLatch latch = new CountDownLatch(1);
         final List<String> responses = new CopyOnWriteArrayList<>();
         final ClientConnection connection = client.connect(new URI("http://localhost:8080"), worker, pool, OptionMap.create(UndertowOptions.ENABLE_HTTP2, true)).get();

@@ -39,6 +39,7 @@ public class JsonHandler extends AbstractRpcHandler {
     static final String SCHEMA = "schema.json";
     static final String ENABLE_VERIFY_JWT = "enableVerifyJwt";
     static final String ENABLE_VERIFY_SCOPE = "enableVerifyScope";
+    static final String DATA = "data";
 
     static final String STATUS_HANDLER_NOT_FOUND = "ERR11200";
     static final String STATUS_REQUEST_BODY_EMPTY = "ERR11201";
@@ -79,14 +80,15 @@ public class JsonHandler extends AbstractRpcHandler {
             // calling jwt scope verification here. token signature and expiration are done
             verifyJwt(config, serviceId, exchange1);
 
+            Object data = map.get(DATA);
             // calling schema validator here.
-            ByteBuffer error = handler.validate(serviceId, map);
+            ByteBuffer error = handler.validate(serviceId, data);
             if(error != null) {
                 exchange1.getResponseSender().send(error);
                 return;
             }
             // if exchange is not ended, then do the processing.
-            ByteBuffer result = handler.handle(map);
+            ByteBuffer result = handler.handle(data);
             logger.exit(result);
             if(result == null) {
                 // there is nothing returned from the handler.

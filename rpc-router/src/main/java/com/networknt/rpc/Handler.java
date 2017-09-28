@@ -49,8 +49,8 @@ public interface Handler {
     ByteBuffer handle (Object object);
 
     default ByteBuffer validate(String serviceId, Object object) {
-        // get schema from serviceId
-
+        // get schema from serviceId, remember that the schema is for the data object only.
+        // the input object is the data attribute of the request body.
         Map<String, Object> serviceMap = (Map<String, Object>)JsonHandler.schema.get(serviceId);
         JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(serviceMap.get("schema"));
         JsonSchemaFactory factory = new JsonSchemaFactory();
