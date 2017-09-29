@@ -1,33 +1,17 @@
 package com.networknt.rpc.router;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.networknt.audit.AuditHandler;
 import com.networknt.config.Config;
-import com.networknt.exception.ExpiredTokenException;
 import com.networknt.rpc.Handler;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
-import com.networknt.utility.Constants;
-import io.swagger.models.HttpMethod;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.undertow.io.Receiver;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HeaderMap;
-import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
-import org.jose4j.jwt.JwtClaims;
-import org.jose4j.jwt.MalformedClaimException;
-import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.Map;
 
 /**
  * This is the entry handler for json api, it will parse the JSON request body and
