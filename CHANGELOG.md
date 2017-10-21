@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+## 1.5.0 - 2017-10-21
+### Added
+
+### Changed
+- fixes #17 Upgrade dependencies and add maven-version
+- fixes #16 move payload into data object
+- Upgrade to light-4j 1.5.0
+
 ## 1.4.6 - 2017-09-24
 ### Added
 
