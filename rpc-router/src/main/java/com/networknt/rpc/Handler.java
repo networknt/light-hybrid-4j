@@ -53,7 +53,7 @@ public interface Handler {
         // the input object is the data attribute of the request body.
         Map<String, Object> serviceMap = (Map<String, Object>)JsonHandler.schema.get(serviceId);
         JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(serviceMap.get("schema"));
-        JsonSchemaFactory factory = new JsonSchemaFactory();
+        JsonSchemaFactory factory = JsonSchemaFactory.getInstance();
         JsonSchema schema = factory.getSchema(jsonNode);
         Set<ValidationMessage> errors = schema.validate(Config.getInstance().getMapper().valueToTree(object));
         ByteBuffer bf = null;
