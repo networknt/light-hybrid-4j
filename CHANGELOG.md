@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.5.9](https://github.com/networknt/light-hybrid-4j/tree/1.5.9) (2018-02-21)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.8...1.5.9)
+
+**Closed issues:**
+
+- update travis CI to only build from master branch [\#21](https://github.com/networknt/light-hybrid-4j/issues/21)
+- update JsonSchemaFactory instance creation [\#20](https://github.com/networknt/light-hybrid-4j/issues/20)
+
+## [1.5.8](https://github.com/networknt/light-hybrid-4j/tree/1.5.8) (2018-02-03)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.7...1.5.8)
+
 ## [1.5.7](https://github.com/networknt/light-hybrid-4j/tree/1.5.7) (2018-01-09)
 [Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.6...1.5.7)
 
