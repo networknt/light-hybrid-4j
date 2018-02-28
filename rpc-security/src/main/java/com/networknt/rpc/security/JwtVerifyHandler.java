@@ -60,6 +60,7 @@ public class JwtVerifyHandler implements MiddlewareHandler {
                 // This is the id-token scope, it is put into the header for audit and rpc-router for token verification
                 // Need to remove the space in order for rpc-router to parse and verify scope
                 auditInfo.put(Constants.SCOPE_STRING, claims.getStringListClaimValue(Constants.SCOPE_STRING).toString().replaceAll("\\s+",""));
+                auditInfo.put(Constants.SUBJECT_CLAIMS, claims);
                 exchange.putAttachment(AuditHandler.AUDIT_INFO, auditInfo);
                 next.handleRequest(exchange);
             } catch (InvalidJwtException e) {
