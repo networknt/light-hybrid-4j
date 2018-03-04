@@ -7,6 +7,8 @@ import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -28,7 +30,7 @@ public class JsonHandler extends AbstractRpcHandler {
     static final String STATUS_HANDLER_NOT_FOUND = "ERR11200";
     static final String STATUS_REQUEST_BODY_EMPTY = "ERR11201";
 
-    static private final XLogger logger = XLoggerFactory.getXLogger(JsonHandler.class);
+    static private final Logger logger = LoggerFactory.getLogger(JsonHandler.class);
 
     static final Map<String, Object> config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
 
@@ -37,7 +39,6 @@ public class JsonHandler extends AbstractRpcHandler {
     public void handleRequest(HttpServerExchange exchange) throws Exception {
         System.out.println("JsonHandler is called");
         exchange.getRequestReceiver().receiveFullString((exchange1, message) -> {
-            logger.entry(message);
             exchange1.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
             if(message == null || message.trim().length() == 0) {
                 // payload of request is missing
@@ -73,7 +74,7 @@ public class JsonHandler extends AbstractRpcHandler {
             }
             // if exchange is not ended, then do the processing.
             ByteBuffer result = handler.handle(data);
-            logger.exit(result);
+            if(logger.isDebugEnabled()) logger.debug(result.toString());
             if(result == null) {
                 // there is nothing returned from the handler.
                 exchange1.endExchange();

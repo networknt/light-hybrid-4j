@@ -31,6 +31,8 @@ import com.networknt.utility.NioUtils;
 import io.undertow.util.HttpString;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -42,7 +44,7 @@ import java.util.Set;
  * Created by steve on 03/10/16.
  */
 public interface Handler {
-    XLogger logger = XLoggerFactory.getXLogger(Handler.class);
+    Logger logger = LoggerFactory.getLogger(Handler.class);
 
     String STATUS_VALIDATION_ERROR = "ERR11004";
 
@@ -52,6 +54,13 @@ public interface Handler {
         // get schema from serviceId, remember that the schema is for the data object only.
         // the input object is the data attribute of the request body.
         Map<String, Object> serviceMap = (Map<String, Object>)JsonHandler.schema.get(serviceId);
+        if(logger.isDebugEnabled()) {
+            try {
+                logger.debug("serviceId = " + serviceId  + " serviceMap = " + Config.getInstance().getMapper().writeValueAsString(serviceMap));
+            } catch (Exception e) {
+                logger.error("Exception:", e);
+            }
+        }
         JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(serviceMap.get("schema"));
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance();
         JsonSchema schema = factory.getSchema(jsonNode);

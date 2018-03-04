@@ -15,6 +15,8 @@ import io.undertow.util.HeaderMap;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.consumer.InvalidJwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import sun.text.resources.FormatData;
@@ -28,7 +30,7 @@ import java.util.*;
  * Created by steve on 19/02/17.
  */
 public abstract class AbstractRpcHandler implements HttpHandler {
-    static private final XLogger logger = XLoggerFactory.getXLogger(AbstractRpcHandler.class);
+    static private final Logger logger = LoggerFactory.getLogger(AbstractRpcHandler.class);
 
     static final String SCHEMA = "schema.json";
     static final String ENABLE_VERIFY_JWT = "enableVerifyJwt";
@@ -46,17 +48,19 @@ public abstract class AbstractRpcHandler implements HttpHandler {
         try {
             final Enumeration<URL> schemaResources = JsonHandler.class.getClassLoader().getResources(SCHEMA);
             while(schemaResources.hasMoreElements()) {
-                try (InputStream is = schemaResources.nextElement().openStream()) {
+                URL url = schemaResources.nextElement();
+                if(logger.isDebugEnabled()) logger.debug("schema file = " + url);
+                try (InputStream is = url.openStream()) {
                     schema.putAll(Config.getInstance().getMapper().readValue(is, new TypeReference<Map<String,Object>>(){}));
                 }
             }
+            if(logger.isDebugEnabled()) logger.debug("schema = " + Config.getInstance().getMapper().writeValueAsString(schema));
         } catch (IOException e) {
             logger.error("Error loading schema.json files from service jars", e);
         }
     }
 
     public String getServiceId(Map<String, Object> jsonMap) {
-        logger.entry(jsonMap);
         return  (jsonMap.get("host") == null? "" : jsonMap.get("host") + "/") +
                 (jsonMap.get("service") == null? "" : jsonMap.get("service") + "/") +
                 (jsonMap.get("action") == null? "" : jsonMap.get("action") + "/") +
@@ -64,7 +68,6 @@ public abstract class AbstractRpcHandler implements HttpHandler {
     }
 
     public String getServiceId(ColferRpc cf) {
-        logger.entry(cf);
         return  (cf.host == null? "" : cf.host + "/") +
                 (cf.service == null? "" : cf.service + "/") +
                 (cf.action == null? "" : cf.action + "/") +
@@ -72,7 +75,6 @@ public abstract class AbstractRpcHandler implements HttpHandler {
     }
 
     public String getServiceId(FormData formData) {
-        logger.entry(formData);
         return (formData.contains("host") ? formData.get("host").peek().getValue() + "/" : "") +
                 (formData.contains("service") ? formData.get("service").peek().getValue() + "/" : "") +
                 (formData.contains("action") ? formData.get("action").peek().getValue() + "/" : "") +

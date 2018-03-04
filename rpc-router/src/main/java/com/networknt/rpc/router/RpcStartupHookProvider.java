@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * Normally, you would put all the service into something com.yourcompany.xxx to speed up
  * the scanning.
  *
- * Created by steve on 19/02/17.
+ * @author Steve Hu
  */
 public class RpcStartupHookProvider implements StartupHookProvider {
     static final String CONFIG_NAME = "rpc-router";
@@ -50,6 +50,5 @@ public class RpcStartupHookProvider implements StartupHookProvider {
                 e.printStackTrace();
             }
         }
-
     }
 }
