@@ -115,6 +115,7 @@ public abstract class AbstractRpcHandler implements HttpHandler {
                 JwtClaims scopeClaims = JwtHelper.verifyJwt(scopeJwt);
                 secondaryScopes = scopeClaims.getStringListClaimValue("scope");
                 auditInfo.put(Constants.SCOPE_CLIENT_ID_STRING, scopeClaims.getStringClaimValue(Constants.CLIENT_ID_STRING));
+                auditInfo.put(Constants.ACCESS_CLAIMS, scopeClaims);
             } catch (InvalidJwtException | MalformedClaimException e) {
                 logger.error("InvalidJwtException", e);
                 return new Status(STATUS_INVALID_SCOPE_TOKEN);
