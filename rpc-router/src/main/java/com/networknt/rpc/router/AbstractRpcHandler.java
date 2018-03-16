@@ -88,6 +88,7 @@ public abstract class AbstractRpcHandler implements HttpHandler {
             String scope = (String)service.get("scope");
             Status status = verifyScope(exchange, scope);
             if(status != null) {
+                exchange.setStatusCode(status.getStatusCode());
                 exchange.getResponseSender().send(status.toString());
             }
         }

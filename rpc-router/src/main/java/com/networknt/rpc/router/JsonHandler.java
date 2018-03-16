@@ -8,6 +8,7 @@ import com.networknt.status.Status;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
+import io.undertow.util.StatusCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.ext.XLogger;
@@ -34,6 +35,7 @@ public class JsonHandler extends AbstractRpcHandler {
     static final String STATUS_HANDLER_NOT_FOUND = "ERR11200";
     static final String STATUS_REQUEST_BODY_EMPTY = "ERR11201";
     static final String STATUS_METHOD_NOT_ALLOWED = "ERR10008";
+    static final String STATUS_REQUEST_CMD_EMPTY = "ERR11202";
 
     static private final Logger logger = LoggerFactory.getLogger(JsonHandler.class);
 
@@ -49,6 +51,7 @@ public class JsonHandler extends AbstractRpcHandler {
                     // payload of request is missing
                     logger.error("Post request without body");
                     Status status = new Status(STATUS_REQUEST_BODY_EMPTY);
+                    exchange.setStatusCode(status.getStatusCode());
                     exchange1.getResponseSender().send(status.toString());
                     return;
                 }
@@ -58,12 +61,21 @@ public class JsonHandler extends AbstractRpcHandler {
         } else if(Methods.GET.equals(exchange.getRequestMethod())) {
             Map params = exchange.getQueryParameters();
             String cmd = ((Deque<String>)params.get(CMD)).getFirst();
+            if(cmd == null || cmd.trim().length() == 0) {
+                // payload of request is missing
+                logger.error("Get param cmd is empty for light-hybrid-4j");
+                Status status = new Status(STATUS_REQUEST_CMD_EMPTY);
+                exchange.setStatusCode(status.getStatusCode());
+                exchange.getResponseSender().send(status.toString());
+                return;
+            }
             String message = URLDecoder.decode(cmd, "UTF8");
             if(logger.isDebugEnabled()) logger.debug("Get method with message = " + message);
             processRequest(exchange, message);
         } else {
             // options is handled in middleware handler so if reach here, invalid.
             Status status = new Status(STATUS_METHOD_NOT_ALLOWED);
+            exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
             return;
         }
@@ -82,6 +94,7 @@ public class JsonHandler extends AbstractRpcHandler {
         if(handler == null) {
             logger.error("Handler is not found for serviceId " + serviceId);
             Status status = new Status(STATUS_HANDLER_NOT_FOUND, serviceId);
+            exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
             return;
         }
@@ -93,6 +106,7 @@ public class JsonHandler extends AbstractRpcHandler {
         // calling schema validator here.
         ByteBuffer error = handler.validate(serviceId, data);
         if(error != null) {
+            exchange.setStatusCode(StatusCodes.BAD_REQUEST);
             exchange.getResponseSender().send(error);
             return;
         }
@@ -101,10 +115,12 @@ public class JsonHandler extends AbstractRpcHandler {
         if(logger.isDebugEnabled()) logger.debug(result.toString());
         if(result == null) {
             // there is nothing returned from the handler.
+            exchange.setStatusCode(StatusCodes.OK);
             exchange.endExchange();
         } else {
+            exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
+            exchange.setStatusCode(StatusCodes.OK);
             exchange.getResponseSender().send(result);
         }
-
     }
 }

@@ -9,6 +9,7 @@ import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
 import io.undertow.util.HttpString;
+import io.undertow.util.StatusCodes;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
@@ -42,6 +43,7 @@ public class MultipartHandler extends AbstractRpcHandler {
                 Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
                 if (handler == null) {
                     Status status = new Status(STATUS_HANDLER_NOT_FOUND, serviceId);
+                    httpServerExchange.setStatusCode(status.getStatusCode());
                     httpServerExchange.getResponseSender().send(status.toString());
                     return;
                 }
@@ -54,8 +56,10 @@ public class MultipartHandler extends AbstractRpcHandler {
                 logger.exit(result);
                 if (result == null) {
                     // there is nothing returned from the handler.
+                    httpServerExchange.setStatusCode(StatusCodes.OK);
                     httpServerExchange.endExchange();
                 } else {
+                    httpServerExchange.setStatusCode(StatusCodes.OK);
                     httpServerExchange.getResponseSender().send(result);
                 }
 
