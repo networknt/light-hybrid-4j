@@ -5,6 +5,7 @@ import com.networknt.audit.AuditHandler;
 import com.networknt.colfer.ColferRpc;
 import com.networknt.config.Config;
 import com.networknt.exception.ExpiredTokenException;
+import com.networknt.rpc.Handler;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
@@ -12,6 +13,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.util.HeaderMap;
+import io.undertow.util.StatusCodes;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.consumer.InvalidJwtException;
@@ -24,7 +26,10 @@ import sun.text.resources.FormatData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.*;
+
+import static com.networknt.rpc.router.JsonHandler.STATUS_HANDLER_NOT_FOUND;
 
 /**
  * Created by steve on 19/02/17.
@@ -74,7 +79,7 @@ public abstract class AbstractRpcHandler implements HttpHandler {
                 (cf.version == null? "" : cf.version);
     }
 
-    public String getServiceId(FormData formData) {
+    String getServiceId(FormData formData) {
         return (formData.contains("host") ? formData.get("host").peek().getValue() + "/" : "") +
                 (formData.contains("service") ? formData.get("service").peek().getValue() + "/" : "") +
                 (formData.contains("action") ? formData.get("action").peek().getValue() + "/" : "") +
@@ -165,5 +170,40 @@ public abstract class AbstractRpcHandler implements HttpHandler {
             matched = true;
         }
         return matched;
+    }
+
+    /**
+     * Helper method to get handler from config and act accordingly in error scenarios.
+     * @param serviceId The service id of the handler to receive.
+     * @param httpServerExchange The exchange object with the client.
+     * @return A handler if it is found. null otherwise.
+     */
+    Handler getHandlerOrPopulateExchange(String serviceId, HttpServerExchange httpServerExchange) {
+        Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
+        if (handler == null) {
+            Status status = new Status(STATUS_HANDLER_NOT_FOUND, serviceId);
+            httpServerExchange.setStatusCode(status.getStatusCode());
+            httpServerExchange.getResponseSender().send(status.toString());
+            return null;
+        }
+        return handler;
+    }
+
+    /**
+     * Helper method to send requests containing FormData to the handler and process return status' appropriately.
+     * @param handler The handler who will be running business logic.
+     * @param formData The data that will be passed into the handler.
+     * @param httpServerExchange The exchange object with the client.
+     */
+    void handleFormDataRequest(Handler handler, FormData formData, HttpServerExchange httpServerExchange) {
+        ByteBuffer result = handler.handle(formData);
+        if (result == null) {
+            // there is nothing returned from the handler.
+            httpServerExchange.setStatusCode(StatusCodes.OK);
+            httpServerExchange.endExchange();
+        } else {
+            httpServerExchange.setStatusCode(StatusCodes.OK);
+            httpServerExchange.getResponseSender().send(result);
+        }
     }
 }

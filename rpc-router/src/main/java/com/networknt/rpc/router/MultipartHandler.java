@@ -20,7 +20,8 @@ import java.util.Map;
 import static com.networknt.rpc.router.JsonHandler.STATUS_HANDLER_NOT_FOUND;
 
 /**
- * Created by Nicholas Azar on July 10, 2017.
+ * @author Nicholas Azar
+ * Created on July 10, 2017
  */
 public class MultipartHandler extends AbstractRpcHandler {
 
@@ -40,28 +41,15 @@ public class MultipartHandler extends AbstractRpcHandler {
             try {
                 FormData data = parser.parseBlocking();
                 String serviceId = getServiceId(data);
-                Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
-                if (handler == null) {
-                    Status status = new Status(STATUS_HANDLER_NOT_FOUND, serviceId);
-                    httpServerExchange.setStatusCode(status.getStatusCode());
-                    httpServerExchange.getResponseSender().send(status.toString());
+                Handler handler = getHandlerOrPopulateExchange(serviceId, httpServerExchange);
+                if (handler == null) { // exchange has been populated
                     return;
                 }
 
                 // calling jwt scope verification here. token signature and expiration are done
                 verifyJwt(config, serviceId, httpServerExchange);
 
-                ByteBuffer result = handler.handle(data);
-
-                logger.exit(result);
-                if (result == null) {
-                    // there is nothing returned from the handler.
-                    httpServerExchange.setStatusCode(StatusCodes.OK);
-                    httpServerExchange.endExchange();
-                } else {
-                    httpServerExchange.setStatusCode(StatusCodes.OK);
-                    httpServerExchange.getResponseSender().send(result);
-                }
+                handleFormDataRequest(handler, data, httpServerExchange);
 
             } catch (IOException e) {
                 e.printStackTrace();
