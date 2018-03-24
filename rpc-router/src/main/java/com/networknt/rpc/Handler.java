@@ -28,6 +28,7 @@ import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
 import com.networknt.utility.NioUtils;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
@@ -48,7 +49,7 @@ public interface Handler {
 
     String STATUS_VALIDATION_ERROR = "ERR11004";
 
-    ByteBuffer handle (Object object);
+    ByteBuffer handle (HttpServerExchange exchange, Object object);
 
     default ByteBuffer validate(String serviceId, Object object) {
         // get schema from serviceId, remember that the schema is for the data object only.

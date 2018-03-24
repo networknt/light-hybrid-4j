@@ -196,7 +196,7 @@ public abstract class AbstractRpcHandler implements HttpHandler {
      * @param httpServerExchange The exchange object with the client.
      */
     void handleFormDataRequest(Handler handler, FormData formData, HttpServerExchange httpServerExchange) {
-        ByteBuffer result = handler.handle(formData);
+        ByteBuffer result = handler.handle(httpServerExchange, formData);
         if (result == null) {
             // there is nothing returned from the handler.
             httpServerExchange.setStatusCode(StatusCodes.OK);

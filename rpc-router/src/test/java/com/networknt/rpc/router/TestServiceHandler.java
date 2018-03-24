@@ -18,7 +18,7 @@ public class TestServiceHandler implements Handler {
     static private final XLogger logger = XLoggerFactory.getXLogger(TestServiceHandler.class);
 
     @Override
-    public ByteBuffer handle(Object input)  {
+    public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
         System.out.println("TestServiceHandler is called with " + input);
         String message = "OK";
         ByteBuffer buffer = ByteBuffer.allocateDirect(message.length());

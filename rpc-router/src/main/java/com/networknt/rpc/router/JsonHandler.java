@@ -111,7 +111,7 @@ public class JsonHandler extends AbstractRpcHandler {
             return;
         }
         // if exchange is not ended, then do the processing.
-        ByteBuffer result = handler.handle(data);
+        ByteBuffer result = handler.handle(exchange, data);
         if(logger.isDebugEnabled()) logger.debug(result.toString());
         if(result == null) {
             // there is nothing returned from the handler.

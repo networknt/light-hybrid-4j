@@ -16,7 +16,7 @@ public class AccountServiceHandler implements Handler {
     static private final XLogger logger = XLoggerFactory.getXLogger(AccountServiceHandler.class);
 
     @Override
-    public ByteBuffer handle(Object input) {
+    public ByteBuffer handle(HttpServerExchange exchange, Object input) {
         System.out.println("AccountServiceHandler is called");
         return null;
     }
