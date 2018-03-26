@@ -37,14 +37,14 @@ import static com.networknt.rpc.router.JsonHandler.STATUS_HANDLER_NOT_FOUND;
 public abstract class AbstractRpcHandler implements HttpHandler {
     static private final Logger logger = LoggerFactory.getLogger(AbstractRpcHandler.class);
 
-    static final String SCHEMA = "schema.json";
-    static final String ENABLE_VERIFY_JWT = "enableVerifyJwt";
-    static final String ENABLE_VERIFY_SCOPE = "enableVerifyScope";
+    private static final String SCHEMA = "schema.json";
+    private static final String ENABLE_VERIFY_JWT = "enableVerifyJwt";
+    private static final String ENABLE_VERIFY_SCOPE = "enableVerifyScope";
 
-    static final String STATUS_INVALID_SCOPE_TOKEN = "ERR10003";
-    static final String STATUS_SCOPE_TOKEN_EXPIRED = "ERR10004";
-    static final String STATUS_AUTH_TOKEN_SCOPE_MISMATCH = "ERR10005";
-    static final String STATUS_SCOPE_TOKEN_SCOPE_MISMATCH = "ERR10006";
+    private static final String STATUS_INVALID_SCOPE_TOKEN = "ERR10003";
+    private static final String STATUS_SCOPE_TOKEN_EXPIRED = "ERR10004";
+    private static final String STATUS_AUTH_TOKEN_SCOPE_MISMATCH = "ERR10005";
+    private static final String STATUS_SCOPE_TOKEN_SCOPE_MISMATCH = "ERR10006";
 
     public static Map<String, Object> schema = new HashMap<>();
 
@@ -62,6 +62,17 @@ public abstract class AbstractRpcHandler implements HttpHandler {
             if(logger.isDebugEnabled()) logger.debug("schema = " + Config.getInstance().getMapper().writeValueAsString(schema));
         } catch (IOException e) {
             logger.error("Error loading schema.json files from service jars", e);
+        }
+    }
+
+    void completeExchange(ByteBuffer result, HttpServerExchange exchange) {
+        if(result == null) {
+            // there is nothing returned from the handler.
+            exchange.setStatusCode(StatusCodes.OK);
+            exchange.endExchange();
+        } else {
+            exchange.setStatusCode(StatusCodes.OK);
+            exchange.getResponseSender().send(result);
         }
     }
 
@@ -197,13 +208,6 @@ public abstract class AbstractRpcHandler implements HttpHandler {
      */
     void handleFormDataRequest(Handler handler, FormData formData, HttpServerExchange httpServerExchange) {
         ByteBuffer result = handler.handle(httpServerExchange, formData);
-        if (result == null) {
-            // there is nothing returned from the handler.
-            httpServerExchange.setStatusCode(StatusCodes.OK);
-            httpServerExchange.endExchange();
-        } else {
-            httpServerExchange.setStatusCode(StatusCodes.OK);
-            httpServerExchange.getResponseSender().send(result);
-        }
+        this.completeExchange(result, httpServerExchange);
     }
 }

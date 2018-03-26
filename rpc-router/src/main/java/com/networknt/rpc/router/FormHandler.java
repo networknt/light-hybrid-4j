@@ -3,36 +3,27 @@ package com.networknt.rpc.router;
 import com.networknt.config.Config;
 import com.networknt.rpc.Handler;
 import com.networknt.security.JwtHelper;
-import com.networknt.status.Status;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
-import io.undertow.util.HttpString;
-import io.undertow.util.StatusCodes;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Map;
-
-import static com.networknt.rpc.router.JsonHandler.STATUS_HANDLER_NOT_FOUND;
 
 /**
  * @author Nicholas Azar
  * Created on July 10, 2017
  */
-public class MultipartHandler extends AbstractRpcHandler {
+public class FormHandler extends AbstractRpcHandler {
 
-    static private final XLogger logger = XLoggerFactory.getXLogger(MultipartHandler.class);
+    static private final XLogger logger = XLoggerFactory.getXLogger(FormHandler.class);
     static final Map<String, Object> config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
 
     @Override
-    public void handleRequest(HttpServerExchange httpServerExchange) throws Exception {
-
-
-        httpServerExchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
+    public void handleRequest(HttpServerExchange httpServerExchange) {
 
         FormParserFactory.Builder builder = FormParserFactory.builder();
         FormDataParser parser = builder.build().createParser(httpServerExchange);
