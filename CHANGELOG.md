@@ -1,5 +1,19 @@
 # Change Log
 
+## [1.5.11](https://github.com/networknt/light-hybrid-4j/tree/1.5.11) (2018-03-31)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.10...1.5.11)
+
+**Closed issues:**
+
+- need to pass the exchange to the hybrid handlers for headers and errors [\#25](https://github.com/networknt/light-hybrid-4j/issues/25)
+- add more debug info into the schema merger and validation [\#23](https://github.com/networknt/light-hybrid-4j/issues/23)
+- The json handler should support get method as well. [\#14](https://github.com/networknt/light-hybrid-4j/issues/14)
+
+**Merged pull requests:**
+
+- Feature/refactor exchange responses [\#26](https://github.com/networknt/light-hybrid-4j/pull/26) ([NicholasAzar](https://github.com/NicholasAzar))
+- feat\(zip\): Adding handler to return a zip object to the client. [\#24](https://github.com/networknt/light-hybrid-4j/pull/24) ([NicholasAzar](https://github.com/NicholasAzar))
+
 ## [1.5.10](https://github.com/networknt/light-hybrid-4j/tree/1.5.10) (2018-03-02)
 [Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.9...1.5.10)
 
