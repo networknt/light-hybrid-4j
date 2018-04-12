@@ -84,7 +84,7 @@
         <version.hdrhistogram>2.1.10</version.hdrhistogram>
         <version.jsr305>3.0.2</version.jsr305>
         <version.json-schema-validator>0.1.18</version.json-schema-validator>
-        <version.fastscanner>2.7.0</version.fastscanner>
+        <version.fastscanner>2.18.1</version.fastscanner>
         <versions.maven-version>2.4</versions.maven-version>
         <argLine>-Xmx512m -XX:MaxPermSize=256m</argLine>
     </properties>
