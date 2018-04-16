@@ -5,7 +5,8 @@ import com.networknt.rpc.Handler;
 import com.networknt.server.StartupHookProvider;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.lukehutch.fastclasspathscanner.scanner.ClassInfo;
-import io.undertow.server.HttpHandler;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
             new FastClasspathScanner(config.getHandlerPackage()).scan().getClassNameToClassInfo();
 
     public static final Map<String, Handler> serviceMap = new HashMap<>();
+    static String[] safeResourcePaths;
 
     @Override
     public void onStartup() {
@@ -50,5 +52,26 @@ public class RpcStartupHookProvider implements StartupHookProvider {
                 e.printStackTrace();
             }
         }
+        try {
+            safeResourcePaths = getSafeResourcePaths().toArray(new String[0]);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    List<String> getSafeResourcePaths() throws Exception {
+        List<String> safeResourcePaths = new ArrayList<>();
+        List<String> safeResourceProviders = classNameToClassInfo.values().stream()
+                .filter(ci -> ci.directlyImplementsInterface(RpcResourcePathsProvider.class.getName()))
+                .map(ClassInfo::getClassName)
+                .sorted().collect(Collectors.toList());
+
+        if (safeResourceProviders != null && safeResourceProviders.size() > 0) {
+            for (String providerName : safeResourceProviders) {
+                Class provider = Class.forName(providerName);
+                safeResourcePaths.addAll(((RpcResourcePathsProvider)provider.getConstructor().newInstance()).getSafeResourcePaths());
+            }
+        }
+        return safeResourcePaths;
     }
 }
