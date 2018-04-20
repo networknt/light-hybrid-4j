@@ -1,5 +1,15 @@
 # Change Log
 
+## [1.5.13](https://github.com/networknt/light-hybrid-4j/tree/1.5.13) (2018-04-20)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.12...1.5.13)
+
+**Closed issues:**
+
+- hybrid service path configurable  [\#28](https://github.com/networknt/light-hybrid-4j/issues/28)
+
+## [1.5.12](https://github.com/networknt/light-hybrid-4j/tree/1.5.12) (2018-04-07)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.11...1.5.12)
+
 ## [1.5.11](https://github.com/networknt/light-hybrid-4j/tree/1.5.11) (2018-03-31)
 [Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.10...1.5.11)
 
