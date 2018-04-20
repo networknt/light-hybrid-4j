@@ -1,3 +1,7 @@
 ---
 description: RPC router description
 handlerPackage: ''
+jsonPath: /api/json
+formPath: /api/form
+colferPath: /api/colfer
+
