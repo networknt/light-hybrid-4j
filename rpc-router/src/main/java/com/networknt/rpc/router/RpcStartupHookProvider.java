@@ -23,11 +23,10 @@ import java.util.stream.Collectors;
  * @author Steve Hu
  */
 public class RpcStartupHookProvider implements StartupHookProvider {
-    static final String CONFIG_NAME = "rpc-router";
-
+    private static final String CONFIG_NAME = "rpc-router";
     static RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(CONFIG_NAME, RpcRouterConfig.class);
 
-    static Map<String, ClassInfo> classNameToClassInfo =
+    private static Map<String, ClassInfo> classNameToClassInfo =
             new FastClasspathScanner(config.getHandlerPackage()).scan().getClassNameToClassInfo();
 
     static final Map<String, Handler> serviceMap = new HashMap<>();

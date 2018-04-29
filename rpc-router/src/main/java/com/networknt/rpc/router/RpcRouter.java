@@ -18,12 +18,14 @@ public class RpcRouter implements HandlerProvider {
     public HttpHandler getHandler() {
         PathHandler httpHandler = Handlers.path();
 
+        RpcRouterConfig config = RpcStartupHookProvider.config;
+
         // Add all prefix or exact resources handlers that clients provide.
         ResourceHelpers.addProvidersToPathHandler(RpcStartupHookProvider.pathResourceProviders, httpHandler);
 
-        httpHandler.addPrefixPath("/api/colfer", new ColferHandler())
-                .addPrefixPath("/api/json", new JsonHandler())
-                .addPrefixPath("/api/form", new FormHandler());
+        httpHandler.addPrefixPath(config.getColferPath() == null ? "/api/colfer" : config.getColferPath(), new ColferHandler());
+        httpHandler.addPrefixPath(config.getJsonPath() == null ? "/api/json" : config.getJsonPath(), new JsonHandler());
+        httpHandler.addPrefixPath(config.getFormPath() == null ? "/api/form" : config.getFormPath(), new FormHandler());
 
         // And if the client provides any predicated handlers, wrap the whole path handler in them.
         List<PredicatedHandler> predicatedHandlers = ResourceHelpers.getPredicatedHandlers(RpcStartupHookProvider.predicatedHandlersProviders);

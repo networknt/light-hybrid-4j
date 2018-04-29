@@ -6,12 +6,13 @@ package com.networknt.rpc.router;
 public class RpcRouterConfig {
     private String description;
     private String handlerPackage;
-
+    private String jsonPath;
+    private String formPath;
+    private String colferPath;
     private String resourcesBasePath;
 
-    public RpcRouterConfig() {
+    public RpcRouterConfig() { }
 
-    }
     public String getDescription() {
         return description;
     }
@@ -26,6 +27,30 @@ public class RpcRouterConfig {
 
     public void setHandlerPackage(String handlerPackage) {
         this.handlerPackage = handlerPackage;
+    }
+
+    public String getJsonPath() {
+        return jsonPath;
+    }
+
+    public void setJsonPath(String jsonPath) {
+        this.jsonPath = jsonPath;
+    }
+
+    public String getFormPath() {
+        return formPath;
+    }
+
+    public void setFormPath(String formPath) {
+        this.formPath = formPath;
+    }
+
+    public String getColferPath() {
+        return colferPath;
+    }
+
+    public void setColferPath(String colferPath) {
+        this.colferPath = colferPath;
     }
 
     public String getResourcesBasePath() {
