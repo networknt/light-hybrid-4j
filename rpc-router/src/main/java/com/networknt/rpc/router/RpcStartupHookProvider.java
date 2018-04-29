@@ -1,11 +1,14 @@
 package com.networknt.rpc.router;
 
 import com.networknt.config.Config;
+import com.networknt.resources.PathResourceProvider;
+import com.networknt.resources.PredicatedHandlersProvider;
 import com.networknt.rpc.Handler;
 import com.networknt.server.StartupHookProvider;
+import com.networknt.service.SingletonServiceFactory;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.lukehutch.fastclasspathscanner.scanner.ClassInfo;
-import io.undertow.server.HttpHandler;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,14 +23,15 @@ import java.util.stream.Collectors;
  * @author Steve Hu
  */
 public class RpcStartupHookProvider implements StartupHookProvider {
-    static final String CONFIG_NAME = "rpc-router";
-
+    private static final String CONFIG_NAME = "rpc-router";
     static RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(CONFIG_NAME, RpcRouterConfig.class);
 
-    static Map<String, ClassInfo> classNameToClassInfo =
+    private static Map<String, ClassInfo> classNameToClassInfo =
             new FastClasspathScanner(config.getHandlerPackage()).scan().getClassNameToClassInfo();
 
-    public static final Map<String, Handler> serviceMap = new HashMap<>();
+    static final Map<String, Handler> serviceMap = new HashMap<>();
+    static PathResourceProvider[] pathResourceProviders;
+    static PredicatedHandlersProvider[] predicatedHandlersProviders;
 
     @Override
     public void onStartup() {
@@ -50,5 +54,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
                 e.printStackTrace();
             }
         }
+        pathResourceProviders = SingletonServiceFactory.getBeans(PathResourceProvider.class);
+        predicatedHandlersProviders = SingletonServiceFactory.getBeans(PredicatedHandlersProvider.class);
     }
 }

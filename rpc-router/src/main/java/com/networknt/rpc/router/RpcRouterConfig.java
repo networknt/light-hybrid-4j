@@ -4,15 +4,14 @@ package com.networknt.rpc.router;
  * Created by steve on 19/02/17.
  */
 public class RpcRouterConfig {
-    String description;
-    String handlerPackage;
-    String jsonPath;
-    String formPath;
-    String colferPath;
+    private String description;
+    private String handlerPackage;
+    private String jsonPath;
+    private String formPath;
+    private String colferPath;
+    private String resourcesBasePath;
 
-    public RpcRouterConfig() {
-
-    }
+    public RpcRouterConfig() { }
 
     public String getDescription() {
         return description;
@@ -52,5 +51,13 @@ public class RpcRouterConfig {
 
     public void setColferPath(String colferPath) {
         this.colferPath = colferPath;
+    }
+
+    public String getResourcesBasePath() {
+        return resourcesBasePath;
+    }
+
+    public void setResourcesBasePath(String resourcesBasePath) {
+        this.resourcesBasePath = resourcesBasePath;
     }
 }

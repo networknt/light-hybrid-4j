@@ -4,4 +4,4 @@ handlerPackage: ''
 jsonPath: /api/json
 formPath: /api/form
 colferPath: /api/colfer
-
+resourcesBasePath: /

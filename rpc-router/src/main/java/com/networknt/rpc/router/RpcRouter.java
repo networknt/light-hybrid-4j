@@ -1,34 +1,38 @@
 package com.networknt.rpc.router;
 
-import com.networknt.config.Config;
+import com.networknt.resources.ResourceHelpers;
 import com.networknt.server.HandlerProvider;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.PathHandler;
+import io.undertow.server.handlers.builder.PredicatedHandler;
+
+import java.util.List;
 
 /**
  * Created by steve on 19/02/17.
  */
 public class RpcRouter implements HandlerProvider {
-    static final String CONFIG_NAME = "rpc-router";
 
-    static RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(CONFIG_NAME, RpcRouterConfig.class);
     @Override
     public HttpHandler getHandler() {
-        PathHandler paths =  Handlers.path()
-                .addPrefixPath("/api/colfer", new ColferHandler())
-                .addPrefixPath("/api/json", new JsonHandler())
-                .addPrefixPath("/api/form", new FormHandler()
-                );
-        if (config.getJsonPath()!=null && !"/api/json".equals(config.getJsonPath())) {
-            paths.addPrefixPath(config.getJsonPath(), new JsonHandler());
+        PathHandler httpHandler = Handlers.path();
+
+        RpcRouterConfig config = RpcStartupHookProvider.config;
+
+        // Add all prefix or exact resources handlers that clients provide.
+        ResourceHelpers.addProvidersToPathHandler(RpcStartupHookProvider.pathResourceProviders, httpHandler);
+
+        httpHandler.addPrefixPath(config.getColferPath() == null ? "/api/colfer" : config.getColferPath(), new ColferHandler());
+        httpHandler.addPrefixPath(config.getJsonPath() == null ? "/api/json" : config.getJsonPath(), new JsonHandler());
+        httpHandler.addPrefixPath(config.getFormPath() == null ? "/api/form" : config.getFormPath(), new FormHandler());
+
+        // And if the client provides any predicated handlers, wrap the whole path handler in them.
+        List<PredicatedHandler> predicatedHandlers = ResourceHelpers.getPredicatedHandlers(RpcStartupHookProvider.predicatedHandlersProviders);
+        if (predicatedHandlers.size() > 0) {
+            return Handlers.predicates(predicatedHandlers, httpHandler);
         }
-        if (config.getFormPath()!=null && !"/api/form".equals(config.getFormPath())) {
-            paths.addPrefixPath(config.getFormPath(), new FormHandler());
-        }
-        if (config.getColferPath()!=null && !"/api/colfer".equals(config.getColferPath())) {
-            paths.addPrefixPath(config.getColferPath(), new ColferHandler());
-        }
-        return paths;
+
+        return httpHandler;
     }
 }
