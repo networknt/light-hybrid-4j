@@ -52,7 +52,7 @@ public class JwtVerifyHandler implements MiddlewareHandler {
         String jwt = JwtHelper.getJwtFromAuthorization(authorization);
         if(jwt != null) {
             try {
-                JwtClaims claims = JwtHelper.verifyJwt(jwt);
+                JwtClaims claims = JwtHelper.verifyJwt(jwt, false);
                 Map<String, Object> auditInfo = new HashMap<>();
                 auditInfo.put(Constants.ENDPOINT_STRING, exchange.getRequestURI());
                 auditInfo.put(Constants.CLIENT_ID_STRING, claims.getStringClaimValue(Constants.CLIENT_ID_STRING));
