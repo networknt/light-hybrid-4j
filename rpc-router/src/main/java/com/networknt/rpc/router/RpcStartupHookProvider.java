@@ -1,8 +1,8 @@
 package com.networknt.rpc.router;
 
 import com.networknt.config.Config;
-import com.networknt.resources.PathResourceProvider;
-import com.networknt.resources.PredicatedHandlersProvider;
+import com.networknt.resource.PathResourceProvider;
+import com.networknt.resource.PredicatedHandlersProvider;
 import com.networknt.rpc.Handler;
 import com.networknt.server.StartupHookProvider;
 import com.networknt.service.SingletonServiceFactory;

@@ -1,6 +1,6 @@
 package com.networknt.rpc.router;
 
-import com.networknt.resources.ResourceHelpers;
+import com.networknt.resource.ResourceHelpers;
 import com.networknt.server.HandlerProvider;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
