@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.5.14](https://github.com/networknt/light-hybrid-4j/tree/1.5.14) (2018-05-19)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.13...1.5.14)
+
+**Closed issues:**
+
+- update VerifyJwt signature and security.yml [\#30](https://github.com/networknt/light-hybrid-4j/issues/30)
+- Log error message on the server if validation error occurs [\#29](https://github.com/networknt/light-hybrid-4j/issues/29)
+
+**Merged pull requests:**
+
+- Resources handler POC [\#27](https://github.com/networknt/light-hybrid-4j/pull/27) ([NicholasAzar](https://github.com/NicholasAzar))
+
 ## [1.5.13](https://github.com/networknt/light-hybrid-4j/tree/1.5.13) (2018-04-20)
 [Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.12...1.5.13)
 
