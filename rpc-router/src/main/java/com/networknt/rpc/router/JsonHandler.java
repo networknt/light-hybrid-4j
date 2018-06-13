@@ -6,6 +6,7 @@ import com.networknt.rpc.Handler;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
 import io.undertow.util.StatusCodes;
@@ -103,6 +104,7 @@ public class JsonHandler extends AbstractRpcHandler {
         logger.error("Handler is not found for serviceId " + serviceId);
         Status status = new Status(STATUS_HANDLER_NOT_FOUND, serviceId);
         exchange.setStatusCode(status.getStatusCode());
+        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
         exchange.getResponseSender().send(status.toString());
     }
 

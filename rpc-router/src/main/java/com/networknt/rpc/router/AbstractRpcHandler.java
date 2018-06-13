@@ -13,6 +13,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.util.HeaderMap;
+import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
@@ -105,6 +106,7 @@ public abstract class AbstractRpcHandler implements HttpHandler {
             Status status = verifyScope(exchange, scope);
             if(status != null) {
                 exchange.setStatusCode(status.getStatusCode());
+                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 exchange.getResponseSender().send(status.toString());
             }
         }
@@ -137,6 +139,7 @@ public abstract class AbstractRpcHandler implements HttpHandler {
                 logger.error("InvalidJwtException", e);
                 return new Status(STATUS_INVALID_SCOPE_TOKEN);
             } catch (ExpiredTokenException e) {
+                logger.error("ExpiredTokenException", e);
                 return new Status(STATUS_SCOPE_TOKEN_EXPIRED);
             }
         }
@@ -194,7 +197,9 @@ public abstract class AbstractRpcHandler implements HttpHandler {
         if (handler == null) {
             Status status = new Status(STATUS_HANDLER_NOT_FOUND, serviceId);
             httpServerExchange.setStatusCode(status.getStatusCode());
+            httpServerExchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             httpServerExchange.getResponseSender().send(status.toString());
+            logger.error(status.toString());
             return null;
         }
         return handler;

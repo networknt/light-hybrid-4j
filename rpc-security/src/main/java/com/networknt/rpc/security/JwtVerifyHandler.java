@@ -65,19 +65,14 @@ public class JwtVerifyHandler implements MiddlewareHandler {
                 next.handleRequest(exchange);
             } catch (InvalidJwtException e) {
                 // only log it and unauthorized is returned.
-                logger.error("Exception: ", e);
-                Status status = new Status(STATUS_INVALID_AUTH_TOKEN);
-                exchange.setStatusCode(status.getStatusCode());
-                exchange.getResponseSender().send(status.toString());
+                logger.error("InvalidJwtException:", e);
+                setExchangeStatus(exchange, STATUS_INVALID_AUTH_TOKEN);
             } catch (ExpiredTokenException e) {
-                Status status = new Status(STATUS_AUTH_TOKEN_EXPIRED);
-                exchange.setStatusCode(status.getStatusCode());
-                exchange.getResponseSender().send(status.toString());
+                logger.error("ExpiredTokenException", e);
+                setExchangeStatus(exchange, STATUS_AUTH_TOKEN_EXPIRED);
             }
         } else {
-            Status status = new Status(STATUS_MISSING_AUTH_TOKEN);
-            exchange.setStatusCode(status.getStatusCode());
-            exchange.getResponseSender().send(status.toString());
+            setExchangeStatus(exchange, STATUS_MISSING_AUTH_TOKEN);
         }
     }
 
