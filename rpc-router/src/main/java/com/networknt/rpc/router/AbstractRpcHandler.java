@@ -5,6 +5,7 @@ import com.networknt.audit.AuditHandler;
 import com.networknt.colfer.ColferRpc;
 import com.networknt.config.Config;
 import com.networknt.exception.ExpiredTokenException;
+import com.networknt.handler.LightHttpHandler;
 import com.networknt.rpc.Handler;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
@@ -35,7 +36,7 @@ import static com.networknt.rpc.router.JsonHandler.STATUS_HANDLER_NOT_FOUND;
 /**
  * Created by steve on 19/02/17.
  */
-public abstract class AbstractRpcHandler implements HttpHandler {
+public abstract class AbstractRpcHandler implements LightHttpHandler {
     static private final Logger logger = LoggerFactory.getLogger(AbstractRpcHandler.class);
 
     private static final String SCHEMA = "schema.json";
@@ -195,11 +196,7 @@ public abstract class AbstractRpcHandler implements HttpHandler {
     Handler getHandlerOrPopulateExchange(String serviceId, HttpServerExchange httpServerExchange) {
         Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
         if (handler == null) {
-            Status status = new Status(STATUS_HANDLER_NOT_FOUND, serviceId);
-            httpServerExchange.setStatusCode(status.getStatusCode());
-            httpServerExchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-            httpServerExchange.getResponseSender().send(status.toString());
-            logger.error(status.toString());
+            setExchangeStatus(httpServerExchange, STATUS_HANDLER_NOT_FOUND, serviceId);
             return null;
         }
         return handler;
