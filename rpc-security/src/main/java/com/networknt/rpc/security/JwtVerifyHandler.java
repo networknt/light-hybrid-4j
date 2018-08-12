@@ -35,12 +35,19 @@ import java.util.Map;
  */
 public class JwtVerifyHandler implements MiddlewareHandler {
     static final Logger logger = LoggerFactory.getLogger(JwtVerifyHandler.class);
+    static final String HYBRID_SECURITY_CONFIG = "hybrid-security";
 
     static final String STATUS_INVALID_AUTH_TOKEN = "ERR10000";
     static final String STATUS_AUTH_TOKEN_EXPIRED = "ERR10001";
     static final String STATUS_MISSING_AUTH_TOKEN = "ERR10002";
 
-    static final Map<String, Object> config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
+    static Map<String, Object> config;
+    static {
+        // check if hybrid-security.yml exist
+        config = Config.getInstance().getJsonMapConfig(HYBRID_SECURITY_CONFIG);
+        // fallback to generic security.yml
+        if(config == null) config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
+    }
 
     private volatile HttpHandler next;
 
