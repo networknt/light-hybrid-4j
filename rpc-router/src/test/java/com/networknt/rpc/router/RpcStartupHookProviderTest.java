@@ -1,7 +1,6 @@
 package com.networknt.rpc.router;
 
 import com.networknt.rpc.Handler;
-import io.undertow.server.HttpHandler;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -2,26 +2,22 @@ package com.networknt.rpc.router;
 
 import com.networknt.client.Http2Client;
 import com.networknt.exception.ClientException;
-import com.networknt.rpc.security.JwtVerifyHandler;
-import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
-import io.undertow.client.*;
-import io.undertow.connector.ByteBufferPool;
-import io.undertow.server.DefaultByteBufferPool;
+import io.undertow.client.ClientConnection;
+import io.undertow.client.ClientRequest;
+import io.undertow.client.ClientResponse;
 import io.undertow.util.Headers;
 import io.undertow.util.Methods;
-import io.undertow.util.StringReadChannelListener;
-import io.undertow.util.StringWriteChannelListener;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xnio.*;
+import org.xnio.IoUtils;
+import org.xnio.OptionMap;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 

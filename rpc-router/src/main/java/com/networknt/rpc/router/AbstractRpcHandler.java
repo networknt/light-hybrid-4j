@@ -10,7 +10,6 @@ import com.networknt.rpc.Handler;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
-import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.util.HeaderMap;
@@ -21,9 +20,6 @@ import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
-import sun.text.resources.FormatData;
 
 import java.io.IOException;
 import java.io.InputStream;

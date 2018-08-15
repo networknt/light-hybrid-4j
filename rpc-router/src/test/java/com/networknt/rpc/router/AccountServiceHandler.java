@@ -1,10 +1,9 @@
 package com.networknt.rpc.router;
 
 import com.networknt.rpc.Handler;
-import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
@@ -13,7 +12,7 @@ import java.nio.ByteBuffer;
  */
 @ServiceHandler(id="www.networknt.com/account/credit/1.0.0")
 public class AccountServiceHandler implements Handler {
-    static private final XLogger logger = XLoggerFactory.getXLogger(AccountServiceHandler.class);
+    static private final Logger logger = LoggerFactory.getLogger(AccountServiceHandler.class);
 
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object input) {

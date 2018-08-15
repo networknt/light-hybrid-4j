@@ -7,8 +7,6 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
-import org.slf4j.ext.XLogger;
-import org.slf4j.ext.XLoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -19,7 +17,6 @@ import java.util.Map;
  */
 public class FormHandler extends AbstractRpcHandler {
 
-    static private final XLogger logger = XLoggerFactory.getXLogger(FormHandler.class);
     static final Map<String, Object> config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
 
     @Override
