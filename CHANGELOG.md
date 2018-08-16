@@ -1,5 +1,22 @@
 # Change Log
 
+## [1.5.18](https://github.com/networknt/light-hybrid-4j/tree/1.5.18) (2018-08-16)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.17...1.5.18)
+
+**Closed issues:**
+
+- remove dependencies on XLogger [\#36](https://github.com/networknt/light-hybrid-4j/issues/36)
+- flatten the config files into the same directory for k8s [\#35](https://github.com/networknt/light-hybrid-4j/issues/35)
+- support specific hybrid security configuration [\#33](https://github.com/networknt/light-hybrid-4j/issues/33)
+- upgrade to undertow 2.0.11.Final [\#32](https://github.com/networknt/light-hybrid-4j/issues/32)
+
+**Merged pull requests:**
+
+- fixes \#33 support specific hybrid security configuration [\#34](https://github.com/networknt/light-hybrid-4j/pull/34) ([stevehu](https://github.com/stevehu))
+
+## [1.5.17](https://github.com/networknt/light-hybrid-4j/tree/1.5.17) (2018-07-15)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.16...1.5.17)
+
 ## [1.5.16](https://github.com/networknt/light-hybrid-4j/tree/1.5.16) (2018-07-05)
 [Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.15...1.5.16)
 
