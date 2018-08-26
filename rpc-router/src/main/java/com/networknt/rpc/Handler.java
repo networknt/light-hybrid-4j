@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.networknt.rpc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,6 +25,7 @@ import com.networknt.schema.ValidationMessage;
 import com.networknt.status.Status;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +34,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by steve on 03/10/16.
+ * This is the interface that every business handler should extend from. It has two default methods
+ * that can be shared by all handlers.
+ *
+ * @author Steve Hu
  */
 public interface Handler {
     Logger logger = LoggerFactory.getLogger(Handler.class);
 
+    String ERROR_NOT_DEFINED = "ERR10042";
     String STATUS_VALIDATION_ERROR = "ERR11004";
 
     ByteBuffer handle (HttpServerExchange exchange, Object object);
@@ -68,5 +72,16 @@ public interface Handler {
             }
         }
         return bf;
+    }
+
+    default String getStatus(String code, final Object... args) {
+        Status status = new Status(code, args);
+        if(status.getStatusCode() == 0) {
+            // There is no entry in status.yml for this particular error code.
+            status = new Status(ERROR_NOT_DEFINED, code);
+        }
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        logger.error(status.toString() + " at " + elements[2].getClassName() + "." + elements[2].getMethodName() + "(" + elements[2].getFileName() + ":" + elements[2].getLineNumber() + ")");
+        return status.toString();
     }
 }
