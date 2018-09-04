@@ -6,6 +6,7 @@ import com.networknt.colfer.ColferRpc;
 import com.networknt.config.Config;
 import com.networknt.exception.ExpiredTokenException;
 import com.networknt.handler.LightHttpHandler;
+import com.networknt.httpstring.HttpStringConstants;
 import com.networknt.rpc.Handler;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
@@ -120,7 +121,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
     private Status verifyScope(HttpServerExchange exchange, String schemaScope) {
         // check if id token scope exist or not.
         HeaderMap headerMap = exchange.getRequestHeaders();
-        String scopeHeader = headerMap.getFirst(Constants.SCOPE_TOKEN);
+        String scopeHeader = headerMap.getFirst(HttpStringConstants.SCOPE_TOKEN);
         String scopeJwt = JwtHelper.getJwtFromAuthorization(scopeHeader);
         List<String> secondaryScopes = null;
         Map<String, Object> auditInfo = exchange.getAttachment(AuditHandler.AUDIT_INFO);
