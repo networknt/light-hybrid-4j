@@ -26,6 +26,7 @@ import java.util.Map;
  */
 public class JsonHandler extends AbstractRpcHandler {
     static final String SCHEMA = "schema.json";
+    static final String HYBRID_SECURITY_CONFIG = "hybrid-security";
     static final String ENABLE_VERIFY_JWT = "enableVerifyJwt";
     static final String ENABLE_VERIFY_SCOPE = "enableVerifyScope";
     static final String DATA = "data";
@@ -38,8 +39,13 @@ public class JsonHandler extends AbstractRpcHandler {
 
     static private final Logger logger = LoggerFactory.getLogger(JsonHandler.class);
 
-    static final Map<String, Object> config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
-
+    static Map<String, Object> config;
+    static {
+        // check if hybrid-security.yml exist
+        config = Config.getInstance().getJsonMapConfig(HYBRID_SECURITY_CONFIG);
+        // fallback to generic security.yml
+        if(config == null) config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
+    }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
