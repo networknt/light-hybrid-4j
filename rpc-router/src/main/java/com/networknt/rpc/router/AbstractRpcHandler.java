@@ -70,7 +70,8 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
             exchange.setStatusCode(StatusCodes.OK);
             exchange.endExchange();
         } else {
-            exchange.setStatusCode(StatusCodes.OK);
+            // we are expecting the handler set the statusCode if there is an error.
+            // if there is no status code, default 200 will be used.
             exchange.getResponseSender().send(result);
         }
     }

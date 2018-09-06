@@ -29,6 +29,7 @@ import io.undertow.util.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.ws.spi.http.HttpExchange;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +75,14 @@ public interface Handler {
         return bf;
     }
 
-    default String getStatus(String code, final Object... args) {
+    /**
+     * Return a Status object so that the handler can get the HTTP response code to set exchange response.
+     * @param exchange HttpServerExchange used to set the response code
+     * @param code Error code defined in status.yml
+     * @param args A number of arguments in the error description
+     * @return status Status object
+     */
+    default String getStatus(HttpServerExchange exchange, String code, final Object... args) {
         Status status = new Status(code, args);
         if(status.getStatusCode() == 0) {
             // There is no entry in status.yml for this particular error code.
@@ -82,6 +90,8 @@ public interface Handler {
         }
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
         logger.error(status.toString() + " at " + elements[2].getClassName() + "." + elements[2].getMethodName() + "(" + elements[2].getFileName() + ":" + elements[2].getLineNumber() + ")");
+        // set status code here so that the response has the right status code.
+        exchange.setStatusCode(status.getStatusCode());
         return status.toString();
     }
 }
