@@ -22,10 +22,15 @@ public class RpcRouter implements HandlerProvider {
 
         // Add all prefix or exact resources handlers that clients provide.
         ResourceHelpers.addProvidersToPathHandler(RpcStartupHookProvider.pathResourceProviders, httpHandler);
-
-        httpHandler.addPrefixPath(config.getColferPath() == null ? "/api/colfer" : config.getColferPath(), new ColferHandler());
-        httpHandler.addPrefixPath(config.getJsonPath() == null ? "/api/json" : config.getJsonPath(), new JsonHandler());
-        httpHandler.addPrefixPath(config.getFormPath() == null ? "/api/form" : config.getFormPath(), new FormHandler());
+        String colferPath = config.getColferPath() == null ? "/api/colfer" : config.getColferPath();
+        System.out.println("colferPath = " + colferPath);
+        String jsonPath = config.getJsonPath() == null ? "/api/json" : config.getJsonPath();
+        System.out.println("jsonPath = " + jsonPath);
+        String formPath = config.getFormPath() == null ? "/api/form" : config.getFormPath();
+        System.out.println("formPath = " + formPath);
+        httpHandler.addPrefixPath(colferPath, new ColferHandler());
+        httpHandler.addPrefixPath(jsonPath, new JsonHandler());
+        httpHandler.addPrefixPath(formPath, new FormHandler());
 
         // And if the client provides any predicated handlers, wrap the whole path handler in them.
         List<PredicatedHandler> predicatedHandlers = ResourceHelpers.getPredicatedHandlers(RpcStartupHookProvider.predicatedHandlersProviders);

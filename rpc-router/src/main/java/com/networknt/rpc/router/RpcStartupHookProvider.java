@@ -35,6 +35,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
 
     @Override
     public void onStartup() {
+        System.out.println("Handler scanning package = " + config.getHandlerPackage());
         // lookup all ServiceHandler and register them to handle request
         List<String> handlers =
                 classNameToClassInfo.values().stream()
@@ -49,7 +50,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
                 Class handler = Class.forName(className);
                 ServiceHandler a = (ServiceHandler)handler.getAnnotation(ServiceHandler.class);
                 serviceMap.put(a.id(), (Handler)handler.getConstructor().newInstance());
-                System.out.printf("RpcStartupHookProvider add %s to %s", a.id(), className);
+                System.out.println("RpcStartupHookProvider add id " + a.id() + " map to " + className);
             } catch (Exception e) {
                 e.printStackTrace();
             }
