@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.5.19](https://github.com/networknt/light-hybrid-4j/tree/1.5.19) (2018-09-22)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.18...1.5.19)
+
+**Closed issues:**
+
+- clear output api path during server startup [\#42](https://github.com/networknt/light-hybrid-4j/issues/42)
+- update the way error is handled in handler [\#41](https://github.com/networknt/light-hybrid-4j/issues/41)
+- JsonHandler needs to check if hybrid-security.yml exists before falling back to security.yml [\#40](https://github.com/networknt/light-hybrid-4j/issues/40)
+- switch to http-string module for HttpString headers constants [\#39](https://github.com/networknt/light-hybrid-4j/issues/39)
+- add default method getStatus to Handler interface [\#37](https://github.com/networknt/light-hybrid-4j/issues/37)
+
 ## [1.5.18](https://github.com/networknt/light-hybrid-4j/tree/1.5.18) (2018-08-16)
 [Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.17...1.5.18)
 
