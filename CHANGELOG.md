@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.5.20](https://github.com/networknt/light-hybrid-4j/tree/1.5.20) (2018-10-05)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.19...1.5.20)
+
+**Closed issues:**
+
+- remove security.yml from module jar file [\#44](https://github.com/networknt/light-hybrid-4j/issues/44)
+
 ## [1.5.19](https://github.com/networknt/light-hybrid-4j/tree/1.5.19) (2018-09-22)
 [Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.18...1.5.19)
 
