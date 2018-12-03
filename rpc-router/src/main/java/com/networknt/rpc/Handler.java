@@ -94,4 +94,18 @@ public interface Handler {
         exchange.setStatusCode(status.getStatusCode());
         return status.toString();
     }
+
+    /**
+     * There are situations that the downstream service returns an error status response and we just
+     * want to bubble up to the caller and eventually to the original caller.
+     *
+     * @param exchange HttpServerExchange
+     * @param status error status
+     */
+    default String getStatus(HttpServerExchange exchange, Status status) {
+        exchange.setStatusCode(status.getStatusCode());
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        logger.error(status.toString() + " at " + elements[2].getClassName() + "." + elements[2].getMethodName() + "(" + elements[2].getFileName() + ":" + elements[2].getLineNumber() + ")");
+        return status.toString();
+    }
 }
