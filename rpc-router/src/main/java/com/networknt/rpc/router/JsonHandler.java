@@ -95,7 +95,6 @@ public class JsonHandler extends AbstractRpcHandler {
         // calling schema validator here.
         ByteBuffer error = handler.validate(serviceId, data);
         if(error != null) {
-            logger.error("ValidationError:" + error);
             exchange.setStatusCode(StatusCodes.BAD_REQUEST);
             exchange.getResponseSender().send(error);
             return;

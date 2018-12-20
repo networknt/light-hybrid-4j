@@ -67,6 +67,7 @@ public interface Handler {
         if(errors.size() > 0) {
             try {
                 Status status = new Status(STATUS_VALIDATION_ERROR, Config.getInstance().getMapper().writeValueAsString(errors));
+                logger.error("Validation Error:" + status.toString());
                 bf = NioUtils.toByteBuffer(status.toString());
             } catch (JsonProcessingException e) {
                 logger.error("Exception:", e);
