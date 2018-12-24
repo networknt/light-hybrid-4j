@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.5.25](https://github.com/networknt/light-hybrid-4j/tree/1.5.25) (2018-12-24)
+[Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.24...1.5.25)
+
+**Closed issues:**
+
+- log validation error in the handler [\#46](https://github.com/networknt/light-hybrid-4j/issues/46)
+
 ## [1.5.24](https://github.com/networknt/light-hybrid-4j/tree/1.5.24) (2018-12-15)
 [Full Changelog](https://github.com/networknt/light-hybrid-4j/compare/1.5.23...1.5.24)
 
