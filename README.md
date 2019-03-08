@@ -1,9 +1,12 @@
 A hybrid between monolith and microservices to take advantages of both.
 
-[Developer Chat](https://gitter.im/networknt/light-hybrid-4j) |
-[Documentation](https://networknt.github.io/light-hybrid-4j) |
-[Contribution Guide](CONTRIBUTING.md) |
-
+[Stack Overflow](https://stackoverflow.com/questions/tagged/light-4j) |
+[Google Group](https://groups.google.com/forum/#!forum/light-4j) |
+[Gitter Chat](https://gitter.im/networknt/light-hybrid-4j) |
+[Subreddit](https://www.reddit.com/r/lightapi/) |
+[Youtube Channel](https://www.youtube.com/channel/UCHCRMWJVXw8iB7zKxF55Byw) |
+[Documentation](https://doc.networknt.com/style/light-hybrid-4j/) |
+[Contribution Guide](https://doc.networknt.com/contribute/) |
 
 [![Build Status](https://travis-ci.org/networknt/light-hybrid-4j.svg?branch=master)](https://travis-ci.org/networknt/light-hybrid-4j)
 
