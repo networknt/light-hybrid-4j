@@ -102,6 +102,7 @@ public interface Handler {
      *
      * @param exchange HttpServerExchange
      * @param status error status
+     * @return String the status string
      */
     default String getStatus(HttpServerExchange exchange, Status status) {
         exchange.setStatusCode(status.getStatusCode());
