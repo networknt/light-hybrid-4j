@@ -1,9 +1,11 @@
 package com.networknt.rpc.router;
 
 import com.networknt.config.Config;
+import com.networknt.registry.URL;
 import com.networknt.resource.PathResourceProvider;
 import com.networknt.resource.PredicatedHandlersProvider;
 import com.networknt.rpc.Handler;
+import com.networknt.server.Server;
 import com.networknt.server.StartupHookProvider;
 import com.networknt.service.SingletonServiceFactory;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
@@ -51,6 +53,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
                 ServiceHandler a = (ServiceHandler)handler.getAnnotation(ServiceHandler.class);
                 serviceMap.put(a.id(), (Handler)handler.getConstructor().newInstance());
                 System.out.println("RpcStartupHookProvider add id " + a.id() + " map to " + className);
+                Server.serviceIds.add(a.id().replace('/', '.'));
             } catch (Exception e) {
                 e.printStackTrace();
             }
