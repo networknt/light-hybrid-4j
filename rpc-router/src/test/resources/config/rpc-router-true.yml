@@ -1,0 +1,8 @@
+---
+description: RPC router description
+handlerPackage: com.networknt
+jsonPath: /api/json
+formPath: /api/form
+colferPath: /api/colfer
+resourcesBasePath: /
+registerService: true
