@@ -1,7 +1,15 @@
 ---
 description: RPC router description
+# The hybrid handler package name that is used for scanner during server startup. The more specific of package name, the faster to start
+# Leave it as with an empty string '' if the handler is scattered in multiple packages. or use the real package name like com.networknt
 handlerPackage: ''
+# The JSON RPC API path
 jsonPath: /api/json
+# The form RPC API path
 formPath: /api/form
+# The Colfer API path
 colferPath: /api/colfer
+# deprecated and should be removed later
 resourcesBasePath: /
+# if we want to register all handlers as services to the Consul for client to discover
+registerService: false

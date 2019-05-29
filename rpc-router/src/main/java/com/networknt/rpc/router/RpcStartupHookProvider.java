@@ -53,7 +53,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
                 ServiceHandler a = (ServiceHandler)handler.getAnnotation(ServiceHandler.class);
                 serviceMap.put(a.id(), (Handler)handler.getConstructor().newInstance());
                 System.out.println("RpcStartupHookProvider add id " + a.id() + " map to " + className);
-                Server.serviceIds.add(a.id().replace('/', '.'));
+                if(config.isRegisterService()) Server.serviceIds.add(a.id().replace('/', '.'));
             } catch (Exception e) {
                 e.printStackTrace();
             }

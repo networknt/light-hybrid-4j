@@ -10,6 +10,7 @@ public class RpcRouterConfig {
     private String formPath;
     private String colferPath;
     private String resourcesBasePath;
+    private boolean registerService;
 
     public RpcRouterConfig() { }
 
@@ -59,5 +60,13 @@ public class RpcRouterConfig {
 
     public void setResourcesBasePath(String resourcesBasePath) {
         this.resourcesBasePath = resourcesBasePath;
+    }
+
+    public boolean isRegisterService() {
+        return registerService;
+    }
+
+    public void setRegisterService(boolean registerService) {
+        this.registerService = registerService;
     }
 }
