@@ -2,14 +2,13 @@ package com.networknt.rpc.router;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.networknt.audit.AuditHandler;
-import com.networknt.colfer.ColferRpc;
 import com.networknt.config.Config;
-import com.networknt.exception.ExpiredTokenException;
 import com.networknt.handler.LightHttpHandler;
 import com.networknt.httpstring.HttpStringConstants;
 import com.networknt.rpc.Handler;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
+import com.networknt.status.exception.ExpiredTokenException;
 import com.networknt.utility.Constants;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
@@ -83,12 +82,14 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                 (jsonMap.get("version") == null? "" : jsonMap.get("version"));
     }
 
+    /*
     public String getServiceId(ColferRpc cf) {
         return  (cf.host == null? "" : cf.host + "/") +
                 (cf.service == null? "" : cf.service + "/") +
                 (cf.action == null? "" : cf.action + "/") +
                 (cf.version == null? "" : cf.version);
     }
+    */
 
     String getServiceId(FormData formData) {
         return (formData.contains("host") ? formData.get("host").peek().getValue() + "/" : "") +

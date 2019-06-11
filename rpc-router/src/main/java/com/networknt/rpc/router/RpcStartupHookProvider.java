@@ -1,7 +1,6 @@
 package com.networknt.rpc.router;
 
 import com.networknt.config.Config;
-import com.networknt.registry.URL;
 import com.networknt.resource.PathResourceProvider;
 import com.networknt.resource.PredicatedHandlersProvider;
 import com.networknt.rpc.Handler;

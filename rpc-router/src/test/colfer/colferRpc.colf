@@ -1,9 +1,0 @@
-package Colfer
-
-// RPC Service
-type colferRpc struct {
-	host text
-	service text
-	action text
-	version text
-}

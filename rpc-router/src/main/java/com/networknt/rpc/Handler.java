@@ -25,11 +25,9 @@ import com.networknt.schema.ValidationMessage;
 import com.networknt.status.Status;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.ws.spi.http.HttpExchange;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Set;
