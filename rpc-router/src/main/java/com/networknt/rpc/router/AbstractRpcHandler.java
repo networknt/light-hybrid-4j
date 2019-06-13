@@ -8,7 +8,7 @@ import com.networknt.httpstring.HttpStringConstants;
 import com.networknt.rpc.Handler;
 import com.networknt.security.JwtHelper;
 import com.networknt.status.Status;
-import com.networknt.status.exception.ExpiredTokenException;
+import com.networknt.exception.ExpiredTokenException;
 import com.networknt.utility.Constants;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
