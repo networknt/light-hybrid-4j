@@ -4,8 +4,9 @@ import com.networknt.audit.AuditHandler;
 import com.networknt.config.Config;
 import com.networknt.handler.Handler;
 import com.networknt.handler.MiddlewareHandler;
-import com.networknt.security.JwtHelper;
+import com.networknt.security.IJwtVerifyHandler;
 import com.networknt.exception.ExpiredTokenException;
+import com.networknt.security.JwtVerifier;
 import com.networknt.utility.Constants;
 import com.networknt.utility.ModuleRegistry;
 import io.undertow.Handlers;
@@ -13,7 +14,6 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderMap;
 import io.undertow.util.Headers;
-import io.undertow.util.HttpString;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ import java.util.Map;
  *
  * @author Steve Hu
  */
-public class JwtVerifyHandler implements MiddlewareHandler {
+public class JwtVerifyHandler implements MiddlewareHandler, IJwtVerifyHandler {
     static final Logger logger = LoggerFactory.getLogger(JwtVerifyHandler.class);
     static final String HYBRID_SECURITY_CONFIG = "hybrid-security";
 
@@ -40,12 +40,15 @@ public class JwtVerifyHandler implements MiddlewareHandler {
     static final String STATUS_AUTH_TOKEN_EXPIRED = "ERR10001";
     static final String STATUS_MISSING_AUTH_TOKEN = "ERR10002";
 
-    static Map<String, Object> config;
+    // make it public so that AbstractRpcHandler can access it directly.
+    public static Map<String, Object> config;
+    public static JwtVerifier jwtVerifier;
     static {
         // check if hybrid-security.yml exist
         config = Config.getInstance().getJsonMapConfig(HYBRID_SECURITY_CONFIG);
         // fallback to generic security.yml
-        if(config == null) config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
+        if(config == null) config = Config.getInstance().getJsonMapConfig(JwtVerifier.SECURITY_CONFIG);
+        jwtVerifier = new JwtVerifier(config);
     }
 
     private volatile HttpHandler next;
@@ -56,10 +59,10 @@ public class JwtVerifyHandler implements MiddlewareHandler {
     public void handleRequest(final HttpServerExchange exchange) throws Exception {
         HeaderMap headerMap = exchange.getRequestHeaders();
         String authorization = headerMap.getFirst(Headers.AUTHORIZATION);
-        String jwt = JwtHelper.getJwtFromAuthorization(authorization);
+        String jwt = jwtVerifier.getJwtFromAuthorization(authorization);
         if(jwt != null) {
             try {
-                JwtClaims claims = JwtHelper.verifyJwt(jwt, false);
+                JwtClaims claims = jwtVerifier.verifyJwt(jwt, false, true);
                 Map<String, Object> auditInfo = new HashMap<>();
                 auditInfo.put(Constants.ENDPOINT_STRING, exchange.getRequestURI());
                 auditInfo.put(Constants.CLIENT_ID_STRING, claims.getStringClaimValue(Constants.CLIENT_ID_STRING));
@@ -97,13 +100,18 @@ public class JwtVerifyHandler implements MiddlewareHandler {
 
     @Override
     public boolean isEnabled() {
-        Object object = config.get(JwtHelper.ENABLE_VERIFY_JWT);
+        Object object = config.get(JwtVerifier.ENABLE_VERIFY_JWT);
         return object != null && (Boolean) object;
     }
 
     @Override
     public void register() {
         ModuleRegistry.registerModule(JwtVerifyHandler.class.getName(), config, null);
+    }
+
+    @Override
+    public JwtVerifier getJwtVerifier() {
+        return jwtVerifier;
     }
 
 }

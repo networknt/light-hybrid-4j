@@ -3,7 +3,7 @@ package com.networknt.rpc.router;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.networknt.config.Config;
 import com.networknt.rpc.Handler;
-import com.networknt.security.JwtHelper;
+import com.networknt.rpc.security.JwtVerifyHandler;
 import com.networknt.status.Status;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
@@ -38,14 +38,6 @@ public class JsonHandler extends AbstractRpcHandler {
     static final String STATUS_REQUEST_CMD_EMPTY = "ERR11202";
 
     static private final Logger logger = LoggerFactory.getLogger(JsonHandler.class);
-
-    static Map<String, Object> config;
-    static {
-        // check if hybrid-security.yml exist
-        config = Config.getInstance().getJsonMapConfig(HYBRID_SECURITY_CONFIG);
-        // fallback to generic security.yml
-        if(config == null) config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
-    }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -89,7 +81,7 @@ public class JsonHandler extends AbstractRpcHandler {
         }
 
         // calling jwt scope verification here. token signature and expiration are done
-        verifyJwt(config, serviceId, exchange);
+        verifyJwt(JwtVerifyHandler.config, serviceId, exchange);
 
         Object data = map.get(DATA);
         // calling schema validator here.
