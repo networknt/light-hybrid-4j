@@ -1,23 +1,19 @@
 package com.networknt.rpc.router;
 
-import com.networknt.config.Config;
 import com.networknt.rpc.Handler;
-import com.networknt.security.JwtHelper;
+import com.networknt.rpc.security.JwtVerifyHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * @author Nicholas Azar
  * Created on July 10, 2017
  */
 public class FormHandler extends AbstractRpcHandler {
-
-    static final Map<String, Object> config = Config.getInstance().getJsonMapConfig(JwtHelper.SECURITY_CONFIG);
 
     @Override
     public void handleRequest(HttpServerExchange httpServerExchange) {
@@ -35,7 +31,7 @@ public class FormHandler extends AbstractRpcHandler {
                 }
 
                 // calling jwt scope verification here. token signature and expiration are done
-                verifyJwt(config, serviceId, httpServerExchange);
+                verifyJwt(JwtVerifyHandler.config, serviceId, httpServerExchange);
 
                 handleFormDataRequest(handler, data, httpServerExchange);
 

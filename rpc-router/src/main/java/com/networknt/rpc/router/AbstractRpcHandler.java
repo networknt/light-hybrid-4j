@@ -6,7 +6,7 @@ import com.networknt.config.Config;
 import com.networknt.handler.LightHttpHandler;
 import com.networknt.httpstring.HttpStringConstants;
 import com.networknt.rpc.Handler;
-import com.networknt.security.JwtHelper;
+import com.networknt.rpc.security.JwtVerifyHandler;
 import com.networknt.status.Status;
 import com.networknt.exception.ExpiredTokenException;
 import com.networknt.utility.Constants;
@@ -124,14 +124,14 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
         // check if id token scope exist or not.
         HeaderMap headerMap = exchange.getRequestHeaders();
         String scopeHeader = headerMap.getFirst(HttpStringConstants.SCOPE_TOKEN);
-        String scopeJwt = JwtHelper.getJwtFromAuthorization(scopeHeader);
+        String scopeJwt = JwtVerifyHandler.jwtVerifier.getJwtFromAuthorization(scopeHeader);
         List<String> secondaryScopes = null;
         Map<String, Object> auditInfo = exchange.getAttachment(AuditHandler.AUDIT_INFO);
         // auditInfo cannot be null at this point as it is populated by rpc-security and scope verification
         // must not enabled if jwt verification is disabled.
         if (scopeJwt != null) {
             try {
-                JwtClaims scopeClaims = JwtHelper.verifyJwt(scopeJwt, false);
+                JwtClaims scopeClaims = JwtVerifyHandler.jwtVerifier.verifyJwt(scopeJwt, false, true);
                 secondaryScopes = scopeClaims.getStringListClaimValue("scope");
                 auditInfo.put(Constants.SCOPE_CLIENT_ID_STRING, scopeClaims.getStringClaimValue(Constants.CLIENT_ID_STRING));
                 auditInfo.put(Constants.ACCESS_CLAIMS, scopeClaims);
