@@ -1,9 +1,9 @@
 package com.networknt.rpc.security;
 
-import com.networknt.audit.AuditHandler;
 import com.networknt.config.Config;
 import com.networknt.handler.Handler;
 import com.networknt.handler.MiddlewareHandler;
+import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.security.IJwtVerifyHandler;
 import com.networknt.exception.ExpiredTokenException;
 import com.networknt.security.JwtVerifier;
@@ -71,7 +71,7 @@ public class JwtVerifyHandler implements MiddlewareHandler, IJwtVerifyHandler {
                 // Need to remove the space in order for rpc-router to parse and verify scope
                 auditInfo.put(Constants.SCOPE_STRING, claims.getStringListClaimValue(Constants.SCOPE_STRING).toString().replaceAll("\\s+",""));
                 auditInfo.put(Constants.SUBJECT_CLAIMS, claims);
-                exchange.putAttachment(AuditHandler.AUDIT_INFO, auditInfo);
+                exchange.putAttachment(AttachmentConstants.AUDIT_INFO, auditInfo);
                 Handler.next(exchange, next);
             } catch (InvalidJwtException e) {
                 // only log it and unauthorized is returned.

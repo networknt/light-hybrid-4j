@@ -1,9 +1,9 @@
 package com.networknt.rpc.router;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.networknt.audit.AuditHandler;
 import com.networknt.config.Config;
 import com.networknt.handler.LightHttpHandler;
+import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.httpstring.HttpStringConstants;
 import com.networknt.rpc.Handler;
 import com.networknt.rpc.security.JwtVerifyHandler;
@@ -126,7 +126,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
         String scopeHeader = headerMap.getFirst(HttpStringConstants.SCOPE_TOKEN);
         String scopeJwt = JwtVerifyHandler.jwtVerifier.getJwtFromAuthorization(scopeHeader);
         List<String> secondaryScopes = null;
-        Map<String, Object> auditInfo = exchange.getAttachment(AuditHandler.AUDIT_INFO);
+        Map<String, Object> auditInfo = exchange.getAttachment(AttachmentConstants.AUDIT_INFO);
         // auditInfo cannot be null at this point as it is populated by rpc-security and scope verification
         // must not enabled if jwt verification is disabled.
         if (scopeJwt != null) {
