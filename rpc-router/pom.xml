@@ -72,10 +72,6 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
-            <artifactId>rpc-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
         </dependency>
         <dependency>

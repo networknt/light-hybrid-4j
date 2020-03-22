@@ -1,9 +1,7 @@
 package com.networknt.rpc.router;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.networknt.config.Config;
+import com.networknt.config.JsonMapper;
 import com.networknt.rpc.Handler;
-import com.networknt.rpc.security.JwtVerifyHandler;
 import com.networknt.status.Status;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
@@ -25,10 +23,6 @@ import java.util.Map;
  * Created by steve on 19/02/17.
  */
 public class JsonHandler extends AbstractRpcHandler {
-    static final String SCHEMA = "schema.json";
-    static final String HYBRID_SECURITY_CONFIG = "hybrid-security";
-    static final String ENABLE_VERIFY_JWT = "enableVerifyJwt";
-    static final String ENABLE_VERIFY_SCOPE = "enableVerifyScope";
     static final String DATA = "data";
     static final String CMD = "cmd";
 
@@ -66,12 +60,7 @@ public class JsonHandler extends AbstractRpcHandler {
     }
 
     private void processRequest(HttpServerExchange exchange, String message) {
-        Map<String, Object> map = null;
-        try {
-            map = Config.getInstance().getMapper().readValue(message, new TypeReference<Map<String,Object>>(){});
-        } catch (Exception e) {
-            logger.error("Exception:", e);
-        }
+        Map<String, Object> map = JsonMapper.string2Map(message);
         String serviceId = getServiceId(map);
         logger.debug("serviceId = " + serviceId);
         Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
@@ -80,8 +69,7 @@ public class JsonHandler extends AbstractRpcHandler {
             return;
         }
 
-        // calling jwt scope verification here. token signature and expiration are done
-        verifyJwt(JwtVerifyHandler.config, serviceId, exchange);
+        verifyJwt(serviceId, exchange);
 
         Object data = map.get(DATA);
         // calling schema validator here.

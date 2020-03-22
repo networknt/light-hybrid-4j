@@ -1,7 +1,6 @@
 package com.networknt.rpc.router;
 
 import com.networknt.rpc.Handler;
-import com.networknt.rpc.security.JwtVerifyHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
@@ -31,7 +30,7 @@ public class FormHandler extends AbstractRpcHandler {
                 }
 
                 // calling jwt scope verification here. token signature and expiration are done
-                verifyJwt(JwtVerifyHandler.config, serviceId, httpServerExchange);
+                verifyJwt(serviceId, httpServerExchange);
 
                 handleFormDataRequest(handler, data, httpServerExchange);
 
