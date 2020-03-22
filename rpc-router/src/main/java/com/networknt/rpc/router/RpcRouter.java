@@ -22,13 +22,10 @@ public class RpcRouter implements HandlerProvider {
 
         // Add all prefix or exact resources handlers that clients provide.
         ResourceHelpers.addProvidersToPathHandler(RpcStartupHookProvider.pathResourceProviders, httpHandler);
-        String colferPath = config.getColferPath() == null ? "/api/colfer" : config.getColferPath();
-        System.out.println("colferPath = " + colferPath);
         String jsonPath = config.getJsonPath() == null ? "/api/json" : config.getJsonPath();
         System.out.println("jsonPath = " + jsonPath);
         String formPath = config.getFormPath() == null ? "/api/form" : config.getFormPath();
         System.out.println("formPath = " + formPath);
-        httpHandler.addPrefixPath(colferPath, new ColferHandler());
         httpHandler.addPrefixPath(jsonPath, new JsonHandler());
         httpHandler.addPrefixPath(formPath, new FormHandler());
 
