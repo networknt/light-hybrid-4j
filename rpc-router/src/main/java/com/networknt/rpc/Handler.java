@@ -41,6 +41,7 @@ import java.util.Set;
 public interface Handler {
     Logger logger = LoggerFactory.getLogger(Handler.class);
 
+    String REQUEST_SUCCESS = "SUC10200";
     String ERROR_NOT_DEFINED = "ERR10042";
     String STATUS_VALIDATION_ERROR = "ERR11004";
 
