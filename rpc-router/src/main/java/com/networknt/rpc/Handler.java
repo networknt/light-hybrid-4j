@@ -64,13 +64,11 @@ public interface Handler {
         Set<ValidationMessage> errors = schema.validate(Config.getInstance().getMapper().valueToTree(object));
         ByteBuffer bf = null;
         if(errors.size() > 0) {
-            try {
-                Status status = new Status(STATUS_VALIDATION_ERROR, Config.getInstance().getMapper().writeValueAsString(errors));
-                logger.error("Validation Error:" + status.toString());
-                bf = NioUtils.toByteBuffer(status.toString());
-            } catch (JsonProcessingException e) {
-                logger.error("Exception:", e);
-            }
+            // like the light-rest-4j, we only return one validation error.
+            ValidationMessage vm = errors.iterator().next();
+            Status status = new Status(STATUS_VALIDATION_ERROR, vm.getMessage());
+            logger.error("Validation Error:" + status.toString());
+            bf = NioUtils.toByteBuffer(status.toString());
         }
         return bf;
     }
