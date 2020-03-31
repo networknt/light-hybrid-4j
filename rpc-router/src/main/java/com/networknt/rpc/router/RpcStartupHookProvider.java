@@ -7,8 +7,9 @@ import com.networknt.rpc.Handler;
 import com.networknt.server.Server;
 import com.networknt.server.StartupHookProvider;
 import com.networknt.service.SingletonServiceFactory;
-import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
-import io.github.lukehutch.fastclasspathscanner.scanner.ClassInfo;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ScanResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,9 +28,6 @@ public class RpcStartupHookProvider implements StartupHookProvider {
     private static final String CONFIG_NAME = "rpc-router";
     static RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(CONFIG_NAME, RpcRouterConfig.class);
 
-    private static Map<String, ClassInfo> classNameToClassInfo =
-            new FastClasspathScanner(config.getHandlerPackage()).scan().getClassNameToClassInfo();
-
     static final Map<String, Handler> serviceMap = new HashMap<>();
     static PathResourceProvider[] pathResourceProviders;
     static PredicatedHandlersProvider[] predicatedHandlersProviders;
@@ -38,12 +36,15 @@ public class RpcStartupHookProvider implements StartupHookProvider {
     public void onStartup() {
         System.out.println("Handler scanning package = " + config.getHandlerPackage());
         // lookup all ServiceHandler and register them to handle request
-        List<String> handlers =
-                classNameToClassInfo.values().stream()
-                        .filter(ci -> ci.hasAnnotation(ServiceHandler.class.getName()))
-                        .map(ClassInfo::getClassName)
-                        .sorted()
-                        .collect(Collectors.toList());
+        List<String> handlers;
+        try (ScanResult scanResult = new ClassGraph()
+                .whitelistPackages(config.getHandlerPackage())
+                .enableAllInfo()
+                .scan()) {
+            handlers = scanResult
+                    .getClassesWithAnnotation(ServiceHandler.class.getName())
+                    .getNames();
+        }
         System.out.println("RpcStartupHookProvider: handlers size " + handlers.size());
         // for each handler, create instance and register.
         for(String className: handlers) {

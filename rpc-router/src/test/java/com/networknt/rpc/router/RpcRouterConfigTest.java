@@ -1,11 +1,12 @@
 package com.networknt.rpc.router;
 
 import com.networknt.config.Config;
-import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
-import io.github.lukehutch.fastclasspathscanner.scanner.ClassInfo;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Map;
 
 public class RpcRouterConfigTest {
@@ -34,18 +35,32 @@ public class RpcRouterConfigTest {
     public void testHandlerPackageEmpty() {
         String configName = "rpc-router-empty";
         RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
-        Map<String, ClassInfo> classNameToClassInfo =
-                new FastClasspathScanner(config.getHandlerPackage()).scan().getClassNameToClassInfo();
-        Assert.assertTrue(classNameToClassInfo.size() > 0);
+        List<String> handlers;
+        try (ScanResult scanResult = new ClassGraph()
+                .whitelistPackages(config.getHandlerPackage())
+                .enableAllInfo()
+                .scan()) {
+            handlers = scanResult
+                    .getClassesWithAnnotation(ServiceHandler.class.getName())
+                    .getNames();
+        }
+        Assert.assertTrue(handlers.size() > 0);
     }
 
     @Test
     public void testHandlerPackageSingle() {
         String configName = "rpc-router-false-package";
         RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
-        Map<String, ClassInfo> classNameToClassInfo =
-                new FastClasspathScanner(config.getHandlerPackage()).scan().getClassNameToClassInfo();
-        Assert.assertTrue(classNameToClassInfo.size() > 0);
+        List<String> handlers;
+        try (ScanResult scanResult = new ClassGraph()
+                .whitelistPackages(config.getHandlerPackage())
+                .enableAllInfo()
+                .scan()) {
+            handlers = scanResult
+                    .getClassesWithAnnotation(ServiceHandler.class.getName())
+                    .getNames();
+        }
+        Assert.assertTrue(handlers.size() > 0);
     }
 
 }
