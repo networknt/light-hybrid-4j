@@ -7,7 +7,6 @@ import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.httpstring.HttpStringConstants;
 import com.networknt.rpc.Handler;
 import com.networknt.security.JwtVerifier;
-import com.networknt.status.Status;
 import com.networknt.exception.ExpiredTokenException;
 import com.networknt.utility.Constants;
 import io.undertow.server.HttpServerExchange;
