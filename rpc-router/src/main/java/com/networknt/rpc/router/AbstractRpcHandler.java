@@ -128,6 +128,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                     auditInfo.put(Constants.ENDPOINT_STRING, serviceId); // use serviceId as endpoint.
                     auditInfo.put(Constants.CLIENT_ID_STRING, claims.getStringClaimValue(Constants.CLIENT_ID_STRING));
                     auditInfo.put(Constants.USER_ID_STRING, claims.getStringClaimValue(Constants.USER_ID_STRING));
+                    auditInfo.put(Constants.ROLES_STRING, claims.getStringClaimValue(Constants.ROLES_STRING));
                     auditInfo.put(Constants.SUBJECT_CLAIMS, claims);
                     if((Boolean)config.get(ENABLE_VERIFY_SCOPE)) {
                         // is there a scope token
