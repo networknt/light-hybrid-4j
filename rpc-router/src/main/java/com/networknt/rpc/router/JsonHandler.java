@@ -69,7 +69,12 @@ public class JsonHandler extends AbstractRpcHandler {
             return;
         }
 
-        verifyJwt(serviceId, exchange);
+        Status status = verifyJwt(serviceId, exchange);
+        if(status != null) {
+            exchange.setStatusCode(status.getStatusCode());
+            exchange.getResponseSender().send(status.toString());
+            return;
+        }
 
         Object data = map.get(DATA);
         // calling schema validator here.
