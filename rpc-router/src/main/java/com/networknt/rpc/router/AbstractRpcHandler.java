@@ -8,6 +8,7 @@ import com.networknt.httpstring.HttpStringConstants;
 import com.networknt.rpc.Handler;
 import com.networknt.security.JwtVerifier;
 import com.networknt.exception.ExpiredTokenException;
+import com.networknt.status.Status;
 import com.networknt.utility.Constants;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
@@ -112,7 +113,8 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                 (formData.contains("version") ? formData.get("version").peek().getValue() : "");
     }
 
-    void verifyJwt(String serviceId, HttpServerExchange exchange) {
+    // if there are any error, return a status object to indicate the exact error. Otherwise, return null
+    Status verifyJwt(String serviceId, HttpServerExchange exchange) {
         Map<String, Object> service = (Map<String, Object>)schema.get(serviceId);
         if(isVerifyJwt(service.get(SKIP_AUTH))) {
             HeaderMap headerMap = exchange.getRequestHeaders();
@@ -142,12 +144,10 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                                 auditInfo.put(Constants.ACCESS_CLAIMS, scopeClaims);
                             } catch (InvalidJwtException | MalformedClaimException e) {
                                 logger.error("InvalidJwtException", e);
-                                setExchangeStatus(exchange, STATUS_INVALID_SCOPE_TOKEN);
-                                return;
+                                return new Status(STATUS_INVALID_SCOPE_TOKEN);
                             } catch (ExpiredTokenException e) {
                                 logger.error("ExpiredTokenException", e);
-                                setExchangeStatus(exchange, STATUS_SCOPE_TOKEN_EXPIRED);
-                                return;
+                                return new Status(STATUS_SCOPE_TOKEN_EXPIRED);
                             }
                         }
 
@@ -158,8 +158,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                         // validate scope
                         if (scopeHeader != null) {
                             if (secondaryScopes == null || !matchedScopes(secondaryScopes, specScopes)) {
-                                setExchangeStatus(exchange, STATUS_SCOPE_TOKEN_SCOPE_MISMATCH, secondaryScopes, specScopes);
-                                return;
+                                return new Status(STATUS_SCOPE_TOKEN_SCOPE_MISMATCH, secondaryScopes, specScopes);
                             }
                         } else {
                             // no scope token, verify scope from auth token.
@@ -168,27 +167,26 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                                 primaryScopes = claims.getStringListClaimValue(Constants.SCOPE_STRING);
                             } catch (MalformedClaimException e) {
                                 logger.error("MalformedClaimException", e);
-                                setExchangeStatus(exchange, STATUS_INVALID_AUTH_TOKEN);
-                                return;
+                                return new Status(STATUS_INVALID_AUTH_TOKEN);
                             }
                             if (!matchedScopes(primaryScopes, specScopes)) {
-                                setExchangeStatus(exchange, STATUS_AUTH_TOKEN_SCOPE_MISMATCH, primaryScopes, specScopes);
-                                return;
+                                return new Status(STATUS_AUTH_TOKEN_SCOPE_MISMATCH, primaryScopes, specScopes);
                             }
                         }
                     }
                 } catch (InvalidJwtException | MalformedClaimException e) {
                     // only log it and unauthorized is returned.
                     logger.error("InvalidJwtException:", e);
-                    setExchangeStatus(exchange, STATUS_INVALID_AUTH_TOKEN);
+                    return new Status(STATUS_INVALID_AUTH_TOKEN);
                 } catch (ExpiredTokenException e) {
                     logger.error("ExpiredTokenException", e);
-                    setExchangeStatus(exchange, STATUS_AUTH_TOKEN_EXPIRED);
+                    return new Status(STATUS_AUTH_TOKEN_EXPIRED);
                 }
             } else {
-                setExchangeStatus(exchange, STATUS_MISSING_AUTH_TOKEN);
+                return new Status(STATUS_MISSING_AUTH_TOKEN);
             }
         }
+        return null;
     }
 
     public boolean isVerifyJwt(Object skipAuth) {
