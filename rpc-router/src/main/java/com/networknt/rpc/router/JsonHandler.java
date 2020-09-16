@@ -71,6 +71,7 @@ public class JsonHandler extends AbstractRpcHandler {
 
         Status status = verifyJwt(serviceId, exchange);
         if(status != null) {
+            logger.error(status.toString());
             exchange.setStatusCode(status.getStatusCode());
             exchange.getResponseSender().send(status.toString());
             return;
