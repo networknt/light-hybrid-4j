@@ -131,6 +131,8 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                     auditInfo.put(Constants.USER_ID_STRING, claims.getStringClaimValue(Constants.USER_ID_STRING));
                     auditInfo.put(Constants.ROLES_STRING, claims.getStringClaimValue(Constants.ROLES_STRING));
                     auditInfo.put(Constants.SUBJECT_CLAIMS, claims);
+                    String callerId = headerMap.getFirst(HttpStringConstants.CALLER_ID);
+                    if(callerId != null) auditInfo.put(Constants.CALLER_ID_STRING, callerId);
                     if((Boolean)config.get(ENABLE_VERIFY_SCOPE)) {
                         // is there a scope token
                         String scopeHeader = headerMap.getFirst(HttpStringConstants.SCOPE_TOKEN);
