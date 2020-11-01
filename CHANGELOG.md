@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.0.19](https://github.com/networknt/light-hybrid-4j/tree/2.0.19) (2020-11-01)
+
+
+**Merged pull requests:**
+
+
+- fixes \#86 get callerId from the header and put it into the auditInfo … [\#87](https://github.com/networknt/light-hybrid-4j/pull/87) ([stevehu](https://github.com/stevehu))
+- Bump junit from 4.12 to 4.13.1 [\#85](https://github.com/networknt/light-hybrid-4j/pull/85) ([dependabot](https://github.com/apps/dependabot))
 ## [2.0.18](https://github.com/networknt/light-hybrid-4j/tree/2.0.18) (2020-10-01)
 
 
