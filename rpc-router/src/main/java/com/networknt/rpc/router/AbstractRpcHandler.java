@@ -141,7 +141,21 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                         if(scopeJwt != null) {
                             try {
                                 JwtClaims scopeClaims = jwtVerifier.verifyJwt(scopeJwt, false, true);
-                                secondaryScopes = scopeClaims.getStringListClaimValue(Constants.SCOPE_STRING);
+                                Object scopeClaim = scopeClaims.getClaimValue(Constants.SCOPE_STRING);
+                                if(scopeClaim instanceof String) {
+                                    secondaryScopes = Arrays.asList(scopeClaims.getStringClaimValue(Constants.SCOPE_STRING).split(" "));
+                                } else if(scopeClaim instanceof List) {
+                                    secondaryScopes = scopeClaims.getStringListClaimValue(Constants.SCOPE_STRING);
+                                }
+                                if(secondaryScopes == null || secondaryScopes.isEmpty()) {
+                                    // some IDPs like Okta and Microsoft call scope claim "scp" instead of "scope"
+                                    Object scpClaim = scopeClaims.getClaimValue(Constants.SCP_STRING);
+                                    if(scpClaim instanceof String) {
+                                        secondaryScopes = Arrays.asList(scopeClaims.getStringClaimValue(Constants.SCP_STRING).split(" "));
+                                    } else if(scpClaim instanceof List) {
+                                        secondaryScopes = scopeClaims.getStringListClaimValue(Constants.SCP_STRING);
+                                    }
+                                }
                                 auditInfo.put(Constants.SCOPE_CLIENT_ID_STRING, scopeClaims.getStringClaimValue(Constants.CLIENT_ID_STRING));
                                 auditInfo.put(Constants.ACCESS_CLAIMS, scopeClaims);
                             } catch (InvalidJwtException | MalformedClaimException e) {
@@ -164,9 +178,23 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                             }
                         } else {
                             // no scope token, verify scope from auth token.
-                            List<String> primaryScopes;
+                            List<String> primaryScopes = null;
                             try {
-                                primaryScopes = claims.getStringListClaimValue(Constants.SCOPE_STRING);
+                                Object scopeClaim = claims.getClaimValue(Constants.SCOPE_STRING);
+                                if(scopeClaim instanceof String) {
+                                    primaryScopes = Arrays.asList(claims.getStringClaimValue(Constants.SCOPE_STRING).split(" "));
+                                } else if(scopeClaim instanceof List) {
+                                    primaryScopes = claims.getStringListClaimValue(Constants.SCOPE_STRING);
+                                }
+                                if(primaryScopes == null || primaryScopes.isEmpty()) {
+                                    // some IDPs like Okta and Microsoft call scope claim "scp" instead of "scope"
+                                    Object scpClaim = claims.getClaimValue(Constants.SCP_STRING);
+                                    if(scpClaim instanceof String) {
+                                        primaryScopes = Arrays.asList(claims.getStringClaimValue(Constants.SCP_STRING).split(" "));
+                                    } else if(scpClaim instanceof List) {
+                                        primaryScopes = claims.getStringListClaimValue(Constants.SCP_STRING);
+                                    }
+                                }
                             } catch (MalformedClaimException e) {
                                 logger.error("MalformedClaimException", e);
                                 return new Status(STATUS_INVALID_AUTH_TOKEN);
