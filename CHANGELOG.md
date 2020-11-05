@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.0.20](https://github.com/networknt/light-hybrid-4j/tree/2.0.20) (2020-11-05)
+
+
+**Merged pull requests:**
+
+
+- fixes \#88 Adding support for scp claim in addition to scope claim for… [\#89](https://github.com/networknt/light-hybrid-4j/pull/89) ([stevehu](https://github.com/stevehu))
 ## [2.0.19](https://github.com/networknt/light-hybrid-4j/tree/2.0.19) (2020-11-01)
 
 
