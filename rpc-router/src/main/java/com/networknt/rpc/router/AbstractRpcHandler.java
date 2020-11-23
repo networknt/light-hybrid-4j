@@ -127,8 +127,14 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                     Map<String, Object> auditInfo = new HashMap<>();
                     exchange.putAttachment(AttachmentConstants.AUDIT_INFO, auditInfo);
                     auditInfo.put(Constants.ENDPOINT_STRING, serviceId); // use serviceId as endpoint.
-                    auditInfo.put(Constants.CLIENT_ID_STRING, claims.getStringClaimValue(Constants.CLIENT_ID_STRING));
-                    auditInfo.put(Constants.USER_ID_STRING, claims.getStringClaimValue(Constants.USER_ID_STRING));
+                    String clientId = claims.getStringClaimValue(Constants.CLIENT_ID_STRING);
+                    // try to get the cid as some OAuth tokens name it as cid like Okta.
+                    if(clientId == null) clientId = claims.getStringClaimValue(Constants.CID_STRING);
+                    auditInfo.put(Constants.CLIENT_ID_STRING, clientId);
+                    String userId = claims.getStringClaimValue(Constants.USER_ID_STRING);
+                    // try to get the uid as some OAuth tokens name it as uid like Okta.
+                    if(userId == null) userId = claims.getStringClaimValue(Constants.UID_STRING);
+                    auditInfo.put(Constants.USER_ID_STRING, userId);
                     auditInfo.put(Constants.ROLES_STRING, claims.getStringClaimValue(Constants.ROLES_STRING));
                     auditInfo.put(Constants.SUBJECT_CLAIMS, claims);
                     String callerId = headerMap.getFirst(HttpStringConstants.CALLER_ID);
