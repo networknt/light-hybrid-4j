@@ -8,6 +8,8 @@
 
 - fixes \#92 support cid uid for client_id and user_id for some jwt tokens [\#93](https://github.com/networknt/light-hybrid-4j/pull/93) ([stevehu](https://github.com/stevehu))
 - fixes \#90 remove secret.yml from test config and update client and se… [\#91](https://github.com/networknt/light-hybrid-4j/pull/91) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.20](https://github.com/networknt/light-hybrid-4j/tree/2.0.20) (2020-11-05)
 
 
