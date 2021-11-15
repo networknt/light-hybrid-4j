@@ -22,11 +22,14 @@ jwt:
     '100': primary.crt
     '101': secondary.crt
   clockSkewInSeconds: 60
-
-# Enable or disable JWT token logging
+  # Key distribution server standard: JsonWebKeySet for other OAuth 2.0 provider| X509Certificate for light-oauth2
+  keyResolver: X509Certificate
+# Enable or disable JWT token logging for audit. This is to log the entire token
+# or choose the next option that only logs client_id, user_id and scope.
 logJwtToken: true
 
-# Enable or disable client_id, user_id and scope logging.
+# Enable or disable client_id, user_id and scope logging if you don't want to log
+# the entire token. Choose this option or the option above.
 logClientUserScope: false
 
 # Enable JWT token cache to speed up verification. This will only verify expired time
