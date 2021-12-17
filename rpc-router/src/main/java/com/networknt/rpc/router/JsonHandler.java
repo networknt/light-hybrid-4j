@@ -120,7 +120,9 @@ public class JsonHandler extends AbstractRpcHandler {
     private void handleUnsupportedMethod(HttpServerExchange exchange) {
         // options is handled in middleware handler so if reach here, invalid.
         exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
-        Status status = new Status(STATUS_METHOD_NOT_ALLOWED);
+        String method = exchange.getRequestMethod().toString();
+        String path = exchange.getRequestPath();
+        Status status = new Status(STATUS_METHOD_NOT_ALLOWED, method, path);
         exchange.setStatusCode(status.getStatusCode());
         exchange.getResponseSender().send(status.toString());
     }
