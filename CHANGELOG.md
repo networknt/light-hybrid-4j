@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.1.0](https://github.com/networknt/light-hybrid-4j/tree/2.1.0) (2022-02-27)
+
+
+**Merged pull requests:**
+
+
+- fixes \#97 Add method and path to the STATUS_METHOD_NOT_ALLOWED [\#98](https://github.com/networknt/light-hybrid-4j/pull/98) ([stevehu](https://github.com/stevehu))
+- fixes \#95 add keyResolver X509Certificate to the hybrid-security.yml [\#96](https://github.com/networknt/light-hybrid-4j/pull/96) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.0.32](https://github.com/networknt/light-hybrid-4j/tree/2.0.32) (2021-10-19)
 
 
