@@ -122,7 +122,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
             HeaderMap headerMap = exchange.getRequestHeaders();
             String authorization = headerMap.getFirst(Headers.AUTHORIZATION);
             // output only the first 10 chars to see if the authorization header empty or miss the Bearer.
-            if(logger.isTraceEnabled()) logger.trace("Need to verify JWT. authorization = " + authorization == null ? null : authorization.substring(0, 10));
+            if(logger.isTraceEnabled()) logger.trace("Need to verify JWT. authorization = " + (authorization == null ? null : authorization.substring(0, 10)));
             String jwt = jwtVerifier.getJwtFromAuthorization(authorization);
             if(jwt != null) {
                 try {
