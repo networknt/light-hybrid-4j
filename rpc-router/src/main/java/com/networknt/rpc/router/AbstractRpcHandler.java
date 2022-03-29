@@ -2,6 +2,7 @@ package com.networknt.rpc.router;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.networknt.config.Config;
+import com.networknt.config.JsonMapper;
 import com.networknt.handler.LightHttpHandler;
 import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.httpstring.HttpStringConstants;
@@ -116,9 +117,12 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
     // if there are any error, return a status object to indicate the exact error. Otherwise, return null
     Status verifyJwt(String serviceId, HttpServerExchange exchange) {
         Map<String, Object> service = (Map<String, Object>)schema.get(serviceId);
+        if(logger.isTraceEnabled()) logger.trace("serviceId = " + serviceId + " service = " + JsonMapper.toJson(service));
         if(isVerifyJwt(service.get(SKIP_AUTH))) {
             HeaderMap headerMap = exchange.getRequestHeaders();
             String authorization = headerMap.getFirst(Headers.AUTHORIZATION);
+            // output only the first 10 chars to see if the authorization header empty or miss the Bearer.
+            if(logger.isTraceEnabled()) logger.trace("Need to verify JWT. authorization = " + authorization == null ? null : authorization.substring(0, 10));
             String jwt = jwtVerifier.getJwtFromAuthorization(authorization);
             if(jwt != null) {
                 try {
