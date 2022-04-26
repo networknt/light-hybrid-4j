@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.1](https://github.com/networknt/light-hybrid-4j/tree/2.1.1) (2022-04-26)
+
+
+**Merged pull requests:**
+
+
+- fixes \#99 add more trace in AbstractRpcHandler to detect the reason f… [\#100](https://github.com/networknt/light-hybrid-4j/pull/100) ([stevehu](https://github.com/stevehu))
 ## [2.1.0](https://github.com/networknt/light-hybrid-4j/tree/2.1.0) (2022-02-27)
 
 
