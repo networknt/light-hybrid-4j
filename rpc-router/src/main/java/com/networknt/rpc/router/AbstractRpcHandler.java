@@ -9,6 +9,7 @@ import com.networknt.httpstring.HttpStringConstants;
 import com.networknt.rpc.Handler;
 import com.networknt.security.JwtVerifier;
 import com.networknt.exception.ExpiredTokenException;
+import com.networknt.security.SecurityConfig;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
 import io.undertow.server.HttpServerExchange;
@@ -38,8 +39,6 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
 
     private static final String SCHEMA = "schema.json";
     private static final String HYBRID_SECURITY_CONFIG = "hybrid-security";
-    private static final String ENABLE_VERIFY_JWT = "enableVerifyJwt";
-    private static final String ENABLE_VERIFY_SCOPE = "enableVerifyScope";
     private static final String SKIP_AUTH = "skipAuth"; // skip the JwtVerification for some endpoints.
 
     private static final String STATUS_INVALID_SCOPE_TOKEN = "ERR10003";
@@ -50,13 +49,11 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
     private static final String STATUS_AUTH_TOKEN_EXPIRED = "ERR10001";
     private static final String STATUS_MISSING_AUTH_TOKEN = "ERR10002";
 
-    private static Map<String, Object> config;
+    private static SecurityConfig config;
     private static JwtVerifier jwtVerifier;
     static {
         // check if hybrid-security.yml exist
-        config = Config.getInstance().getJsonMapConfig(HYBRID_SECURITY_CONFIG);
-        // fallback to generic security.yml
-        if(config == null) config = Config.getInstance().getJsonMapConfig(JwtVerifier.SECURITY_CONFIG);
+        config = SecurityConfig.load(HYBRID_SECURITY_CONFIG);
         jwtVerifier = new JwtVerifier(config);
     }
 
@@ -143,7 +140,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                     auditInfo.put(Constants.SUBJECT_CLAIMS, claims);
                     String callerId = headerMap.getFirst(HttpStringConstants.CALLER_ID);
                     if(callerId != null) auditInfo.put(Constants.CALLER_ID_STRING, callerId);
-                    if((Boolean)config.get(ENABLE_VERIFY_SCOPE)) {
+                    if(config.isEnableVerifyScope()) {
                         // is there a scope token
                         String scopeHeader = headerMap.getFirst(HttpStringConstants.SCOPE_TOKEN);
                         String scopeJwt = jwtVerifier.getJwtFromAuthorization(scopeHeader);
@@ -231,8 +228,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
 
     public boolean isVerifyJwt(Object skipAuth) {
         if(skipAuth != null && Boolean.valueOf(skipAuth.toString())) return false;
-        Object object = config.get(ENABLE_VERIFY_JWT);
-        return object != null && Boolean.valueOf(object.toString()) ;
+        return config.isEnableVerifyJwt();
     }
 
     private boolean matchedScopes(List<String> jwtScopes, List<String> specScopes) {
@@ -277,4 +273,5 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
         ByteBuffer result = handler.handle(httpServerExchange, formData);
         this.completeExchange(result, httpServerExchange);
     }
+
 }
