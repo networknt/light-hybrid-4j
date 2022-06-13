@@ -1,11 +1,11 @@
+# rpc-router configuration
 ---
-description: RPC router description
 # The hybrid handler package name that is used for scanner during server startup. The more specific of package name, the faster to start
 # Leave it as with an empty string '' if the handler is scattered in multiple packages. or use the real package name like com.networknt
-handlerPackage: ''
+handlerPackage: ${rpc-router.handlerPackage:''}
 # The JSON RPC API path
-jsonPath: /api/json
+jsonPath: ${rpc-router.jsonPath:/api/json}
 # The form RPC API path
-formPath: /api/form
+formPath: ${rpc-router.formPath:/api/form}
 # if we want to register all handlers as services to the Consul for client to discover
-registerService: false
+registerService: ${rpc-router.registerService:false}
