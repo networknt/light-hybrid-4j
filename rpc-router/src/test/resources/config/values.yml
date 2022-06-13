@@ -1,1 +1,2 @@
 rpc-router.handlerPackage: com.networknt
+hybrid-security.keyResolver: X509Certificate
