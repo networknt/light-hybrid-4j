@@ -8,7 +8,6 @@ public class RpcRouterConfig {
     private String handlerPackage;
     private String jsonPath;
     private String formPath;
-    private String colferPath;
     private String resourcesBasePath;
     private boolean registerService;
 
@@ -44,14 +43,6 @@ public class RpcRouterConfig {
 
     public void setFormPath(String formPath) {
         this.formPath = formPath;
-    }
-
-    public String getColferPath() {
-        return colferPath;
-    }
-
-    public void setColferPath(String colferPath) {
-        this.colferPath = colferPath;
     }
 
     public String getResourcesBasePath() {
