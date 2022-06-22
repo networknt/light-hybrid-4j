@@ -117,13 +117,14 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
         if(logger.isTraceEnabled()) logger.trace("serviceId = " + serviceId + " service = " + JsonMapper.toJson(service));
         if(isVerifyJwt(service.get(SKIP_AUTH))) {
             HeaderMap headerMap = exchange.getRequestHeaders();
+            String reqPath = exchange.getRequestPath();
             String authorization = headerMap.getFirst(Headers.AUTHORIZATION);
             // output only the first 10 chars to see if the authorization header empty or miss the Bearer.
             if(logger.isTraceEnabled()) logger.trace("Need to verify JWT. authorization = " + (authorization == null ? null : authorization.substring(0, 10)));
             String jwt = jwtVerifier.getJwtFromAuthorization(authorization);
             if(jwt != null) {
                 try {
-                    JwtClaims claims = jwtVerifier.verifyJwt(jwt, false, true);
+                    JwtClaims claims = jwtVerifier.verifyJwt(jwt, false, true, reqPath);
                     // Unlike light-rest-4j, the auditInfo shouldn't be in the exchange for the hybrid framework.
                     Map<String, Object> auditInfo = new HashMap<>();
                     exchange.putAttachment(AttachmentConstants.AUDIT_INFO, auditInfo);
@@ -147,7 +148,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                         List<String> secondaryScopes = null;
                         if(scopeJwt != null) {
                             try {
-                                JwtClaims scopeClaims = jwtVerifier.verifyJwt(scopeJwt, false, true);
+                                JwtClaims scopeClaims = jwtVerifier.verifyJwt(scopeJwt, false, true, reqPath);
                                 Object scopeClaim = scopeClaims.getClaimValue(Constants.SCOPE_STRING);
                                 if(scopeClaim instanceof String) {
                                     secondaryScopes = Arrays.asList(scopeClaims.getStringClaimValue(Constants.SCOPE_STRING).split(" "));
