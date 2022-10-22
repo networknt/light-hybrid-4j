@@ -1,5 +1,16 @@
 # Change Log
 
+## [2.1.2](https://github.com/networknt/light-hybrid-4j/tree/2.1.2) (2022-10-22)
+
+
+**Merged pull requests:**
+
+
+- fixes \#110 pass in request path to verifyJwt to support mulitple OAut… [\#111](https://github.com/networknt/light-hybrid-4j/pull/111) ([stevehu](https://github.com/stevehu))
+- fixes \#108 update hybrid-security.yml to use JsonWebKeySet for keyRes… [\#109](https://github.com/networknt/light-hybrid-4j/pull/109) ([stevehu](https://github.com/stevehu))
+- fixes \#106 add providerId to the security.yml for oauth key service [\#107](https://github.com/networknt/light-hybrid-4j/pull/107) ([stevehu](https://github.com/stevehu))
+- fixes \#104 externalize rpc-router.yml and revised the test cases [\#105](https://github.com/networknt/light-hybrid-4j/pull/105) ([stevehu](https://github.com/stevehu))
+- fixes \#102 update JWT verification to use SecurityConfig [\#103](https://github.com/networknt/light-hybrid-4j/pull/103) ([stevehu](https://github.com/stevehu))
 ## [2.1.1](https://github.com/networknt/light-hybrid-4j/tree/2.1.1) (2022-04-26)
 
 
