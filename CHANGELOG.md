@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.4](https://github.com/networknt/light-hybrid-4j/tree/2.1.4) (2022-11-30)
+
+
+**Merged pull requests:**
+
+
+- fixes \#115 upgrade classgraph to version 4.8.149 [\#116](https://github.com/networknt/light-hybrid-4j/pull/116) ([stevehu](https://github.com/stevehu))
 ## [2.1.3](https://github.com/networknt/light-hybrid-4j/tree/2.1.3) (2022-11-10)
 
 
