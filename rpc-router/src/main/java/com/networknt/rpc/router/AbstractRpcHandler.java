@@ -124,7 +124,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
             String jwt = jwtVerifier.getJwtFromAuthorization(authorization);
             if(jwt != null) {
                 try {
-                    JwtClaims claims = jwtVerifier.verifyJwt(jwt, false, true, reqPath);
+                    JwtClaims claims = jwtVerifier.verifyJwt(jwt, false, true, null, reqPath, null);
                     // Unlike light-rest-4j, the auditInfo shouldn't be in the exchange for the hybrid framework.
                     Map<String, Object> auditInfo = new HashMap<>();
                     exchange.putAttachment(AttachmentConstants.AUDIT_INFO, auditInfo);
@@ -148,7 +148,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                         List<String> secondaryScopes = null;
                         if(scopeJwt != null) {
                             try {
-                                JwtClaims scopeClaims = jwtVerifier.verifyJwt(scopeJwt, false, true, reqPath);
+                                JwtClaims scopeClaims = jwtVerifier.verifyJwt(scopeJwt, false, true, null, reqPath, null);
                                 Object scopeClaim = scopeClaims.getClaimValue(Constants.SCOPE_STRING);
                                 if(scopeClaim instanceof String) {
                                     secondaryScopes = Arrays.asList(scopeClaims.getStringClaimValue(Constants.SCOPE_STRING).split(" "));
