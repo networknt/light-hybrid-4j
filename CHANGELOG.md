@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.1.5](https://github.com/networknt/light-hybrid-4j/tree/2.1.5) (2023-01-04)
+
+
+**Merged pull requests:**
+
+
+- fixes \#121 update jwt verification signature [\#122](https://github.com/networknt/light-hybrid-4j/pull/122) ([stevehu](https://github.com/stevehu))
+- fixes \#119 add skipVerifyScopeWithoutSpec flag to hybrid-security.yml [\#120](https://github.com/networknt/light-hybrid-4j/pull/120) ([stevehu](https://github.com/stevehu))
+- fixes \#117 update openapi-security.yml to add jwtCacheFullSize [\#118](https://github.com/networknt/light-hybrid-4j/pull/118) ([stevehu](https://github.com/stevehu))
 ## [2.1.4](https://github.com/networknt/light-hybrid-4j/tree/2.1.4) (2022-11-30)
 
 
