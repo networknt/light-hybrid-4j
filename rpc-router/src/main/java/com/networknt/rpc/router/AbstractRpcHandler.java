@@ -121,7 +121,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
             String authorization = headerMap.getFirst(Headers.AUTHORIZATION);
             // output only the first 10 chars to see if the authorization header empty or miss the Bearer.
             if(logger.isTraceEnabled()) logger.trace("Need to verify JWT. authorization = " + (authorization == null ? null : authorization.substring(0, 10)));
-            String jwt = jwtVerifier.getJwtFromAuthorization(authorization);
+            String jwt = jwtVerifier.getTokenFromAuthorization(authorization);
             if(jwt != null) {
                 try {
                     JwtClaims claims = jwtVerifier.verifyJwt(jwt, false, true, null, reqPath, null);
@@ -144,7 +144,7 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
                     if(config.isEnableVerifyScope()) {
                         // is there a scope token
                         String scopeHeader = headerMap.getFirst(HttpStringConstants.SCOPE_TOKEN);
-                        String scopeJwt = jwtVerifier.getJwtFromAuthorization(scopeHeader);
+                        String scopeJwt = jwtVerifier.getTokenFromAuthorization(scopeHeader);
                         List<String> secondaryScopes = null;
                         if(scopeJwt != null) {
                             try {
