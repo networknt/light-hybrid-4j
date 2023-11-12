@@ -13,7 +13,6 @@ import java.util.List;
  * Created by steve on 19/02/17.
  */
 public class RpcRouter implements HandlerProvider {
-
     @Override
     public HttpHandler getHandler() {
         PathHandler httpHandler = Handlers.path();
