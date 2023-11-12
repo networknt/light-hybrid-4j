@@ -7,9 +7,14 @@ import com.networknt.rpc.Handler;
 import com.networknt.server.Server;
 import com.networknt.server.StartupHookProvider;
 import com.networknt.service.SingletonServiceFactory;
+import com.networknt.traceability.TraceabilityConfig;
+import com.networknt.traceability.TraceabilityHandler;
+import com.networknt.utility.ModuleRegistry;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,12 +30,18 @@ import java.util.stream.Collectors;
  * @author Steve Hu
  */
 public class RpcStartupHookProvider implements StartupHookProvider {
+    static final Logger logger = LoggerFactory.getLogger(RpcStartupHookProvider.class);
     private static final String CONFIG_NAME = "rpc-router";
-    static RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(CONFIG_NAME, RpcRouterConfig.class);
+    static RpcRouterConfig config;
 
     static final Map<String, Handler> serviceMap = new HashMap<>();
     static PathResourceProvider[] pathResourceProviders;
     static PredicatedHandlersProvider[] predicatedHandlersProviders;
+    public RpcStartupHookProvider() {
+        if(logger.isInfoEnabled()) logger.info("RpcStartupHookProvider is constructed");
+        config = RpcRouterConfig.load();
+        ModuleRegistry.registerModule(RpcRouterConfig.CONFIG_NAME, RpcStartupHookProvider.class.getName(), config.getMappedConfig(), null);
+    }
 
     @Override
     public void onStartup() {
