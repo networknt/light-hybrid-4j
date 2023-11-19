@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.1.29](https://github.com/networknt/light-hybrid-4j/tree/2.1.29) (2023-11-19)
+
+
+**Merged pull requests:**
+
+
+- fixes \#127 refactor module registry to add config name [\#128](https://github.com/networknt/light-hybrid-4j/pull/128) ([stevehu](https://github.com/stevehu))
+- fixes \#125 sync the hybrid-security.yml with the security.yml in ligh… [\#126](https://github.com/networknt/light-hybrid-4j/pull/126) ([stevehu](https://github.com/stevehu))
 ## [2.1.28](https://github.com/networknt/light-hybrid-4j/tree/2.1.28) (2023-10-24)
 
 
