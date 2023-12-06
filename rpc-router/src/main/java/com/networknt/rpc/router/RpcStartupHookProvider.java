@@ -45,7 +45,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
 
     @Override
     public void onStartup() {
-        System.out.println("Handler scanning package = " + config.getHandlerPackage());
+        if(logger.isDebugEnabled()) logger.debug("Handler scanning package = " + config.getHandlerPackage());
         // lookup all ServiceHandler and register them to handle request
         List<String> handlers;
         try (ScanResult scanResult = new ClassGraph()
@@ -56,17 +56,17 @@ public class RpcStartupHookProvider implements StartupHookProvider {
                     .getClassesWithAnnotation(ServiceHandler.class.getName())
                     .getNames();
         }
-        System.out.println("RpcStartupHookProvider: handlers size " + handlers.size());
+        if(logger.isDebugEnabled()) logger.debug("RpcStartupHookProvider: handlers size " + handlers.size());
         // for each handler, create instance and register.
         for(String className: handlers) {
             try {
                 Class handler = Class.forName(className);
                 ServiceHandler a = (ServiceHandler)handler.getAnnotation(ServiceHandler.class);
                 serviceMap.put(a.id(), (Handler)handler.getConstructor().newInstance());
-                System.out.println("RpcStartupHookProvider add id " + a.id() + " map to " + className);
+                if(logger.isDebugEnabled()) logger.debug("RpcStartupHookProvider add id " + a.id() + " map to " + className);
                 if(config.isRegisterService()) Server.serviceIds.add(a.id().replace('/', '.'));
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Exception:", e);
             }
         }
         pathResourceProviders = SingletonServiceFactory.getBeans(PathResourceProvider.class);
