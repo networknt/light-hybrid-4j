@@ -1,2 +1,5 @@
 rpc-router.handlerPackage: com.networknt
-hybrid-security.keyResolver: X509Certificate
+
+# hybrid-security.yml
+hybrid-security.keyResolver: JsonWebKeySet
+
