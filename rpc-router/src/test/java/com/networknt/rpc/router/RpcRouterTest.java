@@ -10,6 +10,7 @@ import io.undertow.util.Headers;
 import io.undertow.util.Methods;
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,9 @@ public class RpcRouterTest {
 
     private static String auth = "Bearer eyJraWQiOiIxMDAiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTgwODkxMzM2NCwianRpIjoicjZpNGstcEF2ekU4VTd4LTFya3JIQSIsImlhdCI6MTQ5MzU1MzM2NCwibmJmIjoxNDkzNTUzMjQ0LCJ2ZXJzaW9uIjoiMS4wIiwidXNlcl9pZCI6InN0ZXZlIiwidXNlcl90eXBlIjoiRU1QTE9ZRUUiLCJjbGllbnRfaWQiOiJmN2Q0MjM0OC1jNjQ3LTRlZmItYTUyZC00YzU3ODc0MjFlNzIiLCJzY29wZSI6WyJ3b3JsZC5yIiwid29ybGQudyIsInNlcnZlci5pbmZvLnIiXX0.VZCeU_M9xJKquSpGu0DgkX5aThUvqlChEcQOIG4aFlLkgfq76hf498GCdqLlAlk7RvkwnQUrwNa2kH8T-gNapgpWYnnwJ0cpWGE4LQ0urqFHetoJeiVyv6XVVp9khO4dsbcJLvVDzEr2Sgzwu3Bi7pkEg6BNwBQIEZRIwNxvQWIt9hnrdrvkId70C0mC9GkZC35_bEOWMkamw0TFUAimeStyZo3NJDwmH9EQmSN1523dF4Q2hFxhtfzOv-DQccIe8U2iG3tT3LJCSYjRJK0idt3NFq57WT0MA7vPSOFplTqCK_WfH5u-so_xKnltRKoKadXkBjHojznXO6nNhF38eQ";
 
+    // Ignore it as we cannot get the jwks and x509 certificate is not supported anymore.
     @Test
+    @Ignore
     public void testJsonRpcValidationError() throws Exception {
         Http2Client client = Http2Client.getInstance();
         String message = "{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"data\":{\"accountNo\":\"1234567\"}}";
@@ -111,7 +114,9 @@ public class RpcRouterTest {
     }
 
 
+    // Ignore it as we cannot get the jwks and x509 certificate is not supported anymore.
     @Test
+    @Ignore
     public void testJsonRpcPostNoError() throws Exception {
         Http2Client client = Http2Client.getInstance();
 
@@ -146,7 +151,9 @@ public class RpcRouterTest {
     }
 
 
+    // Ignore it as we cannot get the jwks and x509 certificate is not supported anymore.
     @Test
+    @Ignore
     public void testJsonRpcGetNoError() throws Exception {
         Http2Client client = Http2Client.getInstance();
         String message = "/api/json?cmd=" + URLEncoder.encode("{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"data\":{\"accountNo\":\"1234567\",\"accountType\":\"P\"}}", "UTF-8");
