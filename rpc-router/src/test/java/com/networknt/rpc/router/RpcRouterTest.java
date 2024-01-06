@@ -2,16 +2,18 @@ package com.networknt.rpc.router;
 
 import com.networknt.client.Http2Client;
 import com.networknt.exception.ClientException;
+import io.undertow.Handlers;
+import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
 import io.undertow.client.ClientConnection;
 import io.undertow.client.ClientRequest;
 import io.undertow.client.ClientResponse;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.RoutingHandler;
 import io.undertow.util.Headers;
+import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnio.IoUtils;
@@ -36,11 +38,47 @@ public class RpcRouterTest {
     static final int httpsPort = server.getServerConfig().getHttpsPort();
     static final String url = enableHttp2 || enableHttps ? "https://localhost:" + httpsPort : "http://localhost:" + httpPort;
 
-    private static String auth = "Bearer eyJraWQiOiIxMDAiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MTgwODkxMzM2NCwianRpIjoicjZpNGstcEF2ekU4VTd4LTFya3JIQSIsImlhdCI6MTQ5MzU1MzM2NCwibmJmIjoxNDkzNTUzMjQ0LCJ2ZXJzaW9uIjoiMS4wIiwidXNlcl9pZCI6InN0ZXZlIiwidXNlcl90eXBlIjoiRU1QTE9ZRUUiLCJjbGllbnRfaWQiOiJmN2Q0MjM0OC1jNjQ3LTRlZmItYTUyZC00YzU3ODc0MjFlNzIiLCJzY29wZSI6WyJ3b3JsZC5yIiwid29ybGQudyIsInNlcnZlci5pbmZvLnIiXX0.VZCeU_M9xJKquSpGu0DgkX5aThUvqlChEcQOIG4aFlLkgfq76hf498GCdqLlAlk7RvkwnQUrwNa2kH8T-gNapgpWYnnwJ0cpWGE4LQ0urqFHetoJeiVyv6XVVp9khO4dsbcJLvVDzEr2Sgzwu3Bi7pkEg6BNwBQIEZRIwNxvQWIt9hnrdrvkId70C0mC9GkZC35_bEOWMkamw0TFUAimeStyZo3NJDwmH9EQmSN1523dF4Q2hFxhtfzOv-DQccIe8U2iG3tT3LJCSYjRJK0idt3NFq57WT0MA7vPSOFplTqCK_WfH5u-so_xKnltRKoKadXkBjHojznXO6nNhF38eQ";
+    static Undertow server2 = null;
+    @BeforeClass
+    public static void setUp() {
+        if (server2 == null) {
+            logger.info("starting server2");
+            HttpHandler handler = getJwksHandler();
+            server2 = Undertow.builder()
+                    .addHttpListener(7082, "localhost")
+                    .setHandler(handler)
+                    .build();
+            server2.start();
+        }
 
-    // Ignore it as we cannot get the jwks and x509 certificate is not supported anymore.
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        if (server2 != null) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {
+
+            }
+            server2.stop();
+            logger.info("The server2 is stopped.");
+        }
+
+    }
+
+    static RoutingHandler getJwksHandler() {
+        return Handlers.routing()
+                .add(Methods.GET, "/oauth2/N2CMw0HGQXeLvC1wBfln2A/keys", exchange -> {
+                    exchange.getResponseHeaders().add(new HttpString("Content-Type"), "application/json");
+                    exchange.getResponseSender().send("{\"keys\":[{\"kty\":\"RSA\",\"kid\":\"Tj_l_tIBTginOtQbL0Pv5w\",\"n\":\"0YRbWAb1FGDpPUUcrIpJC6BwlswlKMS-z2wMAobdo0BNxNa7hG_gIHVPkXu14Jfo1JhUhS4wES3DdY3a6olqPcRN1TCCUVHd-1TLd1BBS-yq9tdJ6HCewhe5fXonaRRKwutvoH7i_eR4m3fQ1GoVzVAA3IngpTr4ptnM3Ef3fj-5wZYmitzrRUyQtfARTl3qGaXP_g8pHFAP0zrNVvOnV-jcNMKm8YZNcgcs1SuLSFtUDXpf7Nr2_xOhiNM-biES6Dza1sMLrlxULFuctudO9lykB7yFh3LHMxtIZyIUHuy0RbjuOGC5PmDowLttZpPI_j4ynJHAaAWr8Ddz764WdQ\",\"e\":\"AQAB\"}]}");
+                });
+
+    }
+
+    private static String auth = "Bearer eyJraWQiOiJUal9sX3RJQlRnaW5PdFFiTDBQdjV3IiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJ1cm46Y29tOm5ldHdvcmtudDpvYXV0aDI6djEiLCJhdWQiOiJ1cm46Y29tLm5ldHdvcmtudCIsImV4cCI6MjAxOTg3MzkyOSwianRpIjoiLWZaNzY5cWxFa05RRnFGQWNkLWlGQSIsImlhdCI6MTcwNDUxMzkyOSwibmJmIjoxNzA0NTEzODA5LCJ2ZXJzaW9uIjoiJzEuMCciLCJ1c2VyX2lkIjoic3RldmUiLCJ1c2VyX3R5cGUiOiJFTVBMT1lFRSIsImNsaWVudF9pZCI6ImY3ZDQyMzQ4LWM2NDctNGVmYi1hNTJkLTRjNTc4NzQyMWU3MiIsInJvbGVzIjoidXNlciIsInNjb3BlIjpbIndvcmxkLnIiLCJ3b3JsZC53Iiwic2VydmVyLmluZm8uciJdfQ.za1C5bh4QxI6McXeogmXtVYKS611VVPNn14PCcV5Q8NadVDIcgL7TCjT_KKbU35BiV0-xlu1BdyzMEZOr3E1xlhK-WB-eAHRF__IXydJXN-pWSo6wp-Jq4-rzZlW_e4kprlT_B0GHngzlJuru5Y-00Mh8bnhUuy1QTxF3JFHnz-62bJZmyeRx9iveNGvUTF5AJGPHhRoHMMCFJjSakiuy8El-wrTFN-Zi3e09n3xxPHj6qH_mDG_WyHMJ5r3bew9asMxU8QV_A0c7jkcwxJRg6UcVLSecmd-GxrCmjw3hiIJKInyqBBIa0uZkHmm4T1c9XiG1LbFHNhHwi0H_sykoQ";
+
     @Test
-    @Ignore
     public void testJsonRpcValidationError() throws Exception {
         Http2Client client = Http2Client.getInstance();
         String message = "{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"data\":{\"accountNo\":\"1234567\"}}";
@@ -116,7 +154,6 @@ public class RpcRouterTest {
 
     // Ignore it as we cannot get the jwks and x509 certificate is not supported anymore.
     @Test
-    @Ignore
     public void testJsonRpcPostNoError() throws Exception {
         Http2Client client = Http2Client.getInstance();
 
@@ -153,7 +190,6 @@ public class RpcRouterTest {
 
     // Ignore it as we cannot get the jwks and x509 certificate is not supported anymore.
     @Test
-    @Ignore
     public void testJsonRpcGetNoError() throws Exception {
         Http2Client client = Http2Client.getInstance();
         String message = "/api/json?cmd=" + URLEncoder.encode("{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"data\":{\"accountNo\":\"1234567\",\"accountType\":\"P\"}}", "UTF-8");

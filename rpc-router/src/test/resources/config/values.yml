@@ -3,3 +3,6 @@ rpc-router.handlerPackage: com.networknt
 # hybrid-security.yml
 hybrid-security.keyResolver: JsonWebKeySet
 
+# client.yml
+client.tokenKeyServerUrl: http://localhost:7082
+client.tokenKeyUri: /oauth2/N2CMw0HGQXeLvC1wBfln2A/keys
