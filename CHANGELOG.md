@@ -1,9 +1,20 @@
 # Change Log
 
-## [2.1.30](https://github.com/networknt/light-hybrid-4j/tree/2.1.30) (2023-11-20)
+## [2.1.31](https://github.com/networknt/light-hybrid-4j/tree/2.1.31) (2024-01-15)
 
 
 **Merged pull requests:**
+
+
+- fixes \#134 Fix test cases by adding a server2 with jwks endpoint [\#135](https://github.com/networknt/light-hybrid-4j/pull/135) ([stevehu](https://github.com/stevehu))
+- fixes \#132 disable some test cases that is relying on jwks endpoint [\#133](https://github.com/networknt/light-hybrid-4j/pull/133) ([stevehu](https://github.com/stevehu))
+- fixes \#130 replace system.out.println with logger [\#131](https://github.com/networknt/light-hybrid-4j/pull/131) ([stevehu](https://github.com/stevehu))
+## [2.1.30](https://github.com/networknt/light-hybrid-4j/tree/2.1.30) (2023-11-21)
+
+
+**Merged pull requests:**
+
+
 
 
 ## [2.1.29](https://github.com/networknt/light-hybrid-4j/tree/2.1.29) (2023-11-19)
