@@ -40,7 +40,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
     public RpcStartupHookProvider() {
         if(logger.isInfoEnabled()) logger.info("RpcStartupHookProvider is constructed");
         config = RpcRouterConfig.load();
-        ModuleRegistry.registerModule(RpcRouterConfig.CONFIG_NAME, RpcStartupHookProvider.class.getName(), config.getMappedConfig(), null);
+        ModuleRegistry.registerModule(RpcRouterConfig.CONFIG_NAME, RpcStartupHookProvider.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(RpcRouterConfig.CONFIG_NAME), null);
     }
 
     @Override
