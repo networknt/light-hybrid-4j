@@ -114,7 +114,7 @@ public class RpcRouterTest {
 
     /**
      * Test empty post request body and expect 400 error from the server.
-     * 
+     *
      * @throws Exception
      */
     @Test

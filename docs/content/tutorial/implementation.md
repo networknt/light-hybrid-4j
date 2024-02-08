@@ -79,5 +79,3 @@ Please refer github source code for detail implementation:
 
  Please refer source in github:
  https://github.com/networknt/light-eventuate-4j/tree/master/docker
-
-
