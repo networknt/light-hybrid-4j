@@ -5,7 +5,7 @@ title: Merge Multiple Schemas Tutorial
 
 In this tutorial, we are going to start a server with multiple services. Each service will have
 its own schema.json and they need to be merge during server startup so that validation and scope
-verification can be done on all request based on the merged schema. 
+verification can be done on all request based on the merged schema.
 
 # Prepare Environment
 
@@ -25,7 +25,7 @@ cd ..
 ```
 
 As we are going to regenerate a server and several services in light-example-4j,
-let's rename these folder so that you can compare them if you want. 
+let's rename these folder so that you can compare them if you want.
 
 ```
 cd ~/networknt/light-example-4j/hybrid
@@ -37,7 +37,7 @@ mv merge-schema merge-schema.bak
 
 In light-codegen light-hybrid-4j framework generator it needs a config.json as input
 to generate a server project. This file can be found in model-config/hybrid/merge-schema/server
- 
+
 Here is the content of config.json
 
 ```
@@ -68,8 +68,8 @@ mvn clean install
 
 # Generate Two Services
 
-Now let's generate two services. For hybrid service generator, it needs a config.json and also a 
-schema.json to define the interface/contract for the service. 
+Now let's generate two services. For hybrid service generator, it needs a config.json and also a
+schema.json to define the interface/contract for the service.
 
 These files can be found in model-config/hybrid/merge-schema/service1 and service2 folder.
 
@@ -101,7 +101,7 @@ Now let's start the server with services in the classpath.
 cd ~/networknt/light-example-4j/hybrid/merge-schema/server
 java -cp target/merger-1.0.0.jar:../service1/target/merger-1.0.0.jar:../service2/target/merger-1.0.0.jar com.networknt.server.Server
 ```
-Now the server is up and running with two services 
+Now the server is up and running with two services
 
 
 # Test
@@ -155,4 +155,3 @@ You will have the response like this.
 ```
 {"message":"Hello World!"}
 ```
-

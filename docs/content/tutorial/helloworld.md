@@ -26,7 +26,7 @@ cd ..
 ```
 
 As we are going to regenerate the generic-server and generic-service in light-example-4j,
-let's rename these folder so that you can compare them if you want. 
+let's rename these folder so that you can compare them if you want.
 
 ```
 cd ~/networknt/light-example-4j/hybrid
@@ -39,7 +39,7 @@ mv generic-service generic-service.bak
 
 In light-codegen light-hybrid-4j framework generator it needs a config.json as input
 to generate a server project. This file can be found in model-config/hybrid/generic-server
- 
+
 Here is the content of config.json
 
 ```
@@ -73,8 +73,8 @@ mvn clean install
 
 # Generate Generic Service
 
-Now let's generate a service. For hybrid service generator, it needs a config.json and also a 
-schema.json to define the interface/contract for the service. 
+Now let's generate a service. For hybrid service generator, it needs a config.json and also a
+schema.json to define the interface/contract for the service.
 
 Service config.json can be found in model-config/hybrid/generic-service and its content is
 
@@ -115,7 +115,7 @@ Now let's start the server with service in the classpath.
 cd ~/networknt/light-example-4j/hybrid/generic-server
 java -cp target/gserver-1.0.0.jar:../generic-service/target/gservice-1.0.0.jar com.networknt.server.Server
 ```
-Now the server is up and running with 4 handlers. 
+Now the server is up and running with 4 handlers.
 
 
 # Test
