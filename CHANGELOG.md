@@ -9,6 +9,8 @@
 - [pre-commit.ci] pre-commit autoupdate [\#140](https://github.com/networknt/light-hybrid-4j/pull/140) ([pre-commit-ci](https://github.com/apps/pre-commit-ci))
 - fixes \#138 add pre-commit hook and apply it [\#139](https://github.com/networknt/light-hybrid-4j/pull/139) ([stevehu](https://github.com/stevehu))
 - fixes \#136 Use NoneDecryptedInstance to load the config for registerM… [\#137](https://github.com/networknt/light-hybrid-4j/pull/137) ([stevehu](https://github.com/stevehu))
+
+
 ## [2.1.31](https://github.com/networknt/light-hybrid-4j/tree/2.1.31) (2024-01-16)
 
 
