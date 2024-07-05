@@ -20,6 +20,7 @@ import com.networknt.config.Config;
 import com.networknt.rpc.router.JsonHandler;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 import com.networknt.status.Status;
 import com.networknt.utility.NioUtils;
@@ -58,7 +59,7 @@ public interface Handler {
             }
         }
         JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(serviceMap.get("schema"));
-        JsonSchemaFactory factory = JsonSchemaFactory.getInstance();
+        JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
         JsonSchema schema = factory.getSchema(jsonNode);
         Set<ValidationMessage> errors = schema.validate(Config.getInstance().getMapper().valueToTree(object));
         ByteBuffer bf = null;
