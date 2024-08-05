@@ -22,7 +22,7 @@
         <groupId>com.networknt</groupId>
         <artifactId>light-hybrid-4j</artifactId>
         <version>2.1.35-SNAPSHOT</version>
-        <relativePath>..</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>rpc-router</artifactId>
@@ -40,6 +40,10 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
+            <artifactId>utility</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
             <artifactId>exception</artifactId>
         </dependency>
         <dependency>
@@ -49,6 +53,18 @@
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>unified-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>api-key</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>basic-auth</artifactId>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
@@ -69,6 +85,14 @@
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>resource</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>health</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>info</artifactId>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
