@@ -18,7 +18,7 @@ public class JsonHandlerTest {
         map.put("action", "retrieve");
         map.put("version", "1.0.3");
 
-        JsonHandler handler = new JsonHandler();
+        SchemaHandler handler = new SchemaHandler();
         String serviceId = handler.getServiceId(map);
         Assert.assertEquals("www.networknt.com/account/retrieve/1.0.3", serviceId);
     }

@@ -1,7 +1,6 @@
 package com.networknt.rpc.router;
 
 import com.networknt.config.Config;
-import com.networknt.traceability.TraceabilityConfig;
 
 import java.util.Map;
 

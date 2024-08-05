@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This is the interface that every business handler should extend from. It has two default methods
+ * This is the interface that every business handler should implement. It has two default methods
  * that can be shared by all handlers.
  *
  * @author Steve Hu
@@ -47,21 +47,18 @@ public interface Handler {
 
     ByteBuffer handle (HttpServerExchange exchange, Object object);
 
-    default ByteBuffer validate(String serviceId, Object object) {
-        // get schema from serviceId, remember that the schema is for the data object only.
-        // the input object is the data attribute of the request body.
-        Map<String, Object> serviceMap = (Map<String, Object>)JsonHandler.schema.get(serviceId);
+    default ByteBuffer validate(String serviceId, Map<String, Object> schema, Map<String, Object> data) {
         if(logger.isDebugEnabled()) {
             try {
-                logger.debug("serviceId = " + serviceId  + " serviceMap = " + Config.getInstance().getMapper().writeValueAsString(serviceMap));
+                logger.debug("serviceId = {} data = {}", serviceId, Config.getInstance().getMapper().writeValueAsString(data));
             } catch (Exception e) {
                 logger.error("Exception:", e);
             }
         }
-        JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(serviceMap.get("schema"));
+        JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(schema);
         JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
-        JsonSchema schema = factory.getSchema(jsonNode);
-        Set<ValidationMessage> errors = schema.validate(Config.getInstance().getMapper().valueToTree(object));
+        JsonSchema jsonSchema = factory.getSchema(jsonNode);
+        Set<ValidationMessage> errors = jsonSchema.validate(Config.getInstance().getMapper().valueToTree(data));
         ByteBuffer bf = null;
         if(errors.size() > 0) {
             // like the light-rest-4j, we only return one validation error.

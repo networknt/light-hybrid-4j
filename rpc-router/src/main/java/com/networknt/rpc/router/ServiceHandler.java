@@ -4,7 +4,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Created by steve on 19/02/17.
+ * This annotation is used to mark a class as a service handler. The id is used to identify the handler
+ *
+ * @author Steve Hu
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ServiceHandler {

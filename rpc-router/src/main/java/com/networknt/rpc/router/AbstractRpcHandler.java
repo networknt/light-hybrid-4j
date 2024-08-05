@@ -49,8 +49,8 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
     private static final String STATUS_AUTH_TOKEN_EXPIRED = "ERR10001";
     private static final String STATUS_MISSING_AUTH_TOKEN = "ERR10002";
 
-    private static SecurityConfig config;
-    private static JwtVerifier jwtVerifier;
+    private static final SecurityConfig config;
+    private static final JwtVerifier jwtVerifier;
     static {
         // check if hybrid-security.yml exist
         config = SecurityConfig.load(HYBRID_SECURITY_CONFIG);
@@ -76,17 +76,6 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
         }
     }
 
-    void completeExchange(ByteBuffer result, HttpServerExchange exchange) {
-        if(result == null) {
-            // there is nothing returned from the handler.
-            exchange.setStatusCode(StatusCodes.OK);
-            exchange.endExchange();
-        } else {
-            // we are expecting the handler set the statusCode if there is an error.
-            // if there is no status code, default 200 will be used.
-            exchange.getResponseSender().send(result);
-        }
-    }
 
     public String getServiceId(Map<String, Object> jsonMap) {
         return  (jsonMap.get("host") == null? "" : jsonMap.get("host") + "/") +
@@ -247,32 +236,6 @@ public abstract class AbstractRpcHandler implements LightHttpHandler {
             matched = true;
         }
         return matched;
-    }
-
-    /**
-     * Helper method to get handler from config and act accordingly in error scenarios.
-     * @param serviceId The service id of the handler to receive.
-     * @param httpServerExchange The exchange object with the client.
-     * @return A handler if it is found. null otherwise.
-     */
-    Handler getHandlerOrPopulateExchange(String serviceId, HttpServerExchange httpServerExchange) {
-        Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
-        if (handler == null) {
-            setExchangeStatus(httpServerExchange, STATUS_HANDLER_NOT_FOUND, serviceId);
-            return null;
-        }
-        return handler;
-    }
-
-    /**
-     * Helper method to send requests containing FormData to the handler and process return status' appropriately.
-     * @param handler The handler who will be running business logic.
-     * @param formData The data that will be passed into the handler.
-     * @param httpServerExchange The exchange object with the client.
-     */
-    void handleFormDataRequest(Handler handler, FormData formData, HttpServerExchange httpServerExchange) {
-        ByteBuffer result = handler.handle(httpServerExchange, formData);
-        this.completeExchange(result, httpServerExchange);
     }
 
 }
