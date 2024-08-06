@@ -3,7 +3,7 @@ package com.networknt.rpc.router;
 import com.networknt.config.Config;
 import com.networknt.resource.PathResourceProvider;
 import com.networknt.resource.PredicatedHandlersProvider;
-import com.networknt.rpc.Handler;
+import com.networknt.rpc.HybridHandler;
 import com.networknt.server.Server;
 import com.networknt.server.StartupHookProvider;
 import com.networknt.service.SingletonServiceFactory;
@@ -29,7 +29,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
     static final Logger logger = LoggerFactory.getLogger(RpcStartupHookProvider.class);
     static RpcRouterConfig config;
 
-    public static final Map<String, Handler> serviceMap = new HashMap<>();
+    public static final Map<String, HybridHandler> serviceMap = new HashMap<>();
     public static PathResourceProvider[] pathResourceProviders;
     public static PredicatedHandlersProvider[] predicatedHandlersProviders;
     public RpcStartupHookProvider() {
@@ -57,7 +57,7 @@ public class RpcStartupHookProvider implements StartupHookProvider {
             try {
                 Class handler = Class.forName(className);
                 ServiceHandler a = (ServiceHandler)handler.getAnnotation(ServiceHandler.class);
-                serviceMap.put(a.id(), (Handler)handler.getConstructor().newInstance());
+                serviceMap.put(a.id(), (HybridHandler)handler.getConstructor().newInstance());
                 if(logger.isDebugEnabled()) logger.debug("RpcStartupHookProvider add id {} maps to {}",  a.id(), className);
                 if(config.isRegisterService()) Server.serviceIds.add(a.id().replace('/', '.'));
             } catch (Exception e) {

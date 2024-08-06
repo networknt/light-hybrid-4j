@@ -1,4 +1,4 @@
-package com.networknt.rpc.router;
+package com.networknt.rpc.security;
 
 import com.networknt.config.Config;
 import com.networknt.httpstring.AttachmentConstants;
@@ -16,16 +16,11 @@ import java.util.Map;
 
 public class HybridJwtVerifyHandler extends AbstractJwtVerifyHandler {
     static final Logger logger = LoggerFactory.getLogger(HybridJwtVerifyHandler.class);
-    static final String HYBRID_SECURITY_CONFIG = "hybrid-security";
-
-    static SecurityConfig config;
-    // make this static variable public so that it can be accessed from the server-info module
-    public static JwtVerifier jwtVerifier;
 
     public HybridJwtVerifyHandler() {
         // at this moment, we assume that the OpenApiHandler is fully loaded with a single spec or multiple specs.
         // And the basePath is the correct one from the OpenApiHandler helper or helperMap if multiple is used.
-        config = SecurityConfig.load(HYBRID_SECURITY_CONFIG);
+        config = SecurityConfig.load();
         jwtVerifier = new JwtVerifier(config);
     }
 
@@ -47,13 +42,13 @@ public class HybridJwtVerifyHandler extends AbstractJwtVerifyHandler {
 
     @Override
     public void register() {
-        ModuleRegistry.registerModule(HYBRID_SECURITY_CONFIG, HybridJwtVerifyHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(HYBRID_SECURITY_CONFIG), null);
+        ModuleRegistry.registerModule(SecurityConfig.CONFIG_NAME, HybridJwtVerifyHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(SecurityConfig.CONFIG_NAME), null);
     }
 
     @Override
     public void reload() {
-        config.reload(HYBRID_SECURITY_CONFIG);
+        config.reload();
         jwtVerifier = new JwtVerifier(config);
-        ModuleRegistry.registerModule(HYBRID_SECURITY_CONFIG, HybridJwtVerifyHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(HYBRID_SECURITY_CONFIG), null);
+        ModuleRegistry.registerModule(SecurityConfig.CONFIG_NAME, HybridJwtVerifyHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(SecurityConfig.CONFIG_NAME), null);
     }
 }

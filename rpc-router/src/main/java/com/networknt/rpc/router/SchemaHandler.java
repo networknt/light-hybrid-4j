@@ -3,9 +3,10 @@ package com.networknt.rpc.router;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.networknt.config.Config;
 import com.networknt.config.JsonMapper;
+import com.networknt.handler.Handler;
 import com.networknt.handler.MiddlewareHandler;
 import com.networknt.httpstring.AttachmentConstants;
-import com.networknt.rpc.Handler;
+import com.networknt.rpc.HybridHandler;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
 import com.networknt.utility.ModuleRegistry;
@@ -124,7 +125,7 @@ public class SchemaHandler implements MiddlewareHandler {
         Map<String, Object> map = JsonMapper.string2Map(message);
         String serviceId = getServiceId(map);
         logger.debug("serviceId = {}", serviceId);
-        Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
+        HybridHandler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
         if(handler == null) {
             this.handleMissingHandler(exchange, serviceId);
             return;
@@ -155,10 +156,15 @@ public class SchemaHandler implements MiddlewareHandler {
         auditInfo.put(Constants.HYBRID_SERVICE_DATA, data);
         exchange.putAttachment(AttachmentConstants.AUDIT_INFO, auditInfo);
 
-        // if exchange is not ended, then do the processing.
-        ByteBuffer result = handler.handle(exchange, data);
-        if(logger.isDebugEnabled()) logger.debug(result.toString());
-        this.completeExchange(result, exchange);
+        // if exchange is not ended, then call the next handler in the chain.
+        if(logger.isTraceEnabled()) logger.trace("SchemaHandler.handleRequest ends.");
+        try {
+            Handler.next(exchange, next);
+        } catch (Exception e) {
+            logger.error("Exception:", e);
+            exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
+            exchange.endExchange();
+        }
     }
 
     void completeExchange(ByteBuffer result, HttpServerExchange exchange) {

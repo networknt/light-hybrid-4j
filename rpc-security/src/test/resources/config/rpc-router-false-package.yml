@@ -1,0 +1,6 @@
+---
+handlerPackage: com.networknt
+jsonPath: /api/json
+formPath: /api/form
+resourcesBasePath: /
+registerService: false

@@ -1,0 +1,5 @@
+---
+handlerPackage: ''
+jsonPath: /api/json
+formPath: /api/form
+resourcesBasePath: /
