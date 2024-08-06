@@ -1,6 +1,6 @@
 package com.networknt.rpc.router;
 
-import com.networknt.rpc.Handler;
+import com.networknt.rpc.HybridHandler;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,7 +14,7 @@ public class RpcStartupHookProviderTest {
     public void testStartup() {
         RpcStartupHookProvider provider = new RpcStartupHookProvider();
         provider.onStartup();
-        Map<String, Handler> servicesMap = provider.serviceMap;
+        Map<String, HybridHandler> servicesMap = provider.serviceMap;
         Assert.assertTrue(servicesMap.size() > 0);
         System.out.println("serviceMap size = " + servicesMap.size());
     }

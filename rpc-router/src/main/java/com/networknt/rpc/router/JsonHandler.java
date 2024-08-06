@@ -2,7 +2,7 @@ package com.networknt.rpc.router;
 
 import com.networknt.handler.LightHttpHandler;
 import com.networknt.httpstring.AttachmentConstants;
-import com.networknt.rpc.Handler;
+import com.networknt.rpc.HybridHandler;
 import com.networknt.utility.Constants;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
@@ -36,7 +36,7 @@ public class JsonHandler implements LightHttpHandler {
             setExchangeStatus(exchange, STATUS_HANDLER_NOT_FOUND);
             return;
         }
-        Handler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
+        HybridHandler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
         Map<String, Object> data = (Map<String, Object>)auditInfo.get(Constants.HYBRID_SERVICE_DATA);
         ByteBuffer result = handler.handle(exchange, data);
         if(result == null) {

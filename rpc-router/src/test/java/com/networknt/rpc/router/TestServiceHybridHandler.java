@@ -1,6 +1,6 @@
 package com.networknt.rpc.router;
 
-import com.networknt.rpc.Handler;
+import com.networknt.rpc.HybridHandler;
 import io.undertow.server.HttpServerExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +12,8 @@ import java.nio.ByteBuffer;
  * Created by steve on 20/02/17.
  */
 @ServiceHandler(id="www.networknt.com/account/delete/0.1.1")
-public class TestServiceHandler implements Handler {
-    static private final Logger logger = LoggerFactory.getLogger(TestServiceHandler.class);
+public class TestServiceHybridHandler implements HybridHandler {
+    static private final Logger logger = LoggerFactory.getLogger(TestServiceHybridHandler.class);
 
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object input)  {

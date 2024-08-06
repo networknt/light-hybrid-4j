@@ -17,7 +17,6 @@ package com.networknt.rpc;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.config.Config;
-import com.networknt.rpc.router.JsonHandler;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
@@ -38,8 +37,8 @@ import java.util.Set;
  *
  * @author Steve Hu
  */
-public interface Handler {
-    Logger logger = LoggerFactory.getLogger(Handler.class);
+public interface HybridHandler {
+    Logger logger = LoggerFactory.getLogger(HybridHandler.class);
 
     String REQUEST_SUCCESS = "SUC10200";
     String ERROR_NOT_DEFINED = "ERR10042";

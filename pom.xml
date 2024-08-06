@@ -110,6 +110,7 @@
 
     <modules>
         <module>rpc-router</module>
+        <module>rpc-security</module>
     </modules>
 
     <dependencyManagement>
@@ -118,6 +119,11 @@
             <dependency>
                 <groupId>com.networknt</groupId>
                 <artifactId>rpc-router</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>rpc-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

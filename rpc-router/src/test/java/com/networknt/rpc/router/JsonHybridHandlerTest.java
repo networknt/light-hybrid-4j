@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by steve on 12/04/17.
  */
-public class JsonHandlerTest {
+public class JsonHybridHandlerTest {
     @Test
     public void testJsonServiceId() {
         Map<String, Object> map = new HashMap<>();
