@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.1.35](https://github.com/networknt/light-hybrid-4j/tree/2.1.35) (2024-08-17)
+
+
+**Merged pull requests:**
+
+
+- fixes \#146 use security.yml for config and remove dup JwtVerifier ins… [\#147](https://github.com/networknt/light-hybrid-4j/pull/147) ([stevehu](https://github.com/stevehu))
+- fixes \#144 add schema handler to use handler chain [\#145](https://github.com/networknt/light-hybrid-4j/pull/145) ([stevehu](https://github.com/stevehu))
+- fixes \#142 upgrade json-schema-validator to 1.5.0 [\#143](https://github.com/networknt/light-hybrid-4j/pull/143) ([stevehu](https://github.com/stevehu))
 ## [2.1.34](https://github.com/networknt/light-hybrid-4j/tree/2.1.34) (2024-06-22)
 
 
