@@ -4,11 +4,15 @@ import com.networknt.handler.LightHttpHandler;
 import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.rpc.HybridHandler;
 import com.networknt.utility.Constants;
+import io.undertow.io.IoCallback;
+import io.undertow.io.Sender;
+import io.undertow.server.DirectByteBufferDeallocator;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
@@ -46,7 +50,17 @@ public class JsonHandler implements LightHttpHandler {
         } else {
             // we are expecting the handler set the statusCode if there is an error.
             // if there is no status code, default 200 will be used.
-            exchange.getResponseSender().send(result);
+            exchange.getResponseSender().send(result, new IoCallback() {
+                @Override
+                public void onComplete(HttpServerExchange exchange, Sender sender) {
+                    DirectByteBufferDeallocator.free(result);
+                }
+
+                @Override
+                public void onException(HttpServerExchange exchange, Sender sender, IOException e) {
+                    DirectByteBufferDeallocator.free(result);
+                }
+            });
         }
     }
 }
