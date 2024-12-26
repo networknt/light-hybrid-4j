@@ -25,6 +25,24 @@ public class HybridJwtVerifyHandler extends AbstractJwtVerifyHandler {
     }
 
     @Override
+    public boolean isSkipAuth(HttpServerExchange exchange) {
+        // check if the request path is in the skipPathPrefixes list
+        String reqPath = exchange.getRequestPath();
+        if (config.getSkipPathPrefixes() != null && config.getSkipPathPrefixes().stream().anyMatch(reqPath::startsWith)) {
+            if(logger.isTraceEnabled()) logger.trace("Skip auth base on skipPathPrefixes for {}", reqPath);
+            return true;
+        }
+        // check if the service has skipAuth flag set to true in the schema.
+        Map<String, Object> auditInfo = exchange.getAttachment(AttachmentConstants.AUDIT_INFO);
+        Map<String, Object> serviceMap = (Map<String, Object>)auditInfo.get(Constants.HYBRID_SERVICE_MAP);
+        Boolean skipAuth = (Boolean)serviceMap.get("skipAuth");
+        if(skipAuth != null) {
+            return skipAuth;
+        }
+        return false;
+    }
+
+    @Override
     public List<String> getSpecScopes(HttpServerExchange exchange, Map<String, Object> auditInfo) throws Exception {
         Map<String, Object> serviceMap = (Map<String, Object>)auditInfo.get(Constants.HYBRID_SERVICE_MAP);
         String scope = (String)serviceMap.get("scope");
