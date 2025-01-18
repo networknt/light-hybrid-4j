@@ -21,6 +21,7 @@ import org.xnio.OptionMap;
 
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -81,7 +82,7 @@ public class RpcRouterTest {
     @Test
     public void testJsonRpcValidationError() throws Exception {
         Http2Client client = Http2Client.getInstance();
-        String message = "{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"data\":{\"accountNo\":\"1234567\"}}";
+        String message = "{\"host\":\"lightapi.net\",\"service\":\"rule\",\"action\":\"deleteRule\",\"version\":\"0.1.0\",\"data\":{\"hostId\":\"1234567\"}}";
 
         final CountDownLatch latch = new CountDownLatch(1);
         final ClientConnection connection;
@@ -157,7 +158,7 @@ public class RpcRouterTest {
     public void testJsonRpcPostNoError() throws Exception {
         Http2Client client = Http2Client.getInstance();
 
-        String message = "{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"data\":{\"accountNo\":\"1234567\",\"accountType\":\"P\"}}";
+        String message = "{\"host\":\"lightapi.net\",\"service\":\"rule\",\"action\":\"deleteRule\",\"version\":\"0.1.0\",\"data\":{\"hostId\":\"1234567\",\"ruleId\":\"ruleId\"}}";
         final CountDownLatch latch = new CountDownLatch(1);
         final ClientConnection connection;
         try {
@@ -192,7 +193,7 @@ public class RpcRouterTest {
     @Test
     public void testJsonRpcGetNoError() throws Exception {
         Http2Client client = Http2Client.getInstance();
-        String message = "/api/json?cmd=" + URLEncoder.encode("{\"host\":\"www.networknt.com\",\"service\":\"account\",\"action\":\"delete\",\"version\":\"0.1.1\",\"data\":{\"accountNo\":\"1234567\",\"accountType\":\"P\"}}", "UTF-8");
+        String message = "/api/json?cmd=" + URLEncoder.encode("{\"host\":\"lightapi.net\",\"service\":\"rule\",\"action\":\"deleteRule\",\"version\":\"0.1.0\",\"data\":{\"hostId\":\"1234567\",\"ruleId\":\"ruleId\"}}", StandardCharsets.UTF_8);
         System.out.println("message = " + message);
 
         final CountDownLatch latch = new CountDownLatch(1);
