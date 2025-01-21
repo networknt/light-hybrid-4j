@@ -1,6 +1,8 @@
 package com.networknt.rpc.router;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.networknt.config.Config;
 import com.networknt.config.JsonMapper;
 import com.networknt.handler.Handler;
@@ -25,13 +27,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
-import java.util.Deque;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class SchemaHandler implements MiddlewareHandler {
     static final Logger logger = LoggerFactory.getLogger(SchemaHandler.class);
+    static final String REQUEST = "request";
     static final String SCHEMA = "schema";
     static final String DATA = "data";
     static final String CMD = "cmd";
@@ -40,28 +41,102 @@ public class SchemaHandler implements MiddlewareHandler {
     static final String STATUS_METHOD_NOT_ALLOWED = "ERR10008";
     static final String STATUS_REQUEST_CMD_EMPTY = "ERR11202";
 
-    private static final String SCHEMA_JSON = "schema.json";
+    private static final String SPEC_YAML = "spec.yaml";
     private volatile HttpHandler next;
-    public static Map<String, Object> schema = new HashMap<>();
+    public static Map<String, Object> services = new HashMap<>();
 
     public SchemaHandler() {
         if(logger.isTraceEnabled()) logger.trace("SchemaHandler constructed");
-        // load all schema.json from resources folder and merge them into one map.
+        // load all spec.yaml from resources folder and merge them into one map.
         try {
-            final Enumeration<URL> schemaResources = SchemaHandler.class.getClassLoader().getResources(SCHEMA_JSON);
+            final Enumeration<URL> schemaResources = SchemaHandler.class.getClassLoader().getResources(SPEC_YAML);
             while(schemaResources.hasMoreElements()) {
                 URL url = schemaResources.nextElement();
-                if(logger.isDebugEnabled()) logger.debug("schema file = " + url);
+                if(logger.isDebugEnabled()) logger.debug("schema file = {}", url);
                 try (InputStream is = url.openStream()) {
-                    schema.putAll(Config.getInstance().getMapper().readValue(is, new TypeReference<Map<String,Object>>(){}));
+                    services.putAll(parseYaml(is));
                 }
             }
-            if(logger.isDebugEnabled()) logger.debug("schema = {}", Config.getInstance().getMapper().writeValueAsString(schema));
+            if(logger.isDebugEnabled()) logger.debug("services = {}", Config.getInstance().getMapper().writeValueAsString(services));
         } catch (IOException e) {
-            logger.error("Error loading schema.json files from service jars", e);
+            logger.error("Error loading spec.yaml files from service jars", e);
             // throw exception to stop the service as this is a serious error.
-            throw new RuntimeException("Error loading schema.json files from service jars");
+            throw new RuntimeException("Error loading spec.yaml files from service jars");
         }
+    }
+
+    public static Map<String, Map<String, Object>> parseYaml(InputStream yamlStream) throws IOException {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        Map<String, Object> rootNode = mapper.readValue(yamlStream, Map.class);
+        Map<String, Map<String, Object>> resultMap = new LinkedHashMap<>();
+
+        String host = (String) rootNode.get("host");
+        String service = (String) rootNode.get("service");
+
+        // Extract schemas
+        Map<String, Map<String, Object>> schemas = new HashMap<>();
+        Map<String, Object> schemasNode = (Map<String, Object>) rootNode.get("schemas");
+        if (schemasNode != null) {
+            for(Map.Entry<String, Object> entry: schemasNode.entrySet()){
+                schemas.put(entry.getKey(), (Map<String, Object>) entry.getValue());
+            }
+        }
+
+
+        // Process actions
+        List<Map<String, Object>> actionsNode = (List<Map<String, Object>>) rootNode.get("action");
+
+        if (actionsNode != null) {
+            for (Map<String, Object> actionNode : actionsNode) {
+                String actionName = (String) actionNode.get("name");
+                String actionVersion = (String) actionNode.get("version");
+                String key = host + "/" + service + "/" + actionName + "/" + actionVersion;
+
+                Boolean skipAuth = (Boolean) actionNode.get("skipAuth") != null ? (Boolean) actionNode.get("skipAuth") : false;
+                String scope = (String) actionNode.get("scope") ;
+
+                Map<String, Object> actionMap = new LinkedHashMap<>();
+                actionMap.put("skipAuth", skipAuth);
+                if(scope != null) {
+                    actionMap.put("scope", scope);
+                }
+
+                // resolve request schema
+                Map<String, Object> requestNode = (Map<String, Object>) actionNode.get("request");
+                if(requestNode != null) {
+                    Map<String, Object> requestMap = new LinkedHashMap<>();
+                    Map<String, Object> schemaRef = (Map<String, Object>) requestNode.get("schema");
+                    if (schemaRef != null && schemaRef.containsKey("$ref")) {
+                        String ref = (String) schemaRef.get("$ref");
+                        String schemaName = ref.substring(ref.lastIndexOf('/') + 1);
+                        Map<String, Object> resolvedSchema = schemas.get(schemaName);
+                        if(resolvedSchema != null) {
+                            requestMap.put("schema", resolvedSchema);
+                        }
+                    }
+                    actionMap.put("request", requestMap);
+                }
+
+                // resolve response schema
+                Map<String, Object> responseNode = (Map<String, Object>) actionNode.get("response");
+                if(responseNode != null) {
+                    Map<String, Object> responseMap = new LinkedHashMap<>();
+                    Map<String, Object> schemaRef = (Map<String, Object>) responseNode.get("schema");
+                    if (schemaRef != null && schemaRef.containsKey("$ref")) {
+                        String ref = (String) schemaRef.get("$ref");
+                        String schemaName = ref.substring(ref.lastIndexOf('/') + 1);
+                        Map<String, Object> resolvedSchema = schemas.get(schemaName);
+                        if(resolvedSchema != null) {
+                            responseMap.put("schema", resolvedSchema);
+                        }
+                    }
+                    actionMap.put("response", responseMap);
+                }
+
+                resultMap.put(key, actionMap);
+            }
+        }
+        return resultMap;
     }
 
     @Override
@@ -96,18 +171,18 @@ public class SchemaHandler implements MiddlewareHandler {
                     this.handleEmptyPostRequest(exchange1);
                     return;
                 }
-                if(logger.isDebugEnabled()) logger.debug("Post method with message = " + message);
+                if(logger.isDebugEnabled()) logger.debug("Post method with message = {}", message);
                 processRequest(exchange1, message);
             });
         } else if(Methods.GET.equals(exchange.getRequestMethod())) {
-            Map params = exchange.getQueryParameters();
+            Map<String, Deque<String>> params = exchange.getQueryParameters();
             String cmd = ((Deque<String>)params.get(CMD)).getFirst();
-            if(cmd == null || cmd.trim().length() == 0) {
+            if(cmd == null || cmd.trim().isEmpty()) {
                 this.handleMissingGetCommand(exchange);
                 return;
             }
-            String message = URLDecoder.decode(cmd, "UTF8");
-            if(logger.isDebugEnabled()) logger.debug("Get method with message = " + message);
+            String message = URLDecoder.decode(cmd, StandardCharsets.UTF_8);
+            if(logger.isDebugEnabled()) logger.debug("Get method with message = {}", message);
             processRequest(exchange, message);
         } else {
             this.handleUnsupportedMethod(exchange);
@@ -131,20 +206,17 @@ public class SchemaHandler implements MiddlewareHandler {
             return;
         }
         Map<String, Object> data = (Map<String, Object>)map.get(DATA);
-        Map<String, Object> serviceMap = (Map<String, Object>)schema.get(serviceId);
-        ByteBuffer error = handler.validate(serviceId, (Map<String, Object>)serviceMap.get(SCHEMA), data);
+        Map<String, Object> serviceMap = (Map<String, Object>)services.get(serviceId);
+        Map<String, Object> requestMap = (Map<String, Object>)serviceMap.get(REQUEST);
+        ByteBuffer error = handler.validate(serviceId, (Map<String, Object>)requestMap.get(SCHEMA), data);
         if(error != null) {
             exchange.setStatusCode(StatusCodes.BAD_REQUEST);
             exchange.getResponseSender().send(error);
             return;
         }
-        if(logger.isDebugEnabled()) {
-            try {
-                logger.debug("serviceId = " + serviceId  + " serviceMap = " + Config.getInstance().getMapper().writeValueAsString(serviceMap));
-            } catch (Exception e) {
-                logger.error("Exception:", e);
-            }
 
+        if(logger.isDebugEnabled()) {
+            logger.debug("serviceId = {} serviceMap = {}", serviceId, JsonMapper.toJson(serviceMap));
         }
         // put the serviceId and data as well as the schema into the exchange for other handlers to use.
         Map<String, Object> auditInfo = exchange.getAttachment(AttachmentConstants.AUDIT_INFO) == null
@@ -180,7 +252,7 @@ public class SchemaHandler implements MiddlewareHandler {
     }
 
     private void handleMissingHandler(HttpServerExchange exchange, String serviceId) {
-        logger.error("Handler is not found for serviceId " + serviceId);
+        logger.error("Handler is not found for serviceId {}", serviceId);
         Status status = new Status(STATUS_HANDLER_NOT_FOUND, serviceId);
         exchange.setStatusCode(status.getStatusCode());
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");

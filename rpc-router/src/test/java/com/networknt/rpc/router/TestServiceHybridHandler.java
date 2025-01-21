@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by steve on 20/02/17.
  */
-@ServiceHandler(id="www.networknt.com/account/delete/0.1.1")
+@ServiceHandler(id="lightapi.net/rule/deleteRule/0.1.0")
 public class TestServiceHybridHandler implements HybridHandler {
     static private final Logger logger = LoggerFactory.getLogger(TestServiceHybridHandler.class);
 

@@ -10,13 +10,13 @@ import java.nio.ByteBuffer;
 /**
  * Created by steve on 12/04/17.
  */
-@ServiceHandler(id="www.networknt.com/account/credit/1.0.0")
-public class AccountServiceHybridHandler implements HybridHandler {
-    static private final Logger logger = LoggerFactory.getLogger(AccountServiceHybridHandler.class);
+@ServiceHandler(id="lightapi.net/rule/deleteRule/0.1.0")
+public class DeleteRuleHybridHandler implements HybridHandler {
+    static private final Logger logger = LoggerFactory.getLogger(DeleteRuleHybridHandler.class);
 
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object input) {
-        System.out.println("AccountServiceHandler is called");
+        System.out.println("DeleteRuleHybridHandler is called");
         return null;
     }
 }
