@@ -70,20 +70,16 @@ public class JsonHandler implements LightHttpHandler {
             exchange.endExchange();
 
         } else {
-
             // we are expecting the handler set the statusCode if there is an error.
             // if there is no status code, default 200 will be used.
-            exchange.getResponseSender().send(result, new IoCallback() {
-                @Override
-                public void onComplete(HttpServerExchange exchange, Sender sender) {
+            exchange.addExchangeCompleteListener((exchange1, nextListener) -> {
+                try {
                     DirectByteBufferDeallocator.free(result);
-                }
-
-                @Override
-                public void onException(HttpServerExchange exchange, Sender sender, IOException e) {
-                    DirectByteBufferDeallocator.free(result);
+                } finally {
+                    nextListener.proceed();
                 }
             });
+            exchange.getResponseSender().send(result);
         }
     }
 }
