@@ -5,6 +5,7 @@ import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.rpc.HybridHandler;
 import com.networknt.server.ServerConfig;
 import com.networknt.utility.Constants;
+import io.undertow.server.DirectByteBufferDeallocator;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 import org.slf4j.Logger;
@@ -69,6 +70,13 @@ public class JsonHandler implements LightHttpHandler {
 
             // we are expecting the handler set the statusCode if there is an error.
             // if there is no status code, default 200 will be used.
+            exchange.addExchangeCompleteListener((exchange1, nextListener) -> {
+                try {
+                    DirectByteBufferDeallocator.free(result);
+                } finally {
+                    nextListener.proceed();
+                }
+            });
             exchange.getResponseSender().send(result);
         }
     }
