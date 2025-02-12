@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.2.0](https://github.com/networknt/light-hybrid-4j/tree/2.2.0) (2025-02-11)
+
+
+**Merged pull requests:**
+
+
+- using ExchangeCompleteListener with DirectByteBuffer cleanup in Undertow [\#156](https://github.com/networknt/light-hybrid-4j/pull/156) ([atmoshaman](https://github.com/atmoshaman))
+- Updated JsonHandler to account for missing audit info. [\#153](https://github.com/networknt/light-hybrid-4j/pull/153) ([KalevGonvick](https://github.com/KalevGonvick))
+- fixes \#125 implement isSkipAuth method in the jwt handler [\#151](https://github.com/networknt/light-hybrid-4j/pull/151) ([stevehu](https://github.com/stevehu))
+- clean direct buffer [\#150](https://github.com/networknt/light-hybrid-4j/pull/150) ([atmoshaman](https://github.com/atmoshaman))
+
+
 ## [2.1.37](https://github.com/networknt/light-hybrid-4j/tree/2.1.37) (2024-09-20)
 
 
