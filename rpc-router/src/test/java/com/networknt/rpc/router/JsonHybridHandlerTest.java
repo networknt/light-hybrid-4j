@@ -1,5 +1,6 @@
 package com.networknt.rpc.router;
 
+import com.networknt.utility.Util;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ public class JsonHybridHandlerTest {
         map.put("version", "1.0.3");
 
         SchemaHandler handler = new SchemaHandler();
-        String serviceId = handler.getServiceId(map);
+        String serviceId = Util.getServiceId(map);
         Assert.assertEquals("www.networknt.com/account/retrieve/1.0.3", serviceId);
     }
 }
