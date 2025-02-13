@@ -12,6 +12,7 @@ import com.networknt.rpc.HybridHandler;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
 import com.networknt.utility.ModuleRegistry;
+import com.networknt.utility.Util;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -189,16 +190,9 @@ public class SchemaHandler implements MiddlewareHandler {
         }
     }
 
-    public String getServiceId(Map<String, Object> jsonMap) {
-        return  (jsonMap.get("host") == null? "" : jsonMap.get("host") + "/") +
-                (jsonMap.get("service") == null? "" : jsonMap.get("service") + "/") +
-                (jsonMap.get("action") == null? "" : jsonMap.get("action") + "/") +
-                (jsonMap.get("version") == null? "" : jsonMap.get("version"));
-    }
-
     private void processRequest(HttpServerExchange exchange, String message) {
         Map<String, Object> map = JsonMapper.string2Map(message);
-        String serviceId = getServiceId(map);
+        String serviceId = Util.getServiceId(map);
         logger.debug("serviceId = {}", serviceId);
         HybridHandler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
         if(handler == null) {
