@@ -1,0 +1,6 @@
+---
+handlerPackages:
+  - com.networknt
+jsonPath: /api/json
+formPath: /api/form
+registerService: true
