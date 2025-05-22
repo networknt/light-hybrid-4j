@@ -13,6 +13,7 @@ import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,37 +34,49 @@ public class RpcStartupHookProvider implements StartupHookProvider {
     public static PathResourceProvider[] pathResourceProviders;
     public static PredicatedHandlersProvider[] predicatedHandlersProviders;
     public RpcStartupHookProvider() {
-        if(logger.isInfoEnabled()) logger.info("RpcStartupHookProvider is constructed");
+        logger.info("RpcStartupHookProvider is constructed");
         config = RpcRouterConfig.load();
         ModuleRegistry.registerModule(RpcRouterConfig.CONFIG_NAME, RpcStartupHookProvider.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(RpcRouterConfig.CONFIG_NAME), null);
     }
 
     @Override
     public void onStartup() {
-        if(logger.isDebugEnabled()) logger.debug("Handler scanning package = {}", config.getHandlerPackage());
+        logger.debug("Handler scanning package = {}", config.getHandlerPackages());
+
+        final var packages = config.getHandlerPackages().toArray(new String[0]);
+        System.out.println("packages: " + Arrays.toString(packages));
+
         // lookup all ServiceHandler and register them to handle request
         List<String> handlers;
         try (ScanResult scanResult = new ClassGraph()
-                .whitelistPackages(config.getHandlerPackage())
+                .acceptPackages(packages)
                 .enableAllInfo()
                 .scan()) {
+
             handlers = scanResult
                     .getClassesWithAnnotation(ServiceHandler.class.getName())
                     .getNames();
         }
-        if(logger.isDebugEnabled()) logger.debug("RpcStartupHookProvider.onStartup handlers size = {}", handlers.size());
+        logger.debug("RpcStartupHookProvider.onStartup handlers size = {}", handlers.size());
+
         // for each handler, create instance and register.
         for(String className: handlers) {
+
             try {
                 Class handler = Class.forName(className);
                 ServiceHandler a = (ServiceHandler)handler.getAnnotation(ServiceHandler.class);
                 serviceMap.put(a.id(), (HybridHandler)handler.getConstructor().newInstance());
-                if(logger.isDebugEnabled()) logger.debug("RpcStartupHookProvider add id {} maps to {}",  a.id(), className);
-                if(config.isRegisterService()) Server.serviceIds.add(a.id().replace('/', '.'));
+
+                logger.debug("RpcStartupHookProvider add id {} maps to {}",  a.id(), className);
+
+                if(config.isRegisterService())
+                    Server.serviceIds.add(a.id().replace('/', '.'));
+
             } catch (Exception e) {
                 logger.error("Exception:", e);
             }
         }
+
         pathResourceProviders = SingletonServiceFactory.getBeans(PathResourceProvider.class);
         predicatedHandlersProviders = SingletonServiceFactory.getBeans(PredicatedHandlersProvider.class);
     }
