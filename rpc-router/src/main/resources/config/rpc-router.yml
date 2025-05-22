@@ -2,7 +2,7 @@
 ---
 # The hybrid handler package name that is used for scanner during server startup. The more specific of package name, the faster to start
 # Leave it as with an empty string '' if the handler is scattered in multiple packages. or use the real package name like com.networknt
-handlerPackage: ${rpc-router.handlerPackage:''}
+handlerPackages: ${rpc-router.handlerPackages:[]}
 # The JSON RPC API path
 jsonPath: ${rpc-router.jsonPath:/api/json}
 # The form RPC API path

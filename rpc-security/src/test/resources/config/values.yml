@@ -2,7 +2,7 @@
 server.httpsPort: 49588
 
 # rpc-router.yml
-rpc-router.handlerPackage: com.networknt
+rpc-router.handlerPackages: com.networknt
 
 # hybrid-security.yml
 hybrid-security.keyResolver: JsonWebKeySet

@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 
 public class RpcRouterConfigTest {
     @Test
@@ -36,15 +35,16 @@ public class RpcRouterConfigTest {
         String configName = "rpc-router-empty";
         RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
         List<String> handlers;
+        final var handler_packages = config.getHandlerPackages().toArray(new String[0]);
         try (ScanResult scanResult = new ClassGraph()
-                .whitelistPackages(config.getHandlerPackage())
+                .acceptPackages(handler_packages)
                 .enableAllInfo()
                 .scan()) {
             handlers = scanResult
                     .getClassesWithAnnotation(ServiceHandler.class.getName())
                     .getNames();
         }
-        Assert.assertTrue(handlers.size() > 0);
+        Assert.assertFalse(handlers.isEmpty());
     }
 
     @Test
@@ -52,15 +52,37 @@ public class RpcRouterConfigTest {
         String configName = "rpc-router-false-package";
         RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
         List<String> handlers;
+        final var handler_packages = config.getHandlerPackages().toArray(new String[0]);
         try (ScanResult scanResult = new ClassGraph()
-                .whitelistPackages(config.getHandlerPackage())
+                .acceptPackages(handler_packages)
                 .enableAllInfo()
                 .scan()) {
             handlers = scanResult
                     .getClassesWithAnnotation(ServiceHandler.class.getName())
                     .getNames();
         }
-        Assert.assertTrue(handlers.size() > 0);
+        Assert.assertFalse(handlers.isEmpty());
+    }
+
+    @Test
+    public void testMultiplePackageHandlers() {
+        String configName = "rpc-router-multi-package";
+        RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
+        List<String> handlers;
+        final var handler_packages = config.getHandlerPackages().toArray(new String[0]);
+        try (ScanResult scanResult = new ClassGraph()
+                .acceptPackages(handler_packages)
+                .enableAllInfo()
+                .scan()) {
+            handlers = scanResult
+                    .getClassesWithAnnotation(ServiceHandler.class.getName())
+                    .getNames();
+        }
+        // 3 handlers are expected.
+        // - DeleteRuleHybridHandler (com.networknt package)
+        // - TestServiceHybridHandler (com.networknt package)
+        // - OtherHybridHandler (com.other.handler package)
+        Assert.assertEquals(3, handlers.size());
     }
 
 }

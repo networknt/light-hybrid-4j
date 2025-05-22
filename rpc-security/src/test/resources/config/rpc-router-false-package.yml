@@ -1,5 +1,5 @@
 ---
-handlerPackage: com.networknt
+handlerPackages: com.networknt
 jsonPath: /api/json
 formPath: /api/form
 resourcesBasePath: /
