@@ -1,5 +1,14 @@
 # Change Log
 
+## [2.2.2](https://github.com/networknt/light-hybrid-4j/tree/2.2.2) (2025-06-05)
+
+
+**Merged pull requests:**
+
+
+- Multiple Handler Packages Configuration Option [\#159](https://github.com/networknt/light-hybrid-4j/pull/159) ([KalevGonvick](https://github.com/KalevGonvick))
+
+
 ## [2.2.1](https://github.com/networknt/light-hybrid-4j/tree/2.2.1) (2025-03-22)
 
 
