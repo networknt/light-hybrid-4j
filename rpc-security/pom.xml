@@ -27,6 +27,7 @@
 
     <artifactId>rpc-security</artifactId>
     <packaging>jar</packaging>
+    <name>rpc-security</name>
     <description>A rpc security for hybrid server that can verfiy the scopes for jwt</description>
 
     <dependencies>

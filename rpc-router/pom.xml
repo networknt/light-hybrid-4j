@@ -27,6 +27,7 @@
 
     <artifactId>rpc-router</artifactId>
     <packaging>jar</packaging>
+    <name>rpc-router</name>
     <description>A rpc router for hybrid server that can map http requests to handlers based on a map lookup</description>
 
     <dependencies>
