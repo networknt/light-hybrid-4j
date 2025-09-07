@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.networknt.config.Config;
+import com.networknt.config.ConfigException;
 import com.networknt.config.schema.*;
 
 import java.io.IOException;
@@ -24,20 +25,19 @@ import java.util.stream.Collectors;
 @ConfigSchema(configKey = "rpc-router", configName = "rpc-router", configDescription = "rpc-router configuration", outputFormats = {OutputFormat.JSON_SCHEMA, OutputFormat.YAML})
 public class RpcRouterConfig {
     public static final String CONFIG_NAME = "rpc-router";
-    public static final String HANDLER_PACKAGE = "handlerPackages";
+    public static final String HANDLER_PACKAGES = "handlerPackages";
     public static final String JSON_PATH = "jsonPath";
     public static final String FORM_PATH = "formPath";
     public static final String REGISTER_SERVICE = "registerService";
 
     @ArrayField(
-            configFieldName = HANDLER_PACKAGE,
-            externalizedKeyName = HANDLER_PACKAGE,
+            configFieldName = HANDLER_PACKAGES,
+            externalizedKeyName = HANDLER_PACKAGES,
             externalized = true,
             description = "The hybrid handler package names that is used for scanner during server startup. The more specific of package names, the faster to start\n" +
                     "List the package prefixes for all handlers used. Leave an empty array to indicate wildcard (all packages)",
             items = String.class
     )
-    @JsonDeserialize(using = HandlerPackageDeserializer.class)
     private List<String> handlerPackages;
 
     @StringField(
@@ -116,17 +116,28 @@ public class RpcRouterConfig {
 
     private void setConfigData() {
         if(getMappedConfig() != null) {
-
-            // Normally you can deserialize into itself by calling '...convertValue(getMappedConfig(), RpcRouterConfig.class)'
-            // but this would lead to an infinite loop since Jackson uses the no-args constructor which calls this method.
-            Object object = getMappedConfig().get(HANDLER_PACKAGE);
+            Object object = getMappedConfig().get(HANDLER_PACKAGES);
             if(object != null) {
-                final var tempDeserializer = new HandlerPackageDeserializer();
-                final var tempModule = new SimpleModule();
-                tempModule.addDeserializer(List.class, tempDeserializer);
-                final var tempMapper = new ObjectMapper();
-                tempMapper.registerModule(tempModule);
-                this.handlerPackages = tempMapper.convertValue(object, new TypeReference<>() {});
+                if (object instanceof String) {
+                    String s = (String) object;
+                    s = s.trim();
+                    if (s.startsWith("[")) {
+                        // this is a JSON string, and we need to parse it.
+                        try {
+                            handlerPackages = Config.getInstance().getMapper().readValue(s, new TypeReference<List<String>>() {
+                            });
+                        } catch (Exception e) {
+                            throw new ConfigException("could not parse the handlerPackages json with a list of strings.");
+                        }
+                    } else {
+                        // this is a comma separated string.
+                        handlerPackages = Arrays.asList(s.split("\\s*,\\s*"));
+                    }
+                } else if (object instanceof List) {
+                    handlerPackages = (List<String>) getMappedConfig().get(HANDLER_PACKAGES);
+                } else {
+                    throw new ConfigException("handlerPackages list is missing or wrong type.");
+                }
             }
             object = getMappedConfig().get(JSON_PATH);
             if(object != null) jsonPath = (String)object;
@@ -136,22 +147,4 @@ public class RpcRouterConfig {
             if(object != null) registerService = Config.loadBooleanValue(REGISTER_SERVICE, object);
         }
     }
-
-    private static class HandlerPackageDeserializer extends JsonDeserializer<List<String>> {
-
-        @Override
-        public List<String> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
-            final var mapper = (ObjectMapper) jsonParser.getCodec();
-            final JsonNode root = mapper.readTree(jsonParser);
-            if (root.isArray()) {
-                return mapper.convertValue(root, new TypeReference<>(){});
-            } else if (root.isTextual()) {
-                final String packages = mapper.convertValue(root, String.class);
-                return Arrays.stream(packages.split(",")).collect(Collectors.toList());
-            } else {
-                return List.of();
-            }
-        }
-    }
-
 }

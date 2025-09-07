@@ -10,6 +10,12 @@ import java.util.List;
 
 public class RpcRouterConfigTest {
     @Test
+    public void testHandlerPackage() {
+        RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(RpcRouterConfig.CONFIG_NAME, RpcRouterConfig.class);
+        Assert.assertTrue(config.getHandlerPackages().size() == 2);
+    }
+
+    @Test
     public void testRegisterServiceTrue() {
         String configName = "rpc-router-true";
         RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
