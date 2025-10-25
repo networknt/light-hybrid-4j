@@ -44,6 +44,7 @@ public class RpcRouterConfig {
             configFieldName = JSON_PATH,
             externalizedKeyName = JSON_PATH,
             externalized = true,
+            defaultValue = "/api/json",
             description = "The JSON RPC API path"
     )
     private String jsonPath;
@@ -52,6 +53,7 @@ public class RpcRouterConfig {
             configFieldName = FORM_PATH,
             externalizedKeyName = FORM_PATH,
             externalized = true,
+            defaultValue = "/api/form",
             description = "The form RPC API path"
     )
     private String formPath;
@@ -60,6 +62,7 @@ public class RpcRouterConfig {
             configFieldName = REGISTER_SERVICE,
             externalizedKeyName = REGISTER_SERVICE,
             externalized = true,
+            defaultValue = "false",
             description = "if we want to register all handlers as services to the Consul for client to discover"
     )
     private boolean registerService;

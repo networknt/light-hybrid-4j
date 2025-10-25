@@ -1,0 +1,28 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "required" : [ "handlerPackages", "jsonPath", "formPath", "registerService" ],
+  "properties" : {
+    "handlerPackages" : {
+      "type" : "array",
+      "description" : "The hybrid handler package names that is used for scanner during server startup. The more specific of package names, the faster to start\nList the package prefixes for all handlers used. Leave an empty array to indicate wildcard (all packages)",
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "jsonPath" : {
+      "type" : "string",
+      "description" : "The JSON RPC API path",
+      "default" : "/api/json"
+    },
+    "formPath" : {
+      "type" : "string",
+      "description" : "The form RPC API path",
+      "default" : "/api/form"
+    },
+    "registerService" : {
+      "type" : "boolean",
+      "description" : "if we want to register all handlers as services to the Consul for client to discover"
+    }
+  }
+}
