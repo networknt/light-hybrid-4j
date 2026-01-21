@@ -33,7 +33,6 @@ public class RpcRouterConfig {
     @ArrayField(
             configFieldName = HANDLER_PACKAGES,
             externalizedKeyName = HANDLER_PACKAGES,
-            externalized = true,
             description = "The hybrid handler package names that is used for scanner during server startup. The more specific of package names, the faster to start\n" +
                     "List the package prefixes for all handlers used. Leave an empty array to indicate wildcard (all packages)",
             items = String.class
@@ -43,7 +42,6 @@ public class RpcRouterConfig {
     @StringField(
             configFieldName = JSON_PATH,
             externalizedKeyName = JSON_PATH,
-            externalized = true,
             defaultValue = "/api/json",
             description = "The JSON RPC API path"
     )
@@ -52,7 +50,6 @@ public class RpcRouterConfig {
     @StringField(
             configFieldName = FORM_PATH,
             externalizedKeyName = FORM_PATH,
-            externalized = true,
             defaultValue = "/api/form",
             description = "The form RPC API path"
     )
@@ -61,7 +58,6 @@ public class RpcRouterConfig {
     @BooleanField(
             configFieldName = REGISTER_SERVICE,
             externalizedKeyName = REGISTER_SERVICE,
-            externalized = true,
             defaultValue = "false",
             description = "if we want to register all handlers as services to the Consul for client to discover"
     )
