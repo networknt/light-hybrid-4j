@@ -12,11 +12,13 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.networknt.config.Config;
 import com.networknt.config.ConfigException;
 import com.networknt.config.schema.*;
+import com.networknt.server.ModuleRegistry;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -65,32 +67,50 @@ public class RpcRouterConfig {
 
     private Map<String, Object> mappedConfig;
     private final Config config;
+    private String configName;
+    private static final Map<String, RpcRouterConfig> instances = new ConcurrentHashMap<>();
 
     private RpcRouterConfig(String configName) {
         config = Config.getInstance();
+        this.configName = configName;
         mappedConfig = config.getJsonMapConfigNoCache(configName);
         setConfigData();
     }
-    private RpcRouterConfig() {
-        this(CONFIG_NAME);
+    public static RpcRouterConfig load() {
+        return load(CONFIG_NAME);
     }
 
     public static RpcRouterConfig load(String configName) {
-        return new RpcRouterConfig(configName);
+        RpcRouterConfig instance = instances.get(configName);
+        if (instance != null) {
+            return instance;
+        }
+        synchronized (RpcRouterConfig.class) {
+            instance = instances.get(configName);
+            if (instance != null) {
+                return instance;
+            }
+            instance = new RpcRouterConfig(configName);
+            instances.put(configName, instance);
+            if (CONFIG_NAME.equals(configName)) {
+                ModuleRegistry.registerModule(CONFIG_NAME, RpcRouterConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), null);
+            }
+            return instance;
+        }
     }
 
-    public static RpcRouterConfig load() {
-        return new RpcRouterConfig();
+    public static void reload() {
+        reload(CONFIG_NAME);
     }
 
-    public void reload() {
-        mappedConfig = config.getJsonMapConfigNoCache(CONFIG_NAME);
-        setConfigData();
-    }
-
-    public void reload(String configName) {
-        mappedConfig = config.getJsonMapConfigNoCache(configName);
-        setConfigData();
+    public static void reload(String configName) {
+        synchronized (RpcRouterConfig.class) {
+            RpcRouterConfig instance = new RpcRouterConfig(configName);
+            instances.put(configName, instance);
+            if (CONFIG_NAME.equals(configName)) {
+                ModuleRegistry.registerModule(CONFIG_NAME, RpcRouterConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), null);
+            }
+        }
     }
 
     public List<String> getHandlerPackages() {
@@ -111,6 +131,10 @@ public class RpcRouterConfig {
 
     public Map<String, Object> getMappedConfig() {
         return mappedConfig;
+    }
+
+    public String getConfigName() {
+        return configName;
     }
 
     private void setConfigData() {

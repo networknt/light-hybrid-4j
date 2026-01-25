@@ -11,35 +11,35 @@ import java.util.List;
 public class RpcRouterConfigTest {
     @Test
     public void testHandlerPackage() {
-        RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(RpcRouterConfig.CONFIG_NAME, RpcRouterConfig.class);
+        RpcRouterConfig config = RpcRouterConfig.load();
         Assert.assertTrue(config.getHandlerPackages().size() == 2);
     }
 
     @Test
     public void testRegisterServiceTrue() {
         String configName = "rpc-router-true";
-        RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
+        RpcRouterConfig config = RpcRouterConfig.load(configName);
         Assert.assertTrue(config.isRegisterService());
     }
 
     @Test
     public void testRegisterServiceFalse() {
         String configName = "rpc-router-false-package";
-        RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
+        RpcRouterConfig config = RpcRouterConfig.load(configName);
         Assert.assertFalse(config.isRegisterService());
     }
 
     @Test
     public void testRegisterServiceEmpty() {
         String configName = "rpc-router-empty";
-        RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
+        RpcRouterConfig config = RpcRouterConfig.load(configName);
         Assert.assertFalse(config.isRegisterService());
     }
 
     @Test
     public void testHandlerPackageEmpty() {
         String configName = "rpc-router-empty";
-        RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
+        RpcRouterConfig config = RpcRouterConfig.load(configName);
         List<String> handlers;
         final var handler_packages = config.getHandlerPackages().toArray(new String[0]);
         try (ScanResult scanResult = new ClassGraph()
@@ -56,7 +56,7 @@ public class RpcRouterConfigTest {
     @Test
     public void testHandlerPackageSingle() {
         String configName = "rpc-router-false-package";
-        RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
+        RpcRouterConfig config = RpcRouterConfig.load(configName);
         List<String> handlers;
         final var handler_packages = config.getHandlerPackages().toArray(new String[0]);
         try (ScanResult scanResult = new ClassGraph()
@@ -73,7 +73,7 @@ public class RpcRouterConfigTest {
     @Test
     public void testMultiplePackageHandlers() {
         String configName = "rpc-router-multi-package";
-        RpcRouterConfig config = (RpcRouterConfig) Config.getInstance().getJsonObjectConfig(configName, RpcRouterConfig.class);
+        RpcRouterConfig config = RpcRouterConfig.load(configName);
         List<String> handlers;
         final var handler_packages = config.getHandlerPackages().toArray(new String[0]);
         try (ScanResult scanResult = new ClassGraph()

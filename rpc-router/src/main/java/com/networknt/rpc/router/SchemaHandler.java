@@ -11,7 +11,7 @@ import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.rpc.HybridHandler;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
-import com.networknt.utility.ModuleRegistry;
+import com.networknt.server.ModuleRegistry;
 import com.networknt.utility.Util;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
@@ -48,22 +48,7 @@ public class SchemaHandler implements MiddlewareHandler {
 
     public SchemaHandler() {
         if(logger.isTraceEnabled()) logger.trace("SchemaHandler constructed");
-        // load all spec.yaml from resources folder and merge them into one map.
-        try {
-            final Enumeration<URL> schemaResources = SchemaHandler.class.getClassLoader().getResources(SPEC_YAML);
-            while(schemaResources.hasMoreElements()) {
-                URL url = schemaResources.nextElement();
-                if(logger.isDebugEnabled()) logger.debug("schema file = {}", url);
-                try (InputStream is = url.openStream()) {
-                    services.putAll(parseYaml(is));
-                }
-            }
-            if(logger.isDebugEnabled()) logger.debug("services = {}", Config.getInstance().getMapper().writeValueAsString(services));
-        } catch (IOException e) {
-            logger.error("Error loading spec.yaml files from service jars", e);
-            // throw exception to stop the service as this is a serious error.
-            throw new RuntimeException("Error loading spec.yaml files from service jars");
-        }
+        loadServices();
     }
 
     public static Map<String, Map<String, Object>> parseYaml(InputStream yamlStream) throws IOException {
@@ -160,6 +145,31 @@ public class SchemaHandler implements MiddlewareHandler {
     @Override
     public void register() {
         ModuleRegistry.registerModule(null, SchemaHandler.class.getName(), null, null);
+    }
+
+    @Override
+    public void reload() {
+        services.clear();
+        loadServices();
+    }
+
+    private void loadServices() {
+        // load all spec.yaml from resources folder and merge them into one map.
+        try {
+            final Enumeration<URL> schemaResources = SchemaHandler.class.getClassLoader().getResources(SPEC_YAML);
+            while(schemaResources.hasMoreElements()) {
+                URL url = schemaResources.nextElement();
+                if(logger.isDebugEnabled()) logger.debug("schema file = {}", url);
+                try (InputStream is = url.openStream()) {
+                    services.putAll(parseYaml(is));
+                }
+            }
+            if(logger.isDebugEnabled()) logger.debug("services = {}", Config.getInstance().getMapper().writeValueAsString(services));
+        } catch (IOException e) {
+            logger.error("Error loading spec.yaml files from service jars", e);
+            // throw exception to stop the service as this is a serious error.
+            throw new RuntimeException("Error loading spec.yaml files from service jars");
+        }
     }
 
     @Override

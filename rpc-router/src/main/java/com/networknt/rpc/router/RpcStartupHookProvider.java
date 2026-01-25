@@ -7,7 +7,7 @@ import com.networknt.rpc.HybridHandler;
 import com.networknt.server.Server;
 import com.networknt.server.StartupHookProvider;
 import com.networknt.service.SingletonServiceFactory;
-import com.networknt.utility.ModuleRegistry;
+import com.networknt.server.ModuleRegistry;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
@@ -36,7 +36,6 @@ public class RpcStartupHookProvider implements StartupHookProvider {
     public RpcStartupHookProvider() {
         logger.info("RpcStartupHookProvider is constructed");
         config = RpcRouterConfig.load();
-        ModuleRegistry.registerModule(RpcRouterConfig.CONFIG_NAME, RpcStartupHookProvider.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(RpcRouterConfig.CONFIG_NAME), null);
     }
 
     @Override

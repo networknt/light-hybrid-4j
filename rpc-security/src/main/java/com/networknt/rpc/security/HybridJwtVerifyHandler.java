@@ -6,7 +6,7 @@ import com.networknt.security.AbstractJwtVerifyHandler;
 import com.networknt.security.JwtVerifier;
 import com.networknt.security.SecurityConfig;
 import com.networknt.utility.Constants;
-import com.networknt.utility.ModuleRegistry;
+import com.networknt.server.ModuleRegistry;
 import io.undertow.server.HttpServerExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,13 +60,6 @@ public class HybridJwtVerifyHandler extends AbstractJwtVerifyHandler {
 
     @Override
     public void register() {
-        ModuleRegistry.registerModule(SecurityConfig.CONFIG_NAME, HybridJwtVerifyHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(SecurityConfig.CONFIG_NAME), null);
-    }
-
-    @Override
-    public void reload() {
-        config.reload();
-        jwtVerifier = new JwtVerifier(config);
         ModuleRegistry.registerModule(SecurityConfig.CONFIG_NAME, HybridJwtVerifyHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(SecurityConfig.CONFIG_NAME), null);
     }
 }
