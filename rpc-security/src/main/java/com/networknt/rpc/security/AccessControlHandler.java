@@ -204,11 +204,7 @@ public class AccessControlHandler implements MiddlewareHandler {
         return config.isEnabled();
     }
 
-    @Override
-    public void register() {
-        ModuleRegistry.registerModule(AccessControlConfig.CONFIG_NAME, AccessControlHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(AccessControlConfig.CONFIG_NAME), null);
-    }
-
+    /*
     @Override
     public void reload() {
         AccessControlConfig.reload();
@@ -216,5 +212,5 @@ public class AccessControlHandler implements MiddlewareHandler {
         ModuleRegistry.registerModule(AccessControlConfig.CONFIG_NAME, AccessControlHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(AccessControlConfig.CONFIG_NAME), null);
         if (logger.isInfoEnabled()) logger.info("AccessControlHandler is reloaded.");
     }
-
+    */
 }

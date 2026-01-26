@@ -66,14 +66,13 @@ public class RpcRouterConfig {
     private boolean registerService;
 
     private Map<String, Object> mappedConfig;
-    private final Config config;
+
     private String configName;
     private static final Map<String, RpcRouterConfig> instances = new ConcurrentHashMap<>();
 
     private RpcRouterConfig(String configName) {
-        config = Config.getInstance();
         this.configName = configName;
-        mappedConfig = config.getJsonMapConfigNoCache(configName);
+        mappedConfig = Config.getInstance().getJsonMapConfigNoCache(configName);
         setConfigData();
     }
     public static RpcRouterConfig load() {

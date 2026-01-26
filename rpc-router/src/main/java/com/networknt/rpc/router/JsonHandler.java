@@ -102,13 +102,4 @@ public class JsonHandler implements MiddlewareHandler {
         return true;
     }
 
-    @Override
-    public void register() {
-        ModuleRegistry.registerModule(RpcRouterConfig.CONFIG_NAME, JsonHandler.class.getName(), null, null);
-    }
-
-    @Override
-    public void reload() {
-
-    }
 }

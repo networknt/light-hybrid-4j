@@ -142,16 +142,13 @@ public class SchemaHandler implements MiddlewareHandler {
         return true;
     }
 
-    @Override
-    public void register() {
-        ModuleRegistry.registerModule(null, SchemaHandler.class.getName(), null, null);
-    }
-
+    /*
     @Override
     public void reload() {
         services.clear();
         loadServices();
     }
+    */
 
     private void loadServices() {
         // load all spec.yaml from resources folder and merge them into one map.

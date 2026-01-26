@@ -58,8 +58,4 @@ public class HybridJwtVerifyHandler extends AbstractJwtVerifyHandler {
         return config.isEnableVerifyJwt();
     }
 
-    @Override
-    public void register() {
-        ModuleRegistry.registerModule(SecurityConfig.CONFIG_NAME, HybridJwtVerifyHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(SecurityConfig.CONFIG_NAME), null);
-    }
 }
