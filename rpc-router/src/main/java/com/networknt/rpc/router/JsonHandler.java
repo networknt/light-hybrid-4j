@@ -38,7 +38,7 @@ public class JsonHandler implements MiddlewareHandler {
         // parsed the body and set the auditInfo attachment.
         Map<String, Object> auditInfo = exchange.getAttachment(AttachmentConstants.AUDIT_INFO);
         final String serviceId;
-        final ServerConfig serverConfig = ServerConfig.getInstance();
+        final ServerConfig serverConfig = ServerConfig.load();
 
         // get the serviceId from the auditInfo attachment.
         if (auditInfo != null) {
