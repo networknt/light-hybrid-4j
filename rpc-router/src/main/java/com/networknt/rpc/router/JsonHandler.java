@@ -1,11 +1,13 @@
 package com.networknt.rpc.router;
 
-import com.networknt.handler.LightHttpHandler;
+import com.networknt.handler.MiddlewareHandler;
 import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.rpc.HybridHandler;
 import com.networknt.server.ServerConfig;
 import com.networknt.utility.Constants;
+import io.undertow.Handlers;
 import io.undertow.server.DirectByteBufferDeallocator;
+import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 import org.slf4j.Logger;
@@ -20,7 +22,8 @@ import java.util.Map;
  *
  * @author Steve Hu
  */
-public class JsonHandler implements LightHttpHandler {
+public class JsonHandler implements MiddlewareHandler {
+    private volatile HttpHandler next;
 
     static final String STATUS_HANDLER_NOT_FOUND = "ERR11200";
 
@@ -34,7 +37,7 @@ public class JsonHandler implements LightHttpHandler {
         // parsed the body and set the auditInfo attachment.
         Map<String, Object> auditInfo = exchange.getAttachment(AttachmentConstants.AUDIT_INFO);
         final String serviceId;
-        final ServerConfig serverConfig = ServerConfig.getInstance();
+        final ServerConfig serverConfig = ServerConfig.load();
 
         // get the serviceId from the auditInfo attachment.
         if (auditInfo != null) {
@@ -80,4 +83,22 @@ public class JsonHandler implements LightHttpHandler {
             exchange.getResponseSender().send(result);
         }
     }
+
+    @Override
+    public HttpHandler getNext() {
+        return next;
+    }
+
+    @Override
+    public MiddlewareHandler setNext(HttpHandler next) {
+        Handlers.handlerNotNull(next);
+        this.next = next;
+        return this;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

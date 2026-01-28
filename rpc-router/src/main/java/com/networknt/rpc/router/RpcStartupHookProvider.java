@@ -7,7 +7,7 @@ import com.networknt.rpc.HybridHandler;
 import com.networknt.server.Server;
 import com.networknt.server.StartupHookProvider;
 import com.networknt.service.SingletonServiceFactory;
-import com.networknt.utility.ModuleRegistry;
+import com.networknt.server.ModuleRegistry;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
@@ -28,19 +28,18 @@ import java.util.Map;
  */
 public class RpcStartupHookProvider implements StartupHookProvider {
     static final Logger logger = LoggerFactory.getLogger(RpcStartupHookProvider.class);
-    static RpcRouterConfig config;
 
     public static final Map<String, HybridHandler> serviceMap = new HashMap<>();
     public static PathResourceProvider[] pathResourceProviders;
     public static PredicatedHandlersProvider[] predicatedHandlersProviders;
     public RpcStartupHookProvider() {
         logger.info("RpcStartupHookProvider is constructed");
-        config = RpcRouterConfig.load();
-        ModuleRegistry.registerModule(RpcRouterConfig.CONFIG_NAME, RpcStartupHookProvider.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(RpcRouterConfig.CONFIG_NAME), null);
+        RpcRouterConfig.load();
     }
 
     @Override
     public void onStartup() {
+        RpcRouterConfig config = RpcRouterConfig.load();
         logger.debug("Handler scanning package = {}", config.getHandlerPackages());
 
         final var packages = config.getHandlerPackages().toArray(new String[0]);

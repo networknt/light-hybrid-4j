@@ -59,11 +59,11 @@ public interface HybridHandler {
         JsonSchema jsonSchema = factory.getSchema(jsonNode);
         Set<ValidationMessage> errors = jsonSchema.validate(Config.getInstance().getMapper().valueToTree(data));
         ByteBuffer bf = null;
-        if(errors.size() > 0) {
+        if(!errors.isEmpty()) {
             // like the light-rest-4j, we only return one validation error.
             ValidationMessage vm = errors.iterator().next();
             Status status = new Status(STATUS_VALIDATION_ERROR, vm.getMessage());
-            logger.error("Validation Error:" + status.toString());
+            logger.error("Validation Error:{}", status);
             bf = NioUtils.toByteBuffer(status.toString());
         }
         return bf;
@@ -100,7 +100,7 @@ public interface HybridHandler {
     default String getStatus(HttpServerExchange exchange, Status status) {
         exchange.setStatusCode(status.getStatusCode());
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
-        logger.error(status.toString() + " at " + elements[2].getClassName() + "." + elements[2].getMethodName() + "(" + elements[2].getFileName() + ":" + elements[2].getLineNumber() + ")");
+        logger.error("{} at {}.{}({}:{})", status.toString(), elements[2].getClassName(), elements[2].getMethodName(), elements[2].getFileName(), elements[2].getLineNumber());
         return status.toString();
     }
 }

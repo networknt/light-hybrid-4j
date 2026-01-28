@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.networknt.config.Config;
 import com.networknt.config.ConfigException;
 import com.networknt.config.schema.*;
+import com.networknt.server.ModuleRegistry;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -63,35 +64,36 @@ public class RpcRouterConfig {
     )
     private boolean registerService;
 
-    private Map<String, Object> mappedConfig;
-    private final Config config;
+    private final Map<String, Object> mappedConfig;
+    private static volatile RpcRouterConfig instance;
 
     private RpcRouterConfig(String configName) {
-        config = Config.getInstance();
-        mappedConfig = config.getJsonMapConfigNoCache(configName);
+        mappedConfig = Config.getInstance().getJsonMapConfig(configName);
         setConfigData();
     }
-    private RpcRouterConfig() {
-        this(CONFIG_NAME);
+    public static RpcRouterConfig load() {
+        return load(CONFIG_NAME);
     }
 
     public static RpcRouterConfig load(String configName) {
+        if (CONFIG_NAME.equals(configName)) {
+            Map<String, Object> mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+            if (instance != null && instance.getMappedConfig() == mappedConfig) {
+                return instance;
+            }
+            synchronized (RpcRouterConfig.class) {
+                mappedConfig = Config.getInstance().getJsonMapConfig(configName);
+                if (instance != null && instance.getMappedConfig() == mappedConfig) {
+                    return instance;
+                }
+                instance = new RpcRouterConfig(configName);
+                ModuleRegistry.registerModule(CONFIG_NAME, RpcRouterConfig.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(CONFIG_NAME), null);
+                return instance;
+            }
+        }
         return new RpcRouterConfig(configName);
     }
 
-    public static RpcRouterConfig load() {
-        return new RpcRouterConfig();
-    }
-
-    public void reload() {
-        mappedConfig = config.getJsonMapConfigNoCache(CONFIG_NAME);
-        setConfigData();
-    }
-
-    public void reload(String configName) {
-        mappedConfig = config.getJsonMapConfigNoCache(configName);
-        setConfigData();
-    }
 
     public List<String> getHandlerPackages() {
         return handlerPackages;

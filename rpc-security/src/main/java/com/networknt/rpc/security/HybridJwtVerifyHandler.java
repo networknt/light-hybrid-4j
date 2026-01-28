@@ -1,12 +1,10 @@
 package com.networknt.rpc.security;
 
-import com.networknt.config.Config;
 import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.security.AbstractJwtVerifyHandler;
 import com.networknt.security.JwtVerifier;
 import com.networknt.security.SecurityConfig;
 import com.networknt.utility.Constants;
-import com.networknt.utility.ModuleRegistry;
 import io.undertow.server.HttpServerExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,15 +56,4 @@ public class HybridJwtVerifyHandler extends AbstractJwtVerifyHandler {
         return config.isEnableVerifyJwt();
     }
 
-    @Override
-    public void register() {
-        ModuleRegistry.registerModule(SecurityConfig.CONFIG_NAME, HybridJwtVerifyHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(SecurityConfig.CONFIG_NAME), null);
-    }
-
-    @Override
-    public void reload() {
-        config.reload();
-        jwtVerifier = new JwtVerifier(config);
-        ModuleRegistry.registerModule(SecurityConfig.CONFIG_NAME, HybridJwtVerifyHandler.class.getName(), Config.getNoneDecryptedInstance().getJsonMapConfigNoCache(SecurityConfig.CONFIG_NAME), null);
-    }
 }
