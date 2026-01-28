@@ -1,12 +1,10 @@
 package com.networknt.rpc.security;
 
-import com.networknt.config.Config;
 import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.security.AbstractJwtVerifyHandler;
 import com.networknt.security.JwtVerifier;
 import com.networknt.security.SecurityConfig;
 import com.networknt.utility.Constants;
-import com.networknt.server.ModuleRegistry;
 import io.undertow.server.HttpServerExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

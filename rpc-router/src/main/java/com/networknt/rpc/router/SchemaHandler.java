@@ -1,6 +1,5 @@
 package com.networknt.rpc.router;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.networknt.config.Config;
@@ -11,7 +10,6 @@ import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.rpc.HybridHandler;
 import com.networknt.status.Status;
 import com.networknt.utility.Constants;
-import com.networknt.server.ModuleRegistry;
 import com.networknt.utility.Util;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
@@ -141,14 +139,6 @@ public class SchemaHandler implements MiddlewareHandler {
     public boolean isEnabled() {
         return true;
     }
-
-    /*
-    @Override
-    public void reload() {
-        services.clear();
-        loadServices();
-    }
-    */
 
     private void loadServices() {
         // load all spec.yaml from resources folder and merge them into one map.

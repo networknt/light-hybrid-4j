@@ -1,7 +1,6 @@
 package com.networknt.rpc.security;
 
 import com.networknt.access.AccessControlConfig;
-import com.networknt.config.Config;
 import com.networknt.config.JsonMapper;
 import com.networknt.handler.Handler;
 import com.networknt.handler.MiddlewareHandler;
@@ -10,7 +9,7 @@ import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.rule.RuleConstants;
 import com.networknt.rule.RuleEngine;
 import com.networknt.rule.RuleLoaderStartupHook;
-import com.networknt.server.ModuleRegistry;
+import com.networknt.utility.Constants;
 import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -62,7 +61,7 @@ public class AccessControlHandler implements MiddlewareHandler {
         Map<String, Object> ruleEnginePayload = new HashMap<>();
 
         // need to get the rule/rules to execute from the RuleLoaderStartupHook. First, get the endpoint.
-        String endpoint = (String) auditInfo.get("endpoint");
+        String endpoint = (String) auditInfo.get(Constants.ENDPOINT_STRING);
         this.populateRuleEnginePayload(exchange, auditInfo, ruleEnginePayload);
 
         // checked the RuleLoaderStartupHook to ensure it is loaded. If not, return an error to the caller.

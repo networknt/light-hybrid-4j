@@ -3,7 +3,6 @@ package com.networknt.rpc.router;
 import com.networknt.handler.MiddlewareHandler;
 import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.rpc.HybridHandler;
-import com.networknt.server.ModuleRegistry;
 import com.networknt.server.ServerConfig;
 import com.networknt.utility.Constants;
 import io.undertow.Handlers;

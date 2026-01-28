@@ -65,7 +65,7 @@ public class RpcRouterConfig {
     private boolean registerService;
 
     private final Map<String, Object> mappedConfig;
-    private static RpcRouterConfig instance;
+    private static volatile RpcRouterConfig instance;
 
     private RpcRouterConfig(String configName) {
         mappedConfig = Config.getInstance().getJsonMapConfig(configName);
