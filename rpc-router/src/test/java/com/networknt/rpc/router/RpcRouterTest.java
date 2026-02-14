@@ -1,7 +1,7 @@
 package com.networknt.rpc.router;
 
 import com.networknt.client.Http2Client;
-import com.networknt.client.simplepool.SimpleConnectionHolder;
+import com.networknt.client.simplepool.SimpleConnectionState;
 import com.networknt.exception.ClientException;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
@@ -86,7 +86,7 @@ public class RpcRouterTest {
         String message = "{\"host\":\"lightapi.net\",\"service\":\"rule\",\"action\":\"deleteRule\",\"version\":\"0.1.0\",\"data\":{\"hostId\":\"1234567\"}}";
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final SimpleConnectionHolder.ConnectionToken token;
+        final SimpleConnectionState.ConnectionToken token;
 
         try {
 
@@ -134,7 +134,7 @@ public class RpcRouterTest {
 
         String message = "";
         final CountDownLatch latch = new CountDownLatch(1);
-        final SimpleConnectionHolder.ConnectionToken token;
+        final SimpleConnectionState.ConnectionToken token;
 
         try {
 
@@ -179,7 +179,7 @@ public class RpcRouterTest {
 
         String message = "{\"host\":\"lightapi.net\",\"service\":\"rule\",\"action\":\"deleteRule\",\"version\":\"0.1.0\",\"data\":{\"hostId\":\"1234567\",\"ruleId\":\"ruleId\"}}";
         final CountDownLatch latch = new CountDownLatch(1);
-        final SimpleConnectionHolder.ConnectionToken token;
+        final SimpleConnectionState.ConnectionToken token;
 
         try {
 
@@ -225,7 +225,7 @@ public class RpcRouterTest {
         System.out.println("message = " + message);
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final SimpleConnectionHolder.ConnectionToken token;
+        final SimpleConnectionState.ConnectionToken token;
 
         try {
 
@@ -266,7 +266,7 @@ public class RpcRouterTest {
         System.out.println("message = " + message);
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final SimpleConnectionHolder.ConnectionToken token;
+        final SimpleConnectionState.ConnectionToken token;
 
         try {
 
