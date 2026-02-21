@@ -14,7 +14,7 @@ import io.undertow.server.RoutingHandler;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnio.IoUtils;
@@ -27,8 +27,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class HybridUnifiedSecurityTest {
-    @ClassRule
-    public static TestServer server = TestServer.getInstance();
+    static TestServer server = TestServer.getInstance();
     static final Logger logger = LoggerFactory.getLogger(HybridUnifiedSecurityTest.class);
     static final boolean enableHttp2 = server.getServerConfig().isEnableHttp2();
     static final boolean enableHttps = server.getServerConfig().isEnableHttps();
@@ -37,8 +36,9 @@ public class HybridUnifiedSecurityTest {
     static final String url = enableHttp2 || enableHttps ? "https://localhost:" + httpsPort : "http://localhost:" + httpPort;
 
     static Undertow server2 = null;
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
+        server.start();
         if (server2 == null) {
             logger.info("starting server2");
             HttpHandler handler = getJwksHandler();
@@ -51,7 +51,7 @@ public class HybridUnifiedSecurityTest {
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         if (server2 != null) {
             try {
@@ -62,6 +62,7 @@ public class HybridUnifiedSecurityTest {
             server2.stop();
             logger.info("The server2 is stopped.");
         }
+        server.stop();
 
     }
 
@@ -116,7 +117,7 @@ public class HybridUnifiedSecurityTest {
         System.out.println("statusCode = " + statusCode);
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
         System.out.println("body = " + body);
-        Assert.assertTrue(body.contains("ERR11004"));
+        Assertions.assertTrue(body.contains("ERR11004"));
     }
 
     // Ignore it as we cannot get the jwks and x509 certificate is not supported anymore.
@@ -160,7 +161,7 @@ public class HybridUnifiedSecurityTest {
         System.out.println("statusCode = " + statusCode);
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
         System.out.println("body = " + body);
-        Assert.assertEquals("OK", body);
+        Assertions.assertEquals("OK", body);
     }
 
 
@@ -194,8 +195,8 @@ public class HybridUnifiedSecurityTest {
             int statusCode = reference.get().getResponseCode();
             String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
             System.out.println("body = " + body);
-            Assert.assertEquals(200, statusCode);
-            Assert.assertEquals("OK", body);
+            Assertions.assertEquals(200, statusCode);
+            Assertions.assertEquals("OK", body);
         } catch (Exception e) {
             logger.error("Exception: ", e);
             throw new ClientException(e);
@@ -235,8 +236,8 @@ public class HybridUnifiedSecurityTest {
             int statusCode = reference.get().getResponseCode();
             String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
             System.out.println("statusCode = " + statusCode + " body = " + body);
-            Assert.assertEquals(400, statusCode);
-            Assert.assertTrue(body.contains("ERR11202"));
+            Assertions.assertEquals(400, statusCode);
+            Assertions.assertTrue(body.contains("ERR11202"));
         } catch (Exception e) {
             logger.error("Exception: ", e);
             throw new ClientException(e);

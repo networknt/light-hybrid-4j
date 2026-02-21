@@ -1,8 +1,8 @@
 package com.networknt.rpc.router;
 
 import com.networknt.rpc.HybridHandler;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ public class RpcStartupHookProviderTest {
         RpcStartupHookProvider provider = new RpcStartupHookProvider();
         provider.onStartup();
         Map<String, HybridHandler> servicesMap = provider.serviceMap;
-        Assert.assertTrue(servicesMap.size() > 0);
+        Assertions.assertTrue(servicesMap.size() > 0);
         System.out.println("serviceMap size = " + servicesMap.size());
     }
 }

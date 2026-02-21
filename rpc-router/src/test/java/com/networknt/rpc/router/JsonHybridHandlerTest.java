@@ -1,8 +1,8 @@
 package com.networknt.rpc.router;
 
 import com.networknt.utility.Util;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +21,6 @@ public class JsonHybridHandlerTest {
 
         SchemaHandler handler = new SchemaHandler();
         String serviceId = Util.getServiceId(map);
-        Assert.assertEquals("www.networknt.com/account/retrieve/1.0.3", serviceId);
+        Assertions.assertEquals("www.networknt.com/account/retrieve/1.0.3", serviceId);
     }
 }

@@ -3,8 +3,8 @@ package com.networknt.rpc.router;
 import com.networknt.config.Config;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -12,28 +12,28 @@ public class RpcRouterConfigTest {
     @Test
     public void testHandlerPackage() {
         RpcRouterConfig config = RpcRouterConfig.load();
-        Assert.assertTrue(config.getHandlerPackages().size() == 2);
+        Assertions.assertTrue(config.getHandlerPackages().size() == 2);
     }
 
     @Test
     public void testRegisterServiceTrue() {
         String configName = "rpc-router-true";
         RpcRouterConfig config = RpcRouterConfig.load(configName);
-        Assert.assertTrue(config.isRegisterService());
+        Assertions.assertTrue(config.isRegisterService());
     }
 
     @Test
     public void testRegisterServiceFalse() {
         String configName = "rpc-router-false-package";
         RpcRouterConfig config = RpcRouterConfig.load(configName);
-        Assert.assertFalse(config.isRegisterService());
+        Assertions.assertFalse(config.isRegisterService());
     }
 
     @Test
     public void testRegisterServiceEmpty() {
         String configName = "rpc-router-empty";
         RpcRouterConfig config = RpcRouterConfig.load(configName);
-        Assert.assertFalse(config.isRegisterService());
+        Assertions.assertFalse(config.isRegisterService());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class RpcRouterConfigTest {
                     .getClassesWithAnnotation(ServiceHandler.class.getName())
                     .getNames();
         }
-        Assert.assertFalse(handlers.isEmpty());
+        Assertions.assertFalse(handlers.isEmpty());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class RpcRouterConfigTest {
                     .getClassesWithAnnotation(ServiceHandler.class.getName())
                     .getNames();
         }
-        Assert.assertFalse(handlers.isEmpty());
+        Assertions.assertFalse(handlers.isEmpty());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class RpcRouterConfigTest {
         // - DeleteRuleHybridHandler (com.networknt package)
         // - TestServiceHybridHandler (com.networknt package)
         // - OtherHybridHandler (com.other.handler package)
-        Assert.assertEquals(3, handlers.size());
+        Assertions.assertEquals(3, handlers.size());
     }
 
 }
