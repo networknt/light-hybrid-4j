@@ -197,8 +197,29 @@ public class SchemaHandler implements MiddlewareHandler {
         // Check if this is a JSON-RPC 2.0 request
         if ("2.0".equals(map.get("jsonrpc"))) {
             serviceId = (String) map.get("method");
-            data = (Map<String, Object>) map.get("params");
             reqId = map.get("id");
+            Object params = map.get("params");
+            if (params == null) {
+                data = null;
+            } else if (params instanceof Map) {
+                data = (Map<String, Object>) params;
+            } else if (params instanceof List) {
+                // JSON-RPC 2.0 positional (array) params are not supported; return invalid params error
+                exchange.setStatusCode(StatusCodes.BAD_REQUEST);
+                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                Map<String, Object> errorResponse = new LinkedHashMap<>();
+                errorResponse.put("jsonrpc", "2.0");
+                errorResponse.put("id", reqId);
+                Map<String, Object> errorObj = new LinkedHashMap<>();
+                errorObj.put("code", -32602);
+                errorObj.put("message", "Invalid params: positional array params are not supported");
+                errorResponse.put("error", errorObj);
+                exchange.getResponseSender().send(JsonMapper.toJson(errorResponse));
+                return;
+            } else {
+                logger.warn("Unexpected params type {} in JSON-RPC 2.0 request, treating as null", params.getClass().getName());
+                data = null;
+            }
             logger.debug("JSON-RPC 2.0 request detected. serviceId = {}", serviceId);
         } else {
             // Legacy light-hybrid-4j request
