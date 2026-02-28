@@ -270,6 +270,55 @@ public class RpcRouterTest {
         Assertions.assertTrue(body == null || body.isEmpty(), "Notification response must have no body");
     }
 
+    @Test
+    public void testJsonRpc20Error() throws Exception {
+        Http2Client client = Http2Client.getInstance();
+
+        // Pass an id and valid params to bypass schema validation, but hit the handler that returns an error
+        String message = "{\"jsonrpc\":\"2.0\",\"method\":\"lightapi.net/rule/updateRule/0.1.0\",\"params\":{\"ruleId\":\"rule456\",\"ruleName\":\"Updated Rule Name\",\"ruleVersion\":\"1.1\",\"ruleType\":\"Validation\",\"ruleOwner\":\"manager\",\"common\":\"N\",\"conditions\":[]},\"id\":99}";
+        final CountDownLatch latch = new CountDownLatch(1);
+        final SimpleConnectionState.ConnectionToken token;
+
+        try {
+            token = client.borrow(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, enableHttp2 ? OptionMap.create(UndertowOptions.ENABLE_HTTP2, true): OptionMap.EMPTY);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+
+        final ClientConnection connection = (ClientConnection) token.getRawConnection();
+        final AtomicReference<ClientResponse> reference = new AtomicReference<>();
+        try {
+            ClientRequest request = new ClientRequest().setPath("/api/json").setMethod(Methods.POST);
+            request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
+            request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+            request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+            connection.sendRequest(request, client.createClientCallback(reference, latch, message));
+
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
+        } catch (Exception e) {
+            logger.error("Exception: ", e);
+            throw new ClientException(e);
+        } finally {
+            client.restore(token);
+        }
+
+        int statusCode = reference.get().getResponseCode();
+        System.out.println("statusCode = " + statusCode);
+        String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        System.out.println("body = " + body);
+
+        Assertions.assertEquals(400, statusCode); // The HTTP status is preserved as 400 by JsonHandler
+
+        Map<String, Object> jsonResponse = mapper.readValue(body, new TypeReference<Map<String, Object>>() {});
+        Assertions.assertEquals("2.0", jsonResponse.get("jsonrpc"));
+        Assertions.assertEquals(99, jsonResponse.get("id"));
+        Assertions.assertFalse(jsonResponse.containsKey("result"), "Error response must not contain result");
+        Assertions.assertTrue(jsonResponse.containsKey("error"), "Error response must contain error object");
+
+        Map<String, Object> errorObject = (Map<String, Object>) jsonResponse.get("error");
+        Assertions.assertEquals(401, errorObject.get("code")); // 401 status code should be coerced
+    }
+
 
     // Ignore it as we cannot get the jwks and x509 certificate is not supported anymore.
     @Test

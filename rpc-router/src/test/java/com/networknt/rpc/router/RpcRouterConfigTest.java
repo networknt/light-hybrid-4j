@@ -84,11 +84,12 @@ public class RpcRouterConfigTest {
                     .getClassesWithAnnotation(ServiceHandler.class.getName())
                     .getNames();
         }
-        // 3 handlers are expected.
+        // 4 handlers are expected.
         // - DeleteRuleHybridHandler (com.networknt package)
         // - TestServiceHybridHandler (com.networknt package)
+        // - TestErrorServiceHybridHandler (com.networknt package)
         // - OtherHybridHandler (com.other.handler package)
-        Assertions.assertEquals(3, handlers.size());
+        Assertions.assertEquals(4, handlers.size());
     }
 
 }
