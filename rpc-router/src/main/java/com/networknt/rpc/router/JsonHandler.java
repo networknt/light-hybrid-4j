@@ -1,5 +1,8 @@
 package com.networknt.rpc.router;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.networknt.config.Config;
 import com.networknt.handler.MiddlewareHandler;
 import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.rpc.HybridHandler;
@@ -87,13 +90,12 @@ public class JsonHandler implements MiddlewareHandler {
                 byte[] bytes = new byte[result.remaining()];
                 result.get(bytes);
                 String resultString = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
-                String jsonRpcResponse;
-                if (reqId instanceof String) {
-                    jsonRpcResponse = String.format("{\"jsonrpc\":\"2.0\",\"result\":%s,\"id\":\"%s\"}", resultString, reqId);
-                } else {
-                    jsonRpcResponse = String.format("{\"jsonrpc\":\"2.0\",\"result\":%s,\"id\":%s}", resultString, reqId);
-                }
-                exchange.getResponseSender().send(jsonRpcResponse);
+                ObjectMapper mapper = Config.getInstance().getMapper();
+                ObjectNode responseNode = mapper.createObjectNode();
+                responseNode.put("jsonrpc", "2.0");
+                responseNode.set("result", mapper.readTree(resultString));
+                responseNode.set("id", mapper.valueToTree(reqId));
+                exchange.getResponseSender().send(mapper.writeValueAsString(responseNode));
             } else {
                 exchange.getResponseSender().send(result);
             }
