@@ -108,7 +108,7 @@ public class JsonHandler implements MiddlewareHandler {
                     // This is an error response
                     ObjectNode errorNode = mapper.createObjectNode();
                     errorNode.put("code", exchange.getStatusCode()); // Basic fallback
-                    
+
                     if (resultNode != null && resultNode.isObject()) {
                         if (resultNode.hasNonNull("statusCode")) {
                             errorNode.put("code", resultNode.get("statusCode").asInt(exchange.getStatusCode()));
@@ -117,6 +117,10 @@ public class JsonHandler implements MiddlewareHandler {
                             errorNode.set("message", resultNode.get("message"));
                         } else if (resultNode.has("code")) { // Status object often has string 'code' instead of message
                             errorNode.set("message", resultNode.get("code"));
+                        }
+                        if (!errorNode.has("message")) {
+                            String reason = StatusCodes.getReason(exchange.getStatusCode());
+                            errorNode.put("message", reason != null ? reason : "Internal Server Error");
                         }
                         errorNode.set("data", resultNode);
                     } else if (resultNode != null && resultNode.isTextual()) {
@@ -128,7 +132,7 @@ public class JsonHandler implements MiddlewareHandler {
                 } else {
                     responseNode.set("result", resultNode);
                 }
-                
+
                 responseNode.set("id", mapper.valueToTree(reqId));
                 exchange.getResponseSender().send(mapper.writeValueAsString(responseNode));
             } else if ("2.0".equals(jsonRpcVersion)) {
