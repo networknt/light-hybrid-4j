@@ -379,6 +379,148 @@ public class RpcRouterTest {
         Assertions.assertNotNull(firstTool.get("inputSchema"));
     }
 
+    @Test
+    public void testJsonRpc20PositionalParams() throws Exception {
+        Http2Client client = Http2Client.getInstance();
+
+        // Send positional array parameters, which is currently unsupported
+        String message = "{\"jsonrpc\":\"2.0\",\"method\":\"lightapi.net/rule/deleteRule/0.1.0\",\"params\":[\"1234567\",\"ruleId\"],\"id\":42}";
+        final CountDownLatch latch = new CountDownLatch(1);
+        final SimpleConnectionState.ConnectionToken token;
+
+        try {
+            token = client.borrow(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, enableHttp2 ? OptionMap.create(UndertowOptions.ENABLE_HTTP2, true): OptionMap.EMPTY);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+
+        final ClientConnection connection = (ClientConnection) token.getRawConnection();
+        final AtomicReference<ClientResponse> reference = new AtomicReference<>();
+        try {
+            ClientRequest request = new ClientRequest().setPath("/api/json").setMethod(Methods.POST);
+            request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
+            request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+            request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+            connection.sendRequest(request, client.createClientCallback(reference, latch, message));
+
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
+        } catch (Exception e) {
+            logger.error("Exception: ", e);
+            throw new ClientException(e);
+        } finally {
+            client.restore(token);
+        }
+
+        int statusCode = reference.get().getResponseCode();
+        System.out.println("statusCode = " + statusCode);
+        String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        System.out.println("body = " + body);
+
+        // A -32602 error is 400 Bad Request HTTP status
+        Assertions.assertEquals(400, statusCode);
+
+        Map<String, Object> jsonResponse = mapper.readValue(body, new TypeReference<Map<String, Object>>() {});
+        Assertions.assertEquals("2.0", jsonResponse.get("jsonrpc"));
+        Assertions.assertEquals(42, jsonResponse.get("id"));
+        Assertions.assertTrue(jsonResponse.containsKey("error"));
+
+        Map<String, Object> errorObj = (Map<String, Object>) jsonResponse.get("error");
+        Assertions.assertEquals(-32602, errorObj.get("code"));
+    }
+
+    @Test
+    public void testJsonRpc20InvalidMethod() throws Exception {
+        Http2Client client = Http2Client.getInstance();
+
+        // Send payload missing method entirely
+        String message = "{\"jsonrpc\":\"2.0\",\"params\":{\"hostId\":\"1234567\"},\"id\":42}";
+        final CountDownLatch latch = new CountDownLatch(1);
+        final SimpleConnectionState.ConnectionToken token;
+
+        try {
+            token = client.borrow(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, enableHttp2 ? OptionMap.create(UndertowOptions.ENABLE_HTTP2, true): OptionMap.EMPTY);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+
+        final ClientConnection connection = (ClientConnection) token.getRawConnection();
+        final AtomicReference<ClientResponse> reference = new AtomicReference<>();
+        try {
+            ClientRequest request = new ClientRequest().setPath("/api/json").setMethod(Methods.POST);
+            request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
+            request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+            request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+            connection.sendRequest(request, client.createClientCallback(reference, latch, message));
+
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
+        } catch (Exception e) {
+            logger.error("Exception: ", e);
+            throw new ClientException(e);
+        } finally {
+            client.restore(token);
+        }
+
+        int statusCode = reference.get().getResponseCode();
+        System.out.println("statusCode = " + statusCode);
+        String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        System.out.println("body = " + body);
+
+        // Triggers ERR11200 handler not found (mapped to 400 initially, then 404 potentially, but standard status is 400 for config validation failure usually)
+        Assertions.assertTrue(body.contains("ERR11200"));
+        Assertions.assertEquals(400, statusCode);
+    }
+
+    @Test
+    public void testJsonRpc20ToolsListGet() throws Exception {
+        Http2Client client = Http2Client.getInstance();
+        
+        // Pass simple tools/list payload over GET via URL encode
+        String payload = "{\"jsonrpc\":\"2.0\",\"method\":\"tools/list\",\"id\":100}";
+        String message = "/api/json?cmd=" + URLEncoder.encode(payload, StandardCharsets.UTF_8);
+        
+        final CountDownLatch latch = new CountDownLatch(1);
+        final SimpleConnectionState.ConnectionToken token;
+
+        try {
+            token = client.borrow(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, OptionMap.create(UndertowOptions.ENABLE_HTTP2, true));
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+
+        final ClientConnection connection = (ClientConnection) token.getRawConnection();
+        final AtomicReference<ClientResponse> reference = new AtomicReference<>();
+        try {
+            ClientRequest request = new ClientRequest().setMethod(Methods.GET).setPath(message);
+            request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+            connection.sendRequest(request, client.createClientCallback(reference, latch));
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
+        } catch (Exception e) {
+            logger.error("Exception: ", e);
+            throw new ClientException(e);
+        } finally {
+            client.restore(token);
+        }
+
+        int statusCode = reference.get().getResponseCode();
+        System.out.println("statusCode = " + statusCode);
+        String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        System.out.println("body = " + body);
+
+        Assertions.assertEquals(200, statusCode);
+
+        Map<String, Object> jsonResponse = mapper.readValue(body, new TypeReference<Map<String, Object>>() {});
+        Assertions.assertEquals("2.0", jsonResponse.get("jsonrpc"));
+        Assertions.assertEquals(100, jsonResponse.get("id"));
+        Assertions.assertTrue(jsonResponse.containsKey("result"));
+
+        Map<String, Object> result = (Map<String, Object>) jsonResponse.get("result");
+        Assertions.assertTrue(result.containsKey("tools"));
+        List<Map<String, Object>> tools = (List<Map<String, Object>>) result.get("tools");
+
+        // Spec has 3 user defined services (createRule, updateRule, deleteRule).
+        Assertions.assertEquals(3, tools.size());
+    }
+
 
     // Ignore it as we cannot get the jwks and x509 certificate is not supported anymore.
     @Test

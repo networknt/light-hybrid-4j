@@ -234,9 +234,14 @@ public class SchemaHandler implements MiddlewareHandler {
             return;
         }
         Map<String, Object> serviceMap = (Map<String, Object>)services.get(serviceId);
-
+        
         // For framework built-in handlers like tools/list, we bypass schema validation
-        if (!"tools/list".equals(serviceId)) {
+        if ("tools/list".equals(serviceId)) {
+            if (serviceMap == null) {
+                serviceMap = new HashMap<>();
+                serviceMap.put("skipAuth", true);
+            }
+        } else {
             if (serviceMap == null) {
                 logger.error("Service {} is not defined in spec.yaml", serviceId);
                 exchange.setStatusCode(StatusCodes.BAD_REQUEST);
