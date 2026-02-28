@@ -172,6 +172,52 @@ public class RpcRouterTest {
         Assertions.assertTrue(body.contains("ERR11201"));
     }
 
+    @Test
+    public void testJsonRpc20Success() throws Exception {
+        Http2Client client = Http2Client.getInstance();
+
+        String message = "{\"jsonrpc\":\"2.0\",\"method\":\"lightapi.net/rule/deleteRule/0.1.0\",\"params\":{\"hostId\":\"1234567\",\"ruleId\":\"ruleId\"},\"id\":42}";
+        final CountDownLatch latch = new CountDownLatch(1);
+        final SimpleConnectionState.ConnectionToken token;
+
+        try {
+
+            token = client.borrow(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, enableHttp2 ? OptionMap.create(UndertowOptions.ENABLE_HTTP2, true): OptionMap.EMPTY);
+
+        } catch (Exception e) {
+
+            throw new ClientException(e);
+
+        }
+
+        final ClientConnection connection = (ClientConnection) token.getRawConnection();
+        final AtomicReference<ClientResponse> reference = new AtomicReference<>();
+        try {
+            ClientRequest request = new ClientRequest().setPath("/api/json").setMethod(Methods.POST);
+            request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
+            request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+            request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+            connection.sendRequest(request, client.createClientCallback(reference, latch, message));
+
+            latch.await();
+        } catch (Exception e) {
+            logger.error("Exception: ", e);
+            throw new ClientException(e);
+        } finally {
+
+            client.restore(token);
+
+        }
+        int statusCode = reference.get().getResponseCode();
+        System.out.println("statusCode = " + statusCode);
+        String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        System.out.println("body = " + body);
+        Assertions.assertEquals(200, statusCode);
+        Assertions.assertTrue(body.contains("\"jsonrpc\":\"2.0\""));
+        Assertions.assertTrue(body.contains("\"id\":42"));
+        Assertions.assertTrue(body.contains("\"result\":"));
+    }
+
 
     // Ignore it as we cannot get the jwks and x509 certificate is not supported anymore.
     @Test

@@ -80,7 +80,23 @@ public class JsonHandler implements MiddlewareHandler {
                     nextListener.proceed();
                 }
             });
-            exchange.getResponseSender().send(result);
+
+            Object reqId = auditInfo != null ? auditInfo.get("jsonrpc_id") : null;
+            if (reqId != null) {
+                // Wrap the result in a JSON-RPC 2.0 response format
+                byte[] bytes = new byte[result.remaining()];
+                result.get(bytes);
+                String resultString = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+                String jsonRpcResponse;
+                if (reqId instanceof String) {
+                    jsonRpcResponse = String.format("{\"jsonrpc\":\"2.0\",\"result\":%s,\"id\":\"%s\"}", resultString, reqId);
+                } else {
+                    jsonRpcResponse = String.format("{\"jsonrpc\":\"2.0\",\"result\":%s,\"id\":%s}", resultString, reqId);
+                }
+                exchange.getResponseSender().send(jsonRpcResponse);
+            } else {
+                exchange.getResponseSender().send(result);
+            }
         }
     }
 
