@@ -254,7 +254,7 @@ public class SchemaHandler implements MiddlewareHandler {
         auditInfo.put(Constants.HYBRID_SERVICE_MAP, serviceMap);
         auditInfo.put(Constants.HYBRID_SERVICE_DATA, data);
         if (reqId != null) {
-            auditInfo.put("jsonrpc_id", reqId);
+            auditInfo.put(Constants.JSONRPC_ID, reqId);
         }
         exchange.putAttachment(AttachmentConstants.AUDIT_INFO, auditInfo);
 
