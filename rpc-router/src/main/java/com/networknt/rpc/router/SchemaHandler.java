@@ -256,6 +256,9 @@ public class SchemaHandler implements MiddlewareHandler {
         if (reqId != null) {
             auditInfo.put(Constants.JSONRPC_ID, reqId);
         }
+        if ("2.0".equals(map.get("jsonrpc"))) {
+            auditInfo.put("jsonrpc_version", "2.0");
+        }
         exchange.putAttachment(AttachmentConstants.AUDIT_INFO, auditInfo);
 
         // if exchange is not ended, then call the next handler in the chain.

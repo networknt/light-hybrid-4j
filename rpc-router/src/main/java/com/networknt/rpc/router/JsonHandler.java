@@ -1,5 +1,6 @@
 package com.networknt.rpc.router;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.networknt.config.Config;
@@ -85,6 +86,7 @@ public class JsonHandler implements MiddlewareHandler {
             });
 
             Object reqId = auditInfo != null ? auditInfo.get("jsonrpc_id") : null;
+            Object jsonRpcVersion = auditInfo != null ? auditInfo.get("jsonrpc_version") : null;
             if (reqId != null) {
                 // Wrap the result in a JSON-RPC 2.0 response format
                 byte[] bytes = new byte[result.remaining()];
@@ -92,10 +94,23 @@ public class JsonHandler implements MiddlewareHandler {
                 String resultString = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
                 ObjectMapper mapper = Config.getInstance().getMapper();
                 ObjectNode responseNode = mapper.createObjectNode();
+                JsonNode resultNode;
+                try {
+                    resultNode = mapper.readTree(resultString);
+                    if (resultNode == null) {
+                        resultNode = mapper.valueToTree(resultString);
+                    }
+                } catch (Exception e) {
+                    resultNode = mapper.valueToTree(resultString);
+                }
                 responseNode.put("jsonrpc", "2.0");
-                responseNode.set("result", mapper.readTree(resultString));
+                responseNode.set("result", resultNode);
                 responseNode.set("id", mapper.valueToTree(reqId));
                 exchange.getResponseSender().send(mapper.writeValueAsString(responseNode));
+            } else if ("2.0".equals(jsonRpcVersion)) {
+                // JSON-RPC 2.0 notification: no response object should be returned
+                exchange.setStatusCode(io.undertow.util.StatusCodes.NO_CONTENT);
+                exchange.endExchange();
             } else {
                 exchange.getResponseSender().send(result);
             }
