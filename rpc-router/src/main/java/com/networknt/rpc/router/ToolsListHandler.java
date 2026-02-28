@@ -41,10 +41,10 @@ public class ToolsListHandler implements HybridHandler {
             }
 
             Map<String, Object> serviceMap = (Map<String, Object>) entry.getValue();
-            Map<String, Object> requestMap = (Map<String, Object>) serviceMap.get("request");
+            Map<String, Object> requestMap = (Map<String, Object>) serviceMap.get(SchemaHandler.REQUEST);
 
             if (requestMap != null) {
-                Map<String, Object> schemaMap = (Map<String, Object>) requestMap.get("schema");
+                Map<String, Object> schemaMap = (Map<String, Object>) requestMap.get(SchemaHandler.SCHEMA);
                 if (schemaMap != null) {
                     Map<String, Object> tool = new HashMap<>();
 
