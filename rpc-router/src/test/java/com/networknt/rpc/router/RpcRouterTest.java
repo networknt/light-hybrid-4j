@@ -20,9 +20,13 @@ import org.slf4j.LoggerFactory;
 import org.xnio.IoUtils;
 import org.xnio.OptionMap;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -33,6 +37,7 @@ public class RpcRouterTest {
     static TestServer server = TestServer.getInstance();
 
     static final Logger logger = LoggerFactory.getLogger(RpcRouterTest.class);
+    static final ObjectMapper mapper = new ObjectMapper();
     static final boolean enableHttp2 = server.getServerConfig().isEnableHttp2();
     static final boolean enableHttps = server.getServerConfig().isEnableHttps();
     static final int httpPort = server.getServerConfig().getHttpPort();
@@ -213,9 +218,10 @@ public class RpcRouterTest {
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
         System.out.println("body = " + body);
         Assertions.assertEquals(200, statusCode);
-        Assertions.assertTrue(body.contains("\"jsonrpc\":\"2.0\""));
-        Assertions.assertTrue(body.contains("\"id\":42"));
-        Assertions.assertTrue(body.contains("\"result\":"));
+        Map<String, Object> jsonResponse = mapper.readValue(body, new TypeReference<Map<String, Object>>() {});
+        Assertions.assertEquals("2.0", jsonResponse.get("jsonrpc"));
+        Assertions.assertEquals(42, jsonResponse.get("id"));
+        Assertions.assertTrue(jsonResponse.containsKey("result"));
     }
 
 
