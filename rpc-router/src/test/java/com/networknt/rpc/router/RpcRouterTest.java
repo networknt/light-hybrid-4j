@@ -28,6 +28,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -113,7 +114,7 @@ public class RpcRouterTest {
             request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
             connection.sendRequest(request, client.createClientCallback(reference, latch, message));
 
-            latch.await();
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
         } catch (Exception e) {
             logger.error("Exception: ", e);
             throw new ClientException(e);
@@ -161,7 +162,7 @@ public class RpcRouterTest {
             request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
             connection.sendRequest(request, client.createClientCallback(reference, latch, message));
 
-            latch.await();
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
         } catch (Exception e) {
             logger.error("Exception: ", e);
             throw new ClientException(e);
@@ -204,7 +205,7 @@ public class RpcRouterTest {
             request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
             connection.sendRequest(request, client.createClientCallback(reference, latch, message));
 
-            latch.await();
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
         } catch (Exception e) {
             logger.error("Exception: ", e);
             throw new ClientException(e);
@@ -253,7 +254,7 @@ public class RpcRouterTest {
             request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
             connection.sendRequest(request, client.createClientCallback(reference, latch, message));
 
-            latch.await();
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
         } catch (Exception e) {
             logger.error("Exception: ", e);
             throw new ClientException(e);
@@ -296,7 +297,7 @@ public class RpcRouterTest {
             ClientRequest request = new ClientRequest().setMethod(Methods.GET).setPath(message);
             request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
             connection.sendRequest(request, client.createClientCallback(reference, latch));
-            latch.await();
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
             int statusCode = reference.get().getResponseCode();
             String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
             System.out.println("body = " + body);
@@ -337,7 +338,7 @@ public class RpcRouterTest {
             ClientRequest request = new ClientRequest().setMethod(Methods.GET).setPath(message);
             request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
             connection.sendRequest(request, client.createClientCallback(reference, latch));
-            latch.await();
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
             int statusCode = reference.get().getResponseCode();
             String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
             System.out.println("statusCode = " + statusCode + " body = " + body);
