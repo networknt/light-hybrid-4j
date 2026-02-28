@@ -104,7 +104,31 @@ public class JsonHandler implements MiddlewareHandler {
                     resultNode = mapper.valueToTree(resultString);
                 }
                 responseNode.put("jsonrpc", "2.0");
-                responseNode.set("result", resultNode);
+                if (exchange.getStatusCode() >= 400) {
+                    // This is an error response
+                    ObjectNode errorNode = mapper.createObjectNode();
+                    errorNode.put("code", exchange.getStatusCode()); // Basic fallback
+                    
+                    if (resultNode != null && resultNode.isObject()) {
+                        if (resultNode.has("statusCode")) {
+                            errorNode.set("code", resultNode.get("statusCode"));
+                        }
+                        if (resultNode.has("message")) {
+                            errorNode.set("message", resultNode.get("message"));
+                        } else if (resultNode.has("code")) { // Status object often has string 'code' instead of message
+                            errorNode.set("message", resultNode.get("code"));
+                        }
+                        errorNode.set("data", resultNode);
+                    } else if (resultNode != null && resultNode.isTextual()) {
+                        errorNode.put("message", resultNode.asText());
+                    } else {
+                        errorNode.put("message", "Internal Server Error");
+                    }
+                    responseNode.set("error", errorNode);
+                } else {
+                    responseNode.set("result", resultNode);
+                }
+                
                 responseNode.set("id", mapper.valueToTree(reqId));
                 exchange.getResponseSender().send(mapper.writeValueAsString(responseNode));
             } else if ("2.0".equals(jsonRpcVersion)) {
