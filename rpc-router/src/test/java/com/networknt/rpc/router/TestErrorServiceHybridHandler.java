@@ -17,12 +17,12 @@ public class TestErrorServiceHybridHandler implements HybridHandler {
     @Override
     public ByteBuffer handle(HttpServerExchange exchange, Object input)  {
         System.out.println("TestErrorServiceHybridHandler is called with " + input);
-        
+
         exchange.setStatusCode(StatusCodes.BAD_REQUEST);
         Status status = new Status("ERR10001", "This is a test error");
-        
+
         String message = com.networknt.config.JsonMapper.toJson(status);
-        
+
         ByteBuffer buffer = ByteBuffer.allocateDirect(message.length());
         try {
             buffer.put(message.getBytes("UTF-8"));

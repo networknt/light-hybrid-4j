@@ -301,20 +301,20 @@ public class RpcRouterTest {
         } finally {
             client.restore(token);
         }
-        
+
         int statusCode = reference.get().getResponseCode();
         System.out.println("statusCode = " + statusCode);
         String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
         System.out.println("body = " + body);
-        
+
         Assertions.assertEquals(400, statusCode); // The HTTP status is preserved as 400 by JsonHandler
-        
+
         Map<String, Object> jsonResponse = mapper.readValue(body, new TypeReference<Map<String, Object>>() {});
         Assertions.assertEquals("2.0", jsonResponse.get("jsonrpc"));
         Assertions.assertEquals(99, jsonResponse.get("id"));
         Assertions.assertFalse(jsonResponse.containsKey("result"), "Error response must not contain result");
         Assertions.assertTrue(jsonResponse.containsKey("error"), "Error response must contain error object");
-        
+
         Map<String, Object> errorObject = (Map<String, Object>) jsonResponse.get("error");
         Assertions.assertEquals(401, errorObject.get("code")); // 401 status code should be coerced
     }
