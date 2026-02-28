@@ -234,12 +234,32 @@ public class SchemaHandler implements MiddlewareHandler {
             return;
         }
         Map<String, Object> serviceMap = (Map<String, Object>)services.get(serviceId);
-        Map<String, Object> requestMap = (Map<String, Object>)serviceMap.get(REQUEST);
-        ByteBuffer error = handler.validate(serviceId, (Map<String, Object>)requestMap.get(SCHEMA), data);
-        if(error != null) {
-            exchange.setStatusCode(StatusCodes.BAD_REQUEST);
-            exchange.getResponseSender().send(error);
-            return;
+        
+        // For framework built-in handlers like tools/list, we bypass schema validation
+        if ("tools/list".equals(serviceId)) {
+            if (serviceMap == null) {
+                serviceMap = new HashMap<>();
+                serviceMap.put("skipAuth", true);
+            }
+        } else {
+            if (serviceMap == null) {
+                logger.error("Service {} is not defined in spec.yaml", serviceId);
+                exchange.setStatusCode(StatusCodes.BAD_REQUEST);
+                exchange.getResponseSender().send(handler.getStatus(exchange, STATUS_HANDLER_NOT_FOUND, serviceId));
+                return;
+            }
+            Map<String, Object> requestMap = (Map<String, Object>)serviceMap.get(REQUEST);
+            if (requestMap != null) {
+                Map<String, Object> schema = (Map<String, Object>)requestMap.get(SCHEMA);
+                if (schema != null) {
+                    ByteBuffer error = handler.validate(serviceId, schema, data);
+                    if(error != null) {
+                        exchange.setStatusCode(StatusCodes.BAD_REQUEST);
+                        exchange.getResponseSender().send(error);
+                        return;
+                    }
+                }
+            }
         }
 
         if(logger.isDebugEnabled()) {

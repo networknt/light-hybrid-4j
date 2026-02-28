@@ -32,7 +32,11 @@ public class HybridJwtVerifyHandler extends AbstractJwtVerifyHandler {
         }
         // check if the service has skipAuth flag set to true in the schema.
         Map<String, Object> auditInfo = exchange.getAttachment(AttachmentConstants.AUDIT_INFO);
+        if (auditInfo == null) return false;
+        
         Map<String, Object> serviceMap = (Map<String, Object>)auditInfo.get(Constants.HYBRID_SERVICE_MAP);
+        if (serviceMap == null) return false;
+        
         Boolean skipAuth = (Boolean)serviceMap.get("skipAuth");
         if(skipAuth != null) {
             return skipAuth;
@@ -42,7 +46,10 @@ public class HybridJwtVerifyHandler extends AbstractJwtVerifyHandler {
 
     @Override
     public List<String> getSpecScopes(HttpServerExchange exchange, Map<String, Object> auditInfo) throws Exception {
+        if (auditInfo == null) return null;
         Map<String, Object> serviceMap = (Map<String, Object>)auditInfo.get(Constants.HYBRID_SERVICE_MAP);
+        if (serviceMap == null) return null;
+        
         String scope = (String)serviceMap.get("scope");
         if(scope != null) {
             return List.of(scope);
