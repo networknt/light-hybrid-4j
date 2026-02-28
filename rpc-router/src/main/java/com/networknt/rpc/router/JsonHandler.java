@@ -110,8 +110,8 @@ public class JsonHandler implements MiddlewareHandler {
                     errorNode.put("code", exchange.getStatusCode()); // Basic fallback
                     
                     if (resultNode != null && resultNode.isObject()) {
-                        if (resultNode.has("statusCode")) {
-                            errorNode.set("code", resultNode.get("statusCode"));
+                        if (resultNode.hasNonNull("statusCode")) {
+                            errorNode.put("code", resultNode.get("statusCode").asInt(exchange.getStatusCode()));
                         }
                         if (resultNode.has("message")) {
                             errorNode.set("message", resultNode.get("message"));
