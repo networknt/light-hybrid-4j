@@ -1,5 +1,9 @@
 package com.networknt.rpc.router;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.networknt.config.Config;
 import com.networknt.handler.MiddlewareHandler;
 import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.rpc.HybridHandler;
@@ -80,7 +84,36 @@ public class JsonHandler implements MiddlewareHandler {
                     nextListener.proceed();
                 }
             });
-            exchange.getResponseSender().send(result);
+
+            Object reqId = auditInfo != null ? auditInfo.get("jsonrpc_id") : null;
+            Object jsonRpcVersion = auditInfo != null ? auditInfo.get("jsonrpc_version") : null;
+            if (reqId != null) {
+                // Wrap the result in a JSON-RPC 2.0 response format
+                byte[] bytes = new byte[result.remaining()];
+                result.get(bytes);
+                String resultString = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+                ObjectMapper mapper = Config.getInstance().getMapper();
+                ObjectNode responseNode = mapper.createObjectNode();
+                JsonNode resultNode;
+                try {
+                    resultNode = mapper.readTree(resultString);
+                    if (resultNode == null) {
+                        resultNode = mapper.valueToTree(resultString);
+                    }
+                } catch (Exception e) {
+                    resultNode = mapper.valueToTree(resultString);
+                }
+                responseNode.put("jsonrpc", "2.0");
+                responseNode.set("result", resultNode);
+                responseNode.set("id", mapper.valueToTree(reqId));
+                exchange.getResponseSender().send(mapper.writeValueAsString(responseNode));
+            } else if ("2.0".equals(jsonRpcVersion)) {
+                // JSON-RPC 2.0 notification: no response object should be returned
+                exchange.setStatusCode(io.undertow.util.StatusCodes.NO_CONTENT);
+                exchange.endExchange();
+            } else {
+                exchange.getResponseSender().send(result);
+            }
         }
     }
 

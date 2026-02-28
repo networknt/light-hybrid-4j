@@ -189,14 +189,50 @@ public class SchemaHandler implements MiddlewareHandler {
 
     private void processRequest(HttpServerExchange exchange, String message) {
         Map<String, Object> map = JsonMapper.string2Map(message);
-        String serviceId = Util.getServiceId(map);
-        logger.debug("serviceId = {}", serviceId);
+
+        String serviceId;
+        Map<String, Object> data;
+        Object reqId = null;
+
+        // Check if this is a JSON-RPC 2.0 request
+        if ("2.0".equals(map.get("jsonrpc"))) {
+            serviceId = (String) map.get("method");
+            reqId = map.get("id");
+            Object params = map.get("params");
+            if (params == null) {
+                data = null;
+            } else if (params instanceof Map) {
+                data = (Map<String, Object>) params;
+            } else if (params instanceof List) {
+                // JSON-RPC 2.0 positional (array) params are not supported; return invalid params error
+                exchange.setStatusCode(StatusCodes.BAD_REQUEST);
+                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                Map<String, Object> errorResponse = new LinkedHashMap<>();
+                errorResponse.put("jsonrpc", "2.0");
+                errorResponse.put("id", reqId);
+                Map<String, Object> errorObj = new LinkedHashMap<>();
+                errorObj.put("code", -32602);
+                errorObj.put("message", "Invalid params: positional array params are not supported");
+                errorResponse.put("error", errorObj);
+                exchange.getResponseSender().send(JsonMapper.toJson(errorResponse));
+                return;
+            } else {
+                logger.warn("Unexpected params type {} in JSON-RPC 2.0 request, treating as null", params.getClass().getName());
+                data = null;
+            }
+            logger.debug("JSON-RPC 2.0 request detected. serviceId = {}", serviceId);
+        } else {
+            // Legacy light-hybrid-4j request
+            serviceId = Util.getServiceId(map);
+            data = (Map<String, Object>) map.get(DATA);
+            logger.debug("Legacy request detected. serviceId = {}", serviceId);
+        }
+
         HybridHandler handler = RpcStartupHookProvider.serviceMap.get(serviceId);
         if(handler == null) {
             this.handleMissingHandler(exchange, serviceId);
             return;
         }
-        Map<String, Object> data = (Map<String, Object>)map.get(DATA);
         Map<String, Object> serviceMap = (Map<String, Object>)services.get(serviceId);
         Map<String, Object> requestMap = (Map<String, Object>)serviceMap.get(REQUEST);
         ByteBuffer error = handler.validate(serviceId, (Map<String, Object>)requestMap.get(SCHEMA), data);
@@ -217,6 +253,12 @@ public class SchemaHandler implements MiddlewareHandler {
         auditInfo.put(Constants.HYBRID_SERVICE_ID, serviceId);
         auditInfo.put(Constants.HYBRID_SERVICE_MAP, serviceMap);
         auditInfo.put(Constants.HYBRID_SERVICE_DATA, data);
+        if (reqId != null) {
+            auditInfo.put(Constants.JSONRPC_ID, reqId);
+        }
+        if ("2.0".equals(map.get("jsonrpc"))) {
+            auditInfo.put("jsonrpc_version", "2.0");
+        }
         exchange.putAttachment(AttachmentConstants.AUDIT_INFO, auditInfo);
 
         // if exchange is not ended, then call the next handler in the chain.
