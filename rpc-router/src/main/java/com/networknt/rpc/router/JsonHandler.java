@@ -118,6 +118,10 @@ public class JsonHandler implements MiddlewareHandler {
                         } else if (resultNode.has("code")) { // Status object often has string 'code' instead of message
                             errorNode.set("message", resultNode.get("code"));
                         }
+                        if (!errorNode.has("message")) {
+                            String reason = StatusCodes.getReason(exchange.getStatusCode());
+                            errorNode.put("message", reason != null ? reason : "Internal Server Error");
+                        }
                         errorNode.set("data", resultNode);
                     } else if (resultNode != null && resultNode.isTextual()) {
                         errorNode.put("message", resultNode.asText());
