@@ -108,7 +108,7 @@ public class JsonHandler implements MiddlewareHandler {
                     // This is an error response
                     ObjectNode errorNode = mapper.createObjectNode();
                     errorNode.put("code", exchange.getStatusCode()); // Basic fallback
-                    
+
                     if (resultNode != null && resultNode.isObject()) {
                         if (resultNode.has("statusCode")) {
                             errorNode.set("code", resultNode.get("statusCode"));
@@ -128,7 +128,7 @@ public class JsonHandler implements MiddlewareHandler {
                 } else {
                     responseNode.set("result", resultNode);
                 }
-                
+
                 responseNode.set("id", mapper.valueToTree(reqId));
                 exchange.getResponseSender().send(mapper.writeValueAsString(responseNode));
             } else if ("2.0".equals(jsonRpcVersion)) {
