@@ -234,7 +234,7 @@ public class SchemaHandler implements MiddlewareHandler {
             return;
         }
         Map<String, Object> serviceMap = (Map<String, Object>)services.get(serviceId);
-        
+
         // For framework built-in handlers like tools/list, we bypass schema validation
         if (!"tools/list".equals(serviceId)) {
             if (serviceMap == null) {

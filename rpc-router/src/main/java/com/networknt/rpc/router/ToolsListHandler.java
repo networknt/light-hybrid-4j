@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * A built-in service handler designed to expose all registered JSON-RPC services (HybridHandlers)
- * as MCP (Model Context Protocol) Tools. 
+ * as MCP (Model Context Protocol) Tools.
  *
  * It iterates over the parsed `spec.yaml` services loaded into `SchemaHandler.services`,
  * extracting the schema properties and constructing a list of standardized MCP Tool definitions.
@@ -34,7 +34,7 @@ public class ToolsListHandler implements HybridHandler {
 
         for (Map.Entry<String, Object> entry : SchemaHandler.services.entrySet()) {
             String serviceId = entry.getKey();
-            
+
             // Skip the tools/list itself to avoid recursive exposure
             if ("tools/list".equals(serviceId)) {
                 continue;
@@ -42,12 +42,12 @@ public class ToolsListHandler implements HybridHandler {
 
             Map<String, Object> serviceMap = (Map<String, Object>) entry.getValue();
             Map<String, Object> requestMap = (Map<String, Object>) serviceMap.get("request");
-            
+
             if (requestMap != null) {
                 Map<String, Object> schemaMap = (Map<String, Object>) requestMap.get("schema");
                 if (schemaMap != null) {
                     Map<String, Object> tool = new HashMap<>();
-                    
+
                     // The MCP tool 'name' field expects a simple identifier, so we use the serviceId.
                     // Hyphens and underscores are often safer than slashes, but slashes might be allowed.
                     // For now, we will use the raw serviceId for exact matching. Replace slashes if MCP throws an error later.
@@ -66,19 +66,19 @@ public class ToolsListHandler implements HybridHandler {
                     // MCP uses 'inputSchema' as the root object
                     Map<String, Object> inputSchema = new HashMap<>();
                     inputSchema.put("type", "object");
-                    
+
                     // Copy properties if they exist
                     if (schemaMap.containsKey("properties")) {
                         inputSchema.put("properties", schemaMap.get("properties"));
                     }
-                    
+
                     // Copy required array if it exists
                     if (schemaMap.containsKey("required")) {
                         inputSchema.put("required", schemaMap.get("required"));
                     }
-                    
+
                     tool.put("inputSchema", inputSchema);
-                    
+
                     tools.add(tool);
                 }
             }

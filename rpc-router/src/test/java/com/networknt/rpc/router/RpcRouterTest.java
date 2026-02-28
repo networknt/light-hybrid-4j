@@ -364,14 +364,14 @@ public class RpcRouterTest {
         Assertions.assertEquals("2.0", jsonResponse.get("jsonrpc"));
         Assertions.assertEquals(100, jsonResponse.get("id"));
         Assertions.assertTrue(jsonResponse.containsKey("result"));
-        
+
         Map<String, Object> result = (Map<String, Object>) jsonResponse.get("result");
         Assertions.assertTrue(result.containsKey("tools"));
         List<Map<String, Object>> tools = (List<Map<String, Object>>) result.get("tools");
-        
+
         // Spec has 3 user defined services (createRule, updateRule, deleteRule).
         Assertions.assertEquals(3, tools.size());
-        
+
         // Assert we got valid MCP tool properties out of it
         Map<String, Object> firstTool = tools.get(0);
         Assertions.assertNotNull(firstTool.get("name"));
