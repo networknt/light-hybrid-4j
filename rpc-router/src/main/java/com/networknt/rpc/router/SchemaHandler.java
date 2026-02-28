@@ -189,7 +189,7 @@ public class SchemaHandler implements MiddlewareHandler {
 
     private void processRequest(HttpServerExchange exchange, String message) {
         Map<String, Object> map = JsonMapper.string2Map(message);
-        
+
         String serviceId;
         Map<String, Object> data;
         Object reqId = null;
