@@ -8,7 +8,7 @@ public class RpcTest {
     public void testRpcResponseFormat() {
         String resultStr = "{\"host\":\"lightapi.net\"}";
         Object reqId = 123;
-        
+
         String jsonRpcResponse = String.format("{\"jsonrpc\":\"2.0\",\"result\":%s,\"id\":%s}", resultStr, reqId);
         Assertions.assertEquals("{\"jsonrpc\":\"2.0\",\"result\":{\"host\":\"lightapi.net\"},\"id\":123}", jsonRpcResponse);
     }
