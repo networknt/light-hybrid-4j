@@ -22,6 +22,8 @@ import org.xnio.OptionMap;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Map;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -317,6 +319,64 @@ public class RpcRouterTest {
 
         Map<String, Object> errorObject = (Map<String, Object>) jsonResponse.get("error");
         Assertions.assertEquals(401, errorObject.get("code")); // 401 status code should be coerced
+    }
+
+    @Test
+    public void testJsonRpc20ToolsList() throws Exception {
+        Http2Client client = Http2Client.getInstance();
+
+        // Pass simple tools/list payload
+        String message = "{\"jsonrpc\":\"2.0\",\"method\":\"tools/list\",\"id\":100}";
+        final CountDownLatch latch = new CountDownLatch(1);
+        final SimpleConnectionState.ConnectionToken token;
+
+        try {
+            token = client.borrow(new URI(url), Http2Client.WORKER, Http2Client.SSL, Http2Client.BUFFER_POOL, enableHttp2 ? OptionMap.create(UndertowOptions.ENABLE_HTTP2, true): OptionMap.EMPTY);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+
+        final ClientConnection connection = (ClientConnection) token.getRawConnection();
+        final AtomicReference<ClientResponse> reference = new AtomicReference<>();
+        try {
+            ClientRequest request = new ClientRequest().setPath("/api/json").setMethod(Methods.POST);
+            request.getRequestHeaders().put(Headers.CONTENT_TYPE, "application/json");
+            request.getRequestHeaders().put(Headers.AUTHORIZATION, auth);
+            request.getRequestHeaders().put(Headers.TRANSFER_ENCODING, "chunked");
+            connection.sendRequest(request, client.createClientCallback(reference, latch, message));
+
+            Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS), "Timed out waiting for server response");
+        } catch (Exception e) {
+            logger.error("Exception: ", e);
+            throw new ClientException(e);
+        } finally {
+            client.restore(token);
+        }
+
+        int statusCode = reference.get().getResponseCode();
+        System.out.println("statusCode = " + statusCode);
+        String body = reference.get().getAttachment(Http2Client.RESPONSE_BODY);
+        System.out.println("body = " + body);
+
+        Assertions.assertEquals(200, statusCode);
+
+        Map<String, Object> jsonResponse = mapper.readValue(body, new TypeReference<Map<String, Object>>() {});
+        Assertions.assertEquals("2.0", jsonResponse.get("jsonrpc"));
+        Assertions.assertEquals(100, jsonResponse.get("id"));
+        Assertions.assertTrue(jsonResponse.containsKey("result"));
+        
+        Map<String, Object> result = (Map<String, Object>) jsonResponse.get("result");
+        Assertions.assertTrue(result.containsKey("tools"));
+        List<Map<String, Object>> tools = (List<Map<String, Object>>) result.get("tools");
+        
+        // Spec has 3 user defined services (createRule, updateRule, deleteRule).
+        Assertions.assertEquals(3, tools.size());
+        
+        // Assert we got valid MCP tool properties out of it
+        Map<String, Object> firstTool = tools.get(0);
+        Assertions.assertNotNull(firstTool.get("name"));
+        Assertions.assertNotNull(firstTool.get("description"));
+        Assertions.assertNotNull(firstTool.get("inputSchema"));
     }
 
 
