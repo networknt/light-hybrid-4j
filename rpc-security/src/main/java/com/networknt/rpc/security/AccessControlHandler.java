@@ -63,6 +63,12 @@ public class AccessControlHandler implements MiddlewareHandler {
 
         // execute rules using the executor
         RuleExecutor ruleExecutor = SingletonServiceFactory.getBean(RuleExecutor.class);
+        if (ruleExecutor == null) {
+            // Fail closed if the RuleExecutor bean is not available (e.g., missing service.singletons wiring).
+            logger.error("RuleExecutor bean is not available. Please check service.singletons configuration.");
+            setExchangeStatus(exchange, STARTUP_HOOK_NOT_LOADED, "RuleExecutor");
+            return;
+        }
         Map<String, Object> result = ruleExecutor.executeRules(endpoint, REQUEST_ACCESS, ruleEnginePayload);
         if (result == null) {
             if (config.isDefaultDeny()) {
