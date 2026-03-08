@@ -473,11 +473,11 @@ public class RpcRouterTest {
     @Test
     public void testJsonRpc20ToolsListGet() throws Exception {
         Http2Client client = Http2Client.getInstance();
-        
+
         // Pass simple tools/list payload over GET via URL encode
         String payload = "{\"jsonrpc\":\"2.0\",\"method\":\"tools/list\",\"id\":100}";
         String message = "/api/json?cmd=" + URLEncoder.encode(payload, StandardCharsets.UTF_8);
-        
+
         final CountDownLatch latch = new CountDownLatch(1);
         final SimpleConnectionState.ConnectionToken token;
 

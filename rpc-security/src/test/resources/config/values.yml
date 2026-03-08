@@ -63,4 +63,3 @@ rule.endpointRules:
     req-acc:
       - test-access-rule
     permission:
-
