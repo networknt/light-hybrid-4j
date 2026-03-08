@@ -30,6 +30,8 @@ service.singletons:
     # ShutdownHookProvider implementations, there are one to many and they are called in the same sequence defined.
     # - com.networknt.server.ShutdownHookProvider:
     # - com.networknt.server.Test1ShutdownHook
+  - com.networknt.rule.RuleExecutor:
+      - com.networknt.rule.MultiThreadRuleExecutor
 
 # unified-security.yml
 unified-security.pathPrefixAuths:
@@ -37,3 +39,27 @@ unified-security.pathPrefixAuths:
     basic: true
     jwt: true
     apikey: true
+
+# rule.yml
+rule.ruleBodies:
+  test-access-rule:
+    hostId: "01964b05-552a-7c4b-9184-6857e7f3dc5f"
+    ruleType: "req-acc"
+    ruleOwner: "01964b05-5532-7c79-8cde-191dcbd421b8"
+    common: "Y"
+    ruleId: "test-access-rule"
+    ruleName: "Role-Based Access Control for authorization code token."
+    ruleVersion: "1.0.0"
+    ruleDesc: "If the token has role claim, then at least one role in the JWT role claim matches the endpoint permission roles configuration."
+    conditions:
+      - operatorCode: "isNotNull"
+        conditionId: "endpoint-is-not-null"
+        conditionDesc: "endpoint is not null in auditInfo."
+        propertyPath: "auditInfo.endpoint"
+        index: 1
+
+rule.endpointRules:
+  lightapi.net/service/dummy/0.1.0:
+    req-acc:
+      - test-access-rule
+    permission:

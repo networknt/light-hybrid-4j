@@ -110,6 +110,10 @@
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
+            <artifactId>rule-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
             <artifactId>rule-loader</artifactId>
         </dependency>
         <dependency>
