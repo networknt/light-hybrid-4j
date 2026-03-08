@@ -47,7 +47,7 @@ rule.ruleBodies:
     ruleType: "req-acc"
     ruleOwner: "01964b05-5532-7c79-8cde-191dcbd421b8"
     common: "Y"
-    ruleId: "allow-role-based-access-control.lightapi.net.dev.lightapi.net"
+    ruleId: "test-access-rule"
     ruleName: "Role-Based Access Control for authorization code token."
     ruleVersion: "1.0.0"
     ruleDesc: "If the token has role claim, then at least one role in the JWT role claim matches the endpoint permission roles configuration."
