@@ -57,7 +57,7 @@ public class AccessControlHandler implements MiddlewareHandler {
         // so we just put as many objects into the map in case the rule needs it for the access control calculation.
         Map<String, Object> ruleEnginePayload = new HashMap<>();
 
-        // need to get the rule/rules to execute from the RuleLoaderStartupHook. First, get the endpoint.
+        // get the endpoint to look up and execute the applicable access control rules via RuleExecutor.
         String endpoint = (String) auditInfo.get(Constants.ENDPOINT_STRING);
         this.populateRuleEnginePayload(exchange, auditInfo, ruleEnginePayload);
 
