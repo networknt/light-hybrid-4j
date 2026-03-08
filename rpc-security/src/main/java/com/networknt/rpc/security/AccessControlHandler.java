@@ -27,8 +27,6 @@ public class AccessControlHandler implements MiddlewareHandler {
     static final String ACCESS_CONTROL_MISSING = "ERR10069";
     static final String STARTUP_HOOK_NOT_LOADED = "ERR11019";
     static final String REQUEST_ACCESS = "req-acc";
-    static final String PERMISSION = "permission";
-    static final String RULE_ID = "ruleId";
     private volatile HttpHandler next;
 
     public AccessControlHandler() {
