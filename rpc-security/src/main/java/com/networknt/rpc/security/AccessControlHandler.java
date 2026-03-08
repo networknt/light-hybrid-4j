@@ -28,9 +28,11 @@ public class AccessControlHandler implements MiddlewareHandler {
     static final String STARTUP_HOOK_NOT_LOADED = "ERR11019";
     static final String REQUEST_ACCESS = "req-acc";
     private volatile HttpHandler next;
+    private final RuleExecutor ruleExecutor;
 
     public AccessControlHandler() {
         AccessControlConfig.load();
+        ruleExecutor = SingletonServiceFactory.getBean(RuleExecutor.class);
         if (logger.isInfoEnabled())
             logger.info("AccessControlHandler is loaded.");
     }
@@ -60,7 +62,6 @@ public class AccessControlHandler implements MiddlewareHandler {
         this.populateRuleEnginePayload(exchange, auditInfo, ruleEnginePayload);
 
         // execute rules using the executor
-        RuleExecutor ruleExecutor = SingletonServiceFactory.getBean(RuleExecutor.class);
         if (ruleExecutor == null) {
             // Fail closed if the RuleExecutor bean is not available (e.g., missing service.singletons wiring).
             logger.error("RuleExecutor bean is not available. Please check service.singletons configuration.");
