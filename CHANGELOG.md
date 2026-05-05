@@ -1,5 +1,15 @@
 # Change Log
 
+## [2.3.4](https://github.com/networknt/light-hybrid-4j/tree/2.3.4) (2026-05-05)
+
+
+**Merged pull requests:**
+
+
+- fixes \#183 replace RuleLoaderStartupHook with MultiThreadRuleExecutor [\#184](https://github.com/networknt/light-hybrid-4j/pull/184) ([stevehu](https://github.com/stevehu))
+- fixes \#179 implement tools/list RPC method [\#180](https://github.com/networknt/light-hybrid-4j/pull/180) ([stevehu](https://github.com/stevehu))
+- fixes \#177 fix JSON-RPC 2.0 Error Mapping [\#178](https://github.com/networknt/light-hybrid-4j/pull/178) ([stevehu](https://github.com/stevehu))
+- fixes \#171 migrate to JSON RPC 2.0 with dual protocol support [\#172](https://github.com/networknt/light-hybrid-4j/pull/172) ([stevehu](https://github.com/stevehu))
 ## [2.3.3](https://github.com/networknt/light-hybrid-4j/tree/2.3.3) (2026-02-19)
 
 
