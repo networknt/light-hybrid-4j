@@ -17,10 +17,12 @@ package com.networknt.rpc;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.config.Config;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
-import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.Error;
+import com.networknt.schema.Schema;
+import com.networknt.schema.SchemaRegistry;
+import com.networknt.schema.SchemaRegistryConfig;
+import com.networknt.schema.dialect.Dialects;
+import com.networknt.schema.path.PathType;
 import com.networknt.status.Status;
 import com.networknt.utility.NioUtils;
 import io.undertow.server.HttpServerExchange;
@@ -28,8 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This is the interface that every business handler should implement. It has two default methods
@@ -55,14 +57,13 @@ public interface HybridHandler {
             }
         }
         JsonNode jsonNode = Config.getInstance().getMapper().valueToTree(schema);
-        JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
-        JsonSchema jsonSchema = factory.getSchema(jsonNode);
-        Set<ValidationMessage> errors = jsonSchema.validate(Config.getInstance().getMapper().valueToTree(data));
+        Schema jsonSchema = HybridHandlerSchemaRegistry.INSTANCE.getSchema(jsonNode);
+        List<Error> errors = jsonSchema.validate(Config.getInstance().getMapper().valueToTree(data));
         ByteBuffer bf = null;
         if(!errors.isEmpty()) {
             // like the light-rest-4j, we only return one validation error.
-            ValidationMessage vm = errors.iterator().next();
-            Status status = new Status(STATUS_VALIDATION_ERROR, vm.getMessage());
+            Error error = errors.get(0);
+            Status status = new Status(STATUS_VALIDATION_ERROR, error.toString());
             logger.error("Validation Error:{}", status);
             bf = NioUtils.toByteBuffer(status.toString());
         }
@@ -102,5 +103,16 @@ public interface HybridHandler {
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
         logger.error("{} at {}.{}({}:{})", status.toString(), elements[2].getClassName(), elements[2].getMethodName(), elements[2].getFileName(), elements[2].getLineNumber());
         return status.toString();
+    }
+}
+
+final class HybridHandlerSchemaRegistry {
+    static final SchemaRegistry INSTANCE = SchemaRegistry.withDefaultDialect(Dialects.getDraft202012(),
+            builder -> builder.schemaRegistryConfig(SchemaRegistryConfig.builder()
+                    .errorMessageKeyword("message")
+                    .pathType(PathType.LEGACY)
+                    .build()));
+
+    private HybridHandlerSchemaRegistry() {
     }
 }
