@@ -21,7 +21,11 @@ import com.networknt.schema.Error;
 import com.networknt.schema.Schema;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.SchemaRegistryConfig;
+import com.networknt.schema.dialect.DefaultDialectRegistry;
+import com.networknt.schema.dialect.Dialect;
 import com.networknt.schema.dialect.Dialects;
+import com.networknt.schema.keyword.NonValidationKeyword;
+import com.networknt.schema.path.NodePath;
 import com.networknt.schema.path.PathType;
 import com.networknt.status.Status;
 import com.networknt.utility.NioUtils;
@@ -30,8 +34,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This is the interface that every business handler should implement. It has two default methods
@@ -63,7 +69,8 @@ public interface HybridHandler {
         if(!errors.isEmpty()) {
             // like the light-rest-4j, we only return one validation error.
             Error error = errors.get(0);
-            Status status = new Status(STATUS_VALIDATION_ERROR, error.toString());
+            Status status = new Status(STATUS_VALIDATION_ERROR,
+                    HybridHandlerSchemaRegistry.formatError(jsonNode, error));
             logger.error("Validation Error:{}", status);
             bf = NioUtils.toByteBuffer(status.toString());
         }
@@ -107,12 +114,132 @@ public interface HybridHandler {
 }
 
 final class HybridHandlerSchemaRegistry {
-    static final SchemaRegistry INSTANCE = SchemaRegistry.withDefaultDialect(Dialects.getDraft202012(),
-            builder -> builder.schemaRegistryConfig(SchemaRegistryConfig.builder()
-                    .errorMessageKeyword("message")
-                    .pathType(PathType.LEGACY)
-                    .build()));
+    private static final Set<String> DIRECT_SUBSCHEMA_KEYWORDS = Set.of(
+            "additionalItems", "additionalProperties", "contains", "contentSchema",
+            "else", "if", "items", "not", "propertyNames", "then",
+            "unevaluatedItems", "unevaluatedProperties");
+    private static final Set<String> SUBSCHEMA_MAP_KEYWORDS = Set.of(
+            "$defs", "definitions", "dependencies", "dependentSchemas",
+            "patternProperties", "properties");
+    private static final Set<String> SUBSCHEMA_ARRAY_KEYWORDS = Set.of(
+            "allOf", "anyOf", "oneOf", "prefixItems");
+    private static final SchemaRegistryConfig CONFIG = SchemaRegistryConfig.builder()
+            .errorMessageKeyword("message")
+            .pathType(PathType.LEGACY)
+            .build();
+    private static final Dialect DEFAULT_DIALECT = withNullableKeyword(Dialects.getDraft202012());
+    private static final List<Dialect> DIALECTS = List.of(
+            DEFAULT_DIALECT,
+            withNullableKeyword(Dialects.getDraft201909()),
+            withNullableKeyword(Dialects.getDraft7()),
+            withNullableKeyword(Dialects.getDraft6()),
+            withNullableKeyword(Dialects.getDraft4()));
+    static final SchemaRegistry INSTANCE = SchemaRegistry.builder()
+            .defaultDialectId(DEFAULT_DIALECT.getId())
+            .dialectRegistry(new DefaultDialectRegistry(DIALECTS))
+            .schemaRegistryConfig(CONFIG)
+            .build();
 
     private HybridHandlerSchemaRegistry() {
+    }
+
+    private static Dialect withNullableKeyword(Dialect dialect) {
+        return Dialect.builder(dialect)
+                .keyword(new NonValidationKeyword("nullable"))
+                .build();
+    }
+
+    static String formatError(JsonNode schemaNode, Error error) {
+        return usesCustomMessage(schemaNode, error) ? error.getMessage() : error.toString();
+    }
+
+    private static boolean usesCustomMessage(JsonNode schemaNode, Error error) {
+        if (schemaNode == null || error.getSchemaLocation() == null || error.getKeyword() == null) {
+            return false;
+        }
+        NodePath fragment = error.getSchemaLocation().getFragment();
+        if (fragment == null) {
+            return false;
+        }
+        List<JsonNode> ancestors = new ArrayList<>();
+        JsonNode current = schemaNode;
+        SchemaTraversalState state = SchemaTraversalState.SCHEMA;
+        ancestors.add(current);
+        for (int i = 0; i < fragment.getNameCount() - 1; i++) {
+            Object element = fragment.getElement(i);
+            current = element instanceof Number
+                    ? current.get(((Number) element).intValue())
+                    : current.get(String.valueOf(element));
+            if (current == null) {
+                return false;
+            }
+            state = nextState(state, element, current);
+            if (state == SchemaTraversalState.SCHEMA) {
+                ancestors.add(current);
+            }
+        }
+        for (int i = ancestors.size() - 1; i >= 0; i--) {
+            JsonNode messages = ancestors.get(i).get("message");
+            if (messages == null) {
+                continue;
+            }
+            JsonNode customMessage = messages.get(error.getKeyword());
+            if (customMessage == null) {
+                return false;
+            }
+            if (customMessage.isTextual()) {
+                return !customMessage.asText().isEmpty();
+            }
+            if (customMessage.isObject()) {
+                JsonNode propertyMessage = error.getProperty() == null
+                        ? null : customMessage.get(error.getProperty());
+                JsonNode selectedMessage = propertyMessage == null ? customMessage.get("") : propertyMessage;
+                return selectedMessage != null && selectedMessage.isTextual()
+                        && !selectedMessage.asText().isEmpty();
+            }
+            return false;
+        }
+        return false;
+    }
+
+    private static SchemaTraversalState nextState(SchemaTraversalState state, Object element, JsonNode node) {
+        if (state == SchemaTraversalState.SUBSCHEMA_MAP) {
+            return element instanceof String && isSchemaNode(node)
+                    ? SchemaTraversalState.SCHEMA : SchemaTraversalState.UNKNOWN;
+        }
+        if (state == SchemaTraversalState.SUBSCHEMA_ARRAY) {
+            return element instanceof Number && isSchemaNode(node)
+                    ? SchemaTraversalState.SCHEMA : SchemaTraversalState.UNKNOWN;
+        }
+        if (state != SchemaTraversalState.SCHEMA || !(element instanceof String)) {
+            return SchemaTraversalState.UNKNOWN;
+        }
+        String keyword = (String) element;
+        if (SUBSCHEMA_MAP_KEYWORDS.contains(keyword)) {
+            return SchemaTraversalState.SUBSCHEMA_MAP;
+        }
+        if (SUBSCHEMA_ARRAY_KEYWORDS.contains(keyword)) {
+            return SchemaTraversalState.SUBSCHEMA_ARRAY;
+        }
+        if (DIRECT_SUBSCHEMA_KEYWORDS.contains(keyword)) {
+            if (isSchemaNode(node)) {
+                return SchemaTraversalState.SCHEMA;
+            }
+            if ("items".equals(keyword) && node.isArray()) {
+                return SchemaTraversalState.SUBSCHEMA_ARRAY;
+            }
+        }
+        return SchemaTraversalState.UNKNOWN;
+    }
+
+    private static boolean isSchemaNode(JsonNode node) {
+        return node.isObject() || node.isBoolean();
+    }
+
+    private enum SchemaTraversalState {
+        SCHEMA,
+        SUBSCHEMA_MAP,
+        SUBSCHEMA_ARRAY,
+        UNKNOWN
     }
 }
