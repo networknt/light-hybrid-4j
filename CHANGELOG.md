@@ -1,5 +1,29 @@
 # Change Log
 
+## [2.4.0](https://github.com/networknt/light-hybrid-4j/tree/2.4.0) (2026-10-07)
+
+**Commits:**
+
+- upgrade to version 2.4.0 before release in master branch ([161abc3](https://github.com/networknt/light-hybrid-4j/commit/161abc39dfc4eeb52c98d88443b07deb27e64fe7)) (by Steve Hu)
+- upgrade maven-javadoc to 3.12.0 from 3.4.1 ([bf3501f](https://github.com/networknt/light-hybrid-4j/commit/bf3501f0eb382207bb2702f8db86e86ab1652255)) (by Steve Hu)
+- upgrade maven-version to 2.22.0 from 2.4 ([5b0454b](https://github.com/networknt/light-hybrid-4j/commit/5b0454b7936d89af2d64b8df88b79e80359c8e4b)) (by Steve Hu)
+- upgrade mockito to 5.24.0 ([4fb573d](https://github.com/networknt/light-hybrid-4j/commit/4fb573dcb3d13db3bb325f0a84623658b909c580)) (by Steve Hu)
+- upgrade slf4j to 2.0.20 from 2.0.19 ([dd0e940](https://github.com/networknt/light-hybrid-4j/commit/dd0e94044104da86837376d7944ce6c90ba5efde)) (by Steve Hu)
+- upgrade jose4j to 0.9.7 from 0.9.6 ([435a348](https://github.com/networknt/light-hybrid-4j/commit/435a3480f13a6cc339ff298311913cbeb8fb40bd)) (by Steve Hu)
+- upgrade jackson to 2.22.3 from 2.22.1 ([52926d1](https://github.com/networknt/light-hybrid-4j/commit/52926d146381cef1b7f4cce97698caf47fd24fa3)) (by Steve Hu)
+- upgrade to version 2.3.8-SNAPSHOT after release in master branch ([5dd0d26](https://github.com/networknt/light-hybrid-4j/commit/5dd0d26c3d473ef3bae6e6bb685b64f5ee12fb60)) (by Steve Hu)
+- upgrade slf4j to 2.0.19 from 2.0.17 ([4481b34](https://github.com/networknt/light-hybrid-4j/commit/4481b34a17fdd0a3b9dd4f22b31c43a8a697c03d)) (by Steve Hu)
+- upgrade maven-surefire to 3.6.0 ([c4fb048](https://github.com/networknt/light-hybrid-4j/commit/c4fb0488a8ce3d347c245b2c9fc2e59ea325e6ae)) (by Steve Hu)
+- upgrade logback to 1.6.3 from 1.5.37 ([b7f2d9f](https://github.com/networknt/light-hybrid-4j/commit/b7f2d9f9520595442863cb03cb87237b1c626648)) (by Steve Hu)
+- Remove obsolete javadoc-packagelist-maven-plugin workaround ([355b214](https://github.com/networknt/light-hybrid-4j/commit/355b2148372b577d1326e12c98a93498394f7da6)) (by Steve Hu)
+- upgrade central-publishing-maven to 0.11.0 from 0.7.0 ([8d8303e](https://github.com/networknt/light-hybrid-4j/commit/8d8303e18ede0365fd53124c1d1be660e2c4288c)) (by Steve Hu)
+- fixes #188 upgrade to 2.0.7 json schema validator ([6be27fe](https://github.com/networknt/light-hybrid-4j/commit/6be27fe9d483e4637fb13f62d2d2e76a096afb9b)) (by Steve Hu)
+- update json-schema-validator version to 2.0.7 ([50fc704](https://github.com/networknt/light-hybrid-4j/commit/50fc70445f14adddf98aa03d9bf3be8ae264ab28)) (by Steve Hu)
+- fix json schema validator migration parity ([5b962b4](https://github.com/networknt/light-hybrid-4j/commit/5b962b40a9d596a2aec091b47fe5c13ade735d8e)) (by Steve Hu)
+- fixes #188 upgrade json-schema-validator to 2.0.5 from 1.5.1 ([2e80324](https://github.com/networknt/light-hybrid-4j/commit/2e8032484d991f1f8754aa14066a1626361899e8)) (by Steve Hu)
+- update json-schema-validator version to 2.0.5 ([d70ced0](https://github.com/networknt/light-hybrid-4j/commit/d70ced0be4cf4163a5b386626f110b63b862e690)) (by Steve Hu)
+- upgrade to version 2.3.8-SNAPSHOT after release in master branch ([c32f1db](https://github.com/networknt/light-hybrid-4j/commit/c32f1dbdee35d860b5cf984736d9066d3e79bb4f)) (by Steve Hu)
+
 ## [2.3.7](https://github.com/networknt/light-hybrid-4j/tree/2.3.7) (2026-08-12)
 
 
