@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.4.1](https://github.com/networknt/light-hybrid-4j/tree/2.4.1) (2026-10-11)
+
+**Commits:**
+
+- upgrade to version 2.4.1 before release in master branch ([2772855](https://github.com/networknt/light-hybrid-4j/commit/27728552f64ab9d6f876ee5044984064617b9a7e)) (by Steve Hu)
+- upgrade maven-gpg to 3.2.8 from 3.2.7 ([15aaaf8](https://github.com/networknt/light-hybrid-4j/commit/15aaaf8e5dabc7e6dc2c53c736f0fdb6aaf8bfdc)) (by Steve Hu)
+- build: upgrade JUnit to 6.1.3 ([be759c1](https://github.com/networknt/light-hybrid-4j/commit/be759c190f7a8ecc258e9e1bdf2614a44c343407)) (by Steve Hu)
+- upgrade udertow to 2.4.4.Final from 2.4.1.Final ([8944485](https://github.com/networknt/light-hybrid-4j/commit/8944485da6743bf57ca663445287cc4263041393)) (by Steve Hu)
+- upgrade logback to 1.6.5 from 1.6.3 ([f9faca1](https://github.com/networknt/light-hybrid-4j/commit/f9faca1168b367f30abf09d8c7086631ad790b4c)) (by Steve Hu)
+- upgrade json-schema-validator to 2.0.8 from 2.0.7 ([fb09009](https://github.com/networknt/light-hybrid-4j/commit/fb09009518d4bd2e70eec02f2972fe7956dd40e8)) (by Steve Hu)
+- upgrade to version 2.4.1-SNAPSHOT after release in master branch ([0f55a7a](https://github.com/networknt/light-hybrid-4j/commit/0f55a7afc62d81c213493ce8643f5b3677cc2e4c)) (by Steve Hu)
+
 ## [2.4.0](https://github.com/networknt/light-hybrid-4j/tree/2.4.0) (2026-10-07)
 
 **Commits:**
