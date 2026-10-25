@@ -46,7 +46,7 @@ JSON object or binary without data conversion on the server side.
 ### Jackson 3 development migration
 
 This development line requires Jackson 3.2.3, json-schema-validator 3.0.8 and the
-migrated yaml-rule 3.0.1 plus light-4j/http-client snapshots. Jackson types in
+migrated yaml-rule 4.0.0-SNAPSHOT plus light-4j/http-client snapshots. Jackson types in
 public APIs use `tools.jackson`; annotation packages remain unchanged. Existing
 project versions are unchanged during implementation, and a coordinated
 next-major release is required before publication.
