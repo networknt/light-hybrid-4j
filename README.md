@@ -41,3 +41,44 @@ swagger specification. This is very time consuming and make the swagger spec. so
 By using Hybrid framework, you just need to define the JSON schema or other binary protocol
 IDL for your request and then validate the request again it. All the communication is based on
 JSON object or binary without data conversion on the server side.
+
+
+### Jackson 3 development migration
+
+This development line requires Jackson 3.2.3, json-schema-validator 3.0.8 and the
+migrated yaml-rule 4.0.0-SNAPSHOT plus light-4j/http-client snapshots. Jackson types in
+public APIs use `tools.jackson`; annotation packages remain unchanged. Existing
+project versions are unchanged during implementation, and a coordinated
+next-major release is required before publication.
+
+JSON handling derives from light-4j's measured compatibility profile. Service
+schema YAML now uses Jackson's SnakeYAML Engine parser, retaining the measured
+legacy stream-read limits. SchemaHandler.parseYaml still declares IOException:
+unchecked Jackson parse/stream failures are wrapped so existing checked-error
+handlers continue to work. The startup loader also catches unchecked Jackson
+serialization failures.
+
+For typed service metadata such as skipAuth, use canonical true/false. The YAML
+resolver changes yes/no/on/off, True/FALSE, Null/NULL, 012, 0x1F, 0b11, 1_000 and
+~ scalar interpretation; non-canonical values can become strings and fail typed
+use. Quote intended strings and use canonical numeric/null values. Existing
+fixture scalars and both parsed service-spec maps match the Jackson 2 baseline;
+this does not audit deployed service jars. Classic SnakeYAML pins are retained
+until the final dependency cleanup phase.
+
+The source-build workflow resolves yaml-rule #36 and light-4j #2815 to their
+latest heads while open, then follows their base branches after merge. Other
+prerequisites use master. Each run logs the exact source commits tested and uses
+a fresh Maven repository. Rerun this check after prerequisite changes and before
+merging: an earlier green run qualifies only its recorded commits. Manual
+workflow dispatch is available. Source-build success does not qualify published
+artifact resolution.
+
+Prerequisites are resolved to full commit SHAs before checkout. To replay a
+failed dependency combination, manually dispatch the source-build workflow with
+its uploaded `source-refs.json` contents as the `source_refs` input. Omitted
+repositories resolve their current source head; supplied values must be full
+commit SHAs. Each green result qualifies only the recorded combination.
+
+GitHub manual dispatch requires this workflow to exist on the default branch.
+Before merge, use the recorded commits to reproduce with local source checkouts.

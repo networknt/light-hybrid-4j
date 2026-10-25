@@ -16,8 +16,8 @@
 
 package com.networknt.rpc;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
 import com.networknt.config.Config;
 import org.junit.jupiter.api.Test;
 
@@ -50,8 +50,8 @@ class HybridHandlerTest {
 
         assertNotNull(error);
         JsonNode response = Config.getInstance().getMapper().readTree(StandardCharsets.UTF_8.decode(error).toString());
-        assertEquals("ERR11004", response.get("code").asText());
-        assertTrue(response.get("description").asText().contains("$: "));
+        assertEquals("ERR11004", response.get("code").asString());
+        assertTrue(response.get("description").asString().contains("$: "));
     }
 
     @Test
@@ -64,12 +64,12 @@ class HybridHandlerTest {
 
         assertNotNull(error);
         JsonNode response = Config.getInstance().getMapper().readTree(StandardCharsets.UTF_8.decode(error).toString());
-        assertTrue(response.get("description").asText().contains("A custom validation message"));
-        assertFalse(response.get("description").asText().contains("$: A custom validation message"));
+        assertTrue(response.get("description").asString().contains("A custom validation message"));
+        assertFalse(response.get("description").asString().contains("$: A custom validation message"));
         assertNotNull(nestedError);
         JsonNode nestedResponse = Config.getInstance().getMapper().readTree(StandardCharsets.UTF_8.decode(nestedError).toString());
-        assertTrue(nestedResponse.get("description").asText().contains("A nested custom message"));
-        assertFalse(nestedResponse.get("description").asText().contains("$.user: A nested custom message"));
+        assertTrue(nestedResponse.get("description").asString().contains("A nested custom message"));
+        assertFalse(nestedResponse.get("description").asString().contains("$.user: A nested custom message"));
     }
 
     @Test
@@ -80,7 +80,7 @@ class HybridHandlerTest {
 
         assertNotNull(error);
         JsonNode response = Config.getInstance().getMapper().readTree(StandardCharsets.UTF_8.decode(error).toString());
-        assertTrue(response.get("description").asText().contains("$.count: "));
+        assertTrue(response.get("description").asString().contains("$.count: "));
     }
 
     @Test
@@ -96,11 +96,11 @@ class HybridHandlerTest {
         assertNotNull(propertiesError);
         JsonNode propertiesResponse = Config.getInstance().getMapper().readTree(
                 StandardCharsets.UTF_8.decode(propertiesError).toString());
-        assertTrue(propertiesResponse.get("description").asText().contains("$.properties.n: "));
+        assertTrue(propertiesResponse.get("description").asString().contains("$.properties.n: "));
         assertNotNull(itemsError);
         JsonNode itemsResponse = Config.getInstance().getMapper().readTree(
                 StandardCharsets.UTF_8.decode(itemsError).toString());
-        assertTrue(itemsResponse.get("description").asText().contains("$.items.n: "));
+        assertTrue(itemsResponse.get("description").asString().contains("$.items.n: "));
     }
 
     @Test
