@@ -1,6 +1,6 @@
 package com.networknt.rpc.router;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import com.networknt.config.Config;
 import com.networknt.rpc.HybridHandler;
 import io.undertow.server.HttpServerExchange;
@@ -91,7 +91,7 @@ public class ToolsListHandler implements HybridHandler {
         try {
             String responseString = Config.getInstance().getMapper().writeValueAsString(responseMap);
             return ByteBuffer.wrap(responseString.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             logger.error("Error serializing tools list", e);
             throw new RuntimeException(e);
         }

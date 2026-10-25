@@ -1,8 +1,8 @@
 package com.networknt.rpc.router;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import com.networknt.config.Config;
 import com.networknt.handler.MiddlewareHandler;
 import com.networknt.httpstring.AttachmentConstants;
@@ -123,8 +123,8 @@ public class JsonHandler implements MiddlewareHandler {
                             errorNode.put("message", reason != null ? reason : "Internal Server Error");
                         }
                         errorNode.set("data", resultNode);
-                    } else if (resultNode != null && resultNode.isTextual()) {
-                        errorNode.put("message", resultNode.asText());
+                    } else if (resultNode != null && resultNode.isString()) {
+                        errorNode.put("message", resultNode.asString());
                     } else {
                         errorNode.put("message", "Internal Server Error");
                     }

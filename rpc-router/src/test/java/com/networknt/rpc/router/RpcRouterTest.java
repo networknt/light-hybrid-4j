@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.xnio.IoUtils;
 import org.xnio.OptionMap;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public class RpcRouterTest {
     static TestServer server = TestServer.getInstance();
 
     static final Logger logger = LoggerFactory.getLogger(RpcRouterTest.class);
-    static final ObjectMapper mapper = new ObjectMapper();
+    static final ObjectMapper mapper = com.networknt.config.Jackson2Defaults.mapper();
     static final boolean enableHttp2 = server.getServerConfig().isEnableHttp2();
     static final boolean enableHttps = server.getServerConfig().isEnableHttps();
     static final int httpPort = server.getServerConfig().getHttpPort();

@@ -1,8 +1,11 @@
 package com.networknt.rpc.router;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 import com.networknt.config.Config;
+import com.networknt.config.Jackson2Defaults;
 import com.networknt.config.JsonMapper;
 import com.networknt.handler.Handler;
 import com.networknt.handler.MiddlewareHandler;
@@ -50,8 +53,19 @@ public class SchemaHandler implements MiddlewareHandler {
     }
 
     public static Map<String, Map<String, Object>> parseYaml(InputStream yamlStream) throws IOException {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        Map<String, Object> rootNode = mapper.readValue(yamlStream, Map.class);
+        // YAML scalars use the Engine resolver; retain the legacy map-reader limits.
+        YAMLFactory factory = YAMLFactory.builder().configureForJackson2()
+                .streamReadConstraints(Jackson2Defaults.mapper().tokenStreamFactory().streamReadConstraints())
+                .disable(StreamReadFeature.USE_FAST_DOUBLE_PARSER, StreamReadFeature.USE_FAST_BIG_NUMBER_PARSER)
+                .build();
+        YAMLMapper mapper = YAMLMapper.builder(factory).configureForJackson2().build();
+        Map<String, Object> rootNode;
+        try {
+            rootNode = mapper.readValue(yamlStream, Map.class);
+        } catch (JacksonException e) {
+            // Keep the public checked-I/O contract and its callers' handled error path.
+            throw new IOException("Unable to parse service YAML", e);
+        }
         Map<String, Map<String, Object>> resultMap = new LinkedHashMap<>();
 
         String host = (String) rootNode.get("host");
@@ -152,7 +166,7 @@ public class SchemaHandler implements MiddlewareHandler {
                 }
             }
             if(logger.isDebugEnabled()) logger.debug("services = {}", Config.getInstance().getMapper().writeValueAsString(services));
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             logger.error("Error loading spec.yaml files from service jars", e);
             // throw exception to stop the service as this is a serious error.
             throw new RuntimeException("Error loading spec.yaml files from service jars");
