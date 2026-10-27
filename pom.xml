@@ -106,7 +106,7 @@
         <version.undertow>2.4.4.Final</version.undertow>
         <version.assertj>3.27.7</version.assertj>
         <version.json-schema-validator>3.0.8</version.json-schema-validator>
-        <version.yaml-rule>4.0.0-SNAPSHOT</version.yaml-rule>
+        <version.yaml-rule>4.0.0</version.yaml-rule>
         <version.classgraph>4.8.149</version.classgraph>
         <versions.maven-version>2.23.0</versions.maven-version>
         <version.maven-javadoc>3.12.0</version.maven-javadoc>
