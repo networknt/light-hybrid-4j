@@ -4,6 +4,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.dataformat.yaml.YAMLFactory;
 import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLReadFeature;
 import com.networknt.config.Config;
 import com.networknt.config.Jackson2Defaults;
 import com.networknt.config.JsonMapper;
@@ -57,6 +58,8 @@ public class SchemaHandler implements MiddlewareHandler {
     private static YAMLMapper createYamlMapper() {
         // YAML scalars use the Engine resolver; retain the legacy map-reader limits.
         YAMLFactory factory = YAMLFactory.builder().configureForJackson2()
+                // A valueless skipAuth retains the same authenticated default as null.
+                .enable(YAMLReadFeature.EMPTY_STRING_AS_NULL)
                 .streamReadConstraints(Jackson2Defaults.mapper().tokenStreamFactory().streamReadConstraints())
                 .disable(StreamReadFeature.USE_FAST_DOUBLE_PARSER, StreamReadFeature.USE_FAST_BIG_NUMBER_PARSER)
                 .build();
