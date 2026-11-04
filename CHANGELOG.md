@@ -1,5 +1,16 @@
 # Change Log
 
+## [2.5.0](https://github.com/networknt/light-hybrid-4j/tree/2.5.0) (2026-11-04)
+
+**Commits:**
+
+- upgrade to version 2.5.0 before release in 2.x branch ([25e28c1](https://github.com/networknt/light-hybrid-4j/commit/25e28c14a3abcd820591c571152a7fd309c0d659)) (by Steve Hu)
+- upgrade to version 2.5.0-SNAPSHOT after release in 2.x branch ([be30bb2](https://github.com/networknt/light-hybrid-4j/commit/be30bb20fd682def12c7492743e987b7ec710a3f)) (by Steve Hu)
+- upgrade jackson to 2.22.4 from 2.22.3 ([9e0e3c7](https://github.com/networknt/light-hybrid-4j/commit/9e0e3c77f694f59d3d656e3817d5c6a7d4a44deb)) (by Steve Hu)
+- upgrade logback to 1.6.6 from 1.6.5 ([9060ed7](https://github.com/networknt/light-hybrid-4j/commit/9060ed7724c00d4a5c7f6dc22aa7bedacbb54775)) (by Steve Hu)
+- upgrade maven-version to 2.23.0 from 2.22.0 ([e4c7652](https://github.com/networknt/light-hybrid-4j/commit/e4c76524d98737739581b43c5d12ecc9e2284f7f)) (by Steve Hu)
+- upgrade to version 2.4.2-SNAPSHOT after release in master branch ([017d72b](https://github.com/networknt/light-hybrid-4j/commit/017d72b92130e7b0c5de274ac31164e2fe2f020f)) (by Steve Hu)
+
 ## [2.4.1](https://github.com/networknt/light-hybrid-4j/tree/2.4.1) (2026-10-11)
 
 **Commits:**
