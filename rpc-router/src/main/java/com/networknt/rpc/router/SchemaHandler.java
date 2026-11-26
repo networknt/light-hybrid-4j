@@ -169,22 +169,26 @@ public class SchemaHandler implements MiddlewareHandler {
                     this.handleEmptyPostRequest(exchange1);
                     return;
                 }
-                if(logger.isDebugEnabled()) logger.debug("Post method with message = {}", message);
                 processRequest(exchange1, message);
             });
         } else if(Methods.GET.equals(exchange.getRequestMethod())) {
             Map<String, Deque<String>> params = exchange.getQueryParameters();
-            String cmd = ((Deque<String>)params.get(CMD)).getFirst();
+            Deque<String> commands = params.get(CMD);
+            String cmd = commands == null ? null : commands.peekFirst();
             if(cmd == null || cmd.trim().isEmpty()) {
                 this.handleMissingGetCommand(exchange);
                 return;
             }
-            String message = URLDecoder.decode(cmd, StandardCharsets.UTF_8);
-            if(logger.isDebugEnabled()) logger.debug("Get method with message = {}", message);
-            processRequest(exchange, message);
+            processRequest(exchange, decodeGetCommand(cmd));
         } else {
             this.handleUnsupportedMethod(exchange);
         }
+    }
+
+    static String decodeGetCommand(String command) {
+        // Undertow normally supplies JSON. Older clients can send an extra URL-encoded layer.
+        return command.stripLeading().startsWith("{") ? command
+                : URLDecoder.decode(command, StandardCharsets.UTF_8);
     }
 
     private void processRequest(HttpServerExchange exchange, String message) {
